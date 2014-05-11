@@ -169,7 +169,10 @@ function processShare(miner, nonce, resultHash){
         return false;
     }
 
-    var hashNum = bignum.fromBuffer(hash, {size: 'auto'});
+    var hashArray = hash.toJSON();
+    hashArray.reverse();
+
+    var hashNum = bignum.fromBuffer(new Buffer(hashArray));
     var hashDiff = diff1.div(hashNum);
 
     if (hashDiff.ge(CurrentJob.difficulty)){
@@ -183,10 +186,10 @@ function processShare(miner, nonce, resultHash){
         });
     }
 
-    /*if (hashDiff.lt(miner.difficulty)){
+    if (hashDiff.lt(miner.difficulty)){
         console.log('Rejected low difficulty share of ' + hashDiff.toString());
         return false;
-    }*/
+    }
 
     var hashTarget = hash.readUInt32LE(hash.length - 4);
     var percent = (miner.target / hashTarget * 100).toFixed(2);
