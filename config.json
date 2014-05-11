@@ -1,8 +1,10 @@
 {
 
-    "startingTarget": 850000000,
+    "startingTarget": 200000000,
 
     "poolPort": 5555,
+
+    "blockRefreshInterval": 1000,
 
     "daemon": {
         "host": "127.0.0.1",

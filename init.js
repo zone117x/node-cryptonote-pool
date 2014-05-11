@@ -1,6 +1,8 @@
 var fs = require('fs');
 var http = require('http');
 
+var bignum = require('bignum');
+
 var multiHashing = require('multi-hashing');
 
 var config = JSON.parse(fs.readFileSync('config.json'));
@@ -13,6 +15,8 @@ var diff1 = 0xffffffff;
 
 var connectedMiners = {};
 
+
+//console.log(new Buffer('33333303', 'hex').readUInt32LE(0));
 
 
 var rpc = function(host, port, method, params, callback){
@@ -94,7 +98,7 @@ Miner.prototype = {
     },
     getTargetHex: function(){
         var buff = new Buffer(4);
-        buff.writeUInt32BE(config.startingTarget, 0);
+        buff.writeUInt32LE(config.startingTarget, 0);
         var hex = buff.toString('hex');
         return hex;
     }
@@ -128,7 +132,7 @@ var CurrentJob = {
     }
 };
 
-var processBlockTemplate = function(template){
+function processBlockTemplate(template){
     CurrentJob.id = uid();
     CurrentJob.blob = template.blocktemplate_blob;
     CurrentJob.difficulty = template.difficulty;
@@ -136,24 +140,24 @@ var processBlockTemplate = function(template){
     CurrentJob.extraNonce = 0;
     CurrentJob.reserveOffset = template.reserved_offset;
     CurrentJob.buffer = new Buffer(CurrentJob.blob, 'hex');
-};
+}
 
-var jobRefresh = function(){
+function jobRefresh(){
     getBlockTemplate(reserveSize, function(error, result){
         if (error){
             console.log('error polling getblocktemplate ' + JSON.stringify(error));
             return;
         }
         if (result.height > CurrentJob.height){
-            console.log('found new  block');
+            console.log('found new  block at height ' + result.height + ' w/ difficulty of ' + result.difficulty);
             processBlockTemplate(result);
         }
+        setTimeout(jobRefresh, config.blockRefreshInterval);
     })
-};
+}
 jobRefresh();
 
-
-var processShare = function(miner, nonce, resultHash){
+function processShare(miner, nonce, resultHash){
     var shareBuffer = new Buffer(CurrentJob.buffer.length);
     CurrentJob.buffer.copy(shareBuffer);
     shareBuffer.writeUInt32BE(miner.extraNonce, CurrentJob.reserveOffset);
@@ -168,18 +172,19 @@ var processShare = function(miner, nonce, resultHash){
     }
 
     var hashTarget = hash.readUInt32LE(hash.length - 4);
+    var percent = (miner.target / hashTarget * 100).toFixed(2);
 
     if (hashTarget > miner.target){
-        console.log('high target share ' + hashTarget);
+        console.log('high target share ' + percent);
         return false;
     }
-    console.log('Accepted share ' + resultHash);
+    console.log('Accepted share at ' + percent + '% of target (' + miner.target + '/' + hashTarget + ')');
 
     return true;
-};
+}
 
 
-var handleMinerMethod = function(id, method, params, res){
+function handleMinerMethod(id, method, params, res){
 
     var sendReply = function(error, result){
         var sendData = JSON.stringify({
@@ -206,8 +211,6 @@ var handleMinerMethod = function(id, method, params, res){
             }
             var minerId = uid();
             var miner = new Miner(minerId, params.login, params.pass);
-            miner.lastJobId = CurrentJob.id;
-            miner.extraNonce = CurrentJob.extraNonce;
             connectedMiners[minerId] = miner;
             sendReply(null, {
                 id: minerId,
@@ -218,7 +221,8 @@ var handleMinerMethod = function(id, method, params, res){
                 },
                 status: 'OK'
             });
-
+            miner.lastJobId = CurrentJob.id;
+            miner.extraNonce = CurrentJob.extraNonce;
             console.log('miner connected ' + params.login + ':' + params.pass);
             break;
         case 'getjob':
@@ -267,7 +271,7 @@ var handleMinerMethod = function(id, method, params, res){
             console.log('invalid ' + method + ' ' + JSON.stringify(params));
             break;
     }
-};
+}
 
 
 var getworkServer = http.createServer(function(req, res){
