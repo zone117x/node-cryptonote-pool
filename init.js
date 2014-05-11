@@ -11,12 +11,10 @@ var cryptoNight = multiHashing['cryptonight'];
 
 var reserveSize = 4;
 
-var diff1 = 0xffffffff;
+var diff1 = bignum('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', 16);
 
 var connectedMiners = {};
 
-
-//console.log(new Buffer('33333303', 'hex').readUInt32LE(0));
 
 
 var rpc = function(host, port, method, params, callback){
@@ -90,15 +88,15 @@ function Miner(id, login, pass){
     this.login = login;
     this.pass = pass;
     this.heartbeat();
-    this.target = config.startingTarget;
+    this.difficulty = config.difficulty;
 }
 Miner.prototype = {
     heartbeat: function(){
         this.lastBeat = Date.now();
     },
     getTargetHex: function(){
-        var buff = new Buffer(4);
-        buff.writeUInt32LE(config.startingTarget, 0);
+        var buff = diff1.div(config.difficulty).toBuffer().slice(0, 4);
+        this.target = buff.readUInt32LE(0);
         var hex = buff.toString('hex');
         return hex;
     }
@@ -171,6 +169,25 @@ function processShare(miner, nonce, resultHash){
         return false;
     }
 
+    var hashNum = bignum.fromBuffer(hash, {size: 'auto'});
+    var hashDiff = diff1.div(hashNum);
+
+    if (hashDiff.ge(CurrentJob.difficulty)){
+        console.log('Block found!');
+        rpcDaemon('submitblock', [hashHex], function(error, result){
+            if (error){
+                console.log('error submitting block ' + JSON.stringify(error));
+                return;
+            }
+            console.log('Block submitted successfully ' + JSON.stringify(result));
+        });
+    }
+
+    /*if (hashDiff.lt(miner.difficulty)){
+        console.log('Rejected low difficulty share of ' + hashDiff.toString());
+        return false;
+    }*/
+
     var hashTarget = hash.readUInt32LE(hash.length - 4);
     var percent = (miner.target / hashTarget * 100).toFixed(2);
 
@@ -178,7 +195,7 @@ function processShare(miner, nonce, resultHash){
         console.log('high target share ' + percent);
         return false;
     }
-    console.log('Accepted share at ' + percent + '% of target (' + miner.target + '/' + hashTarget + ')');
+    console.log('Accepted share at difficulty ' + hashDiff.toString() + ' - ' + percent + '% of target (' + miner.target + '/' + hashTarget + ')');
 
     return true;
 }

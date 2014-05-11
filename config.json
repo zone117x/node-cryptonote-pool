@@ -1,6 +1,6 @@
 {
 
-    "startingTarget": 200000000,
+    "difficulty": 5,
 
     "poolPort": 5555,
 
