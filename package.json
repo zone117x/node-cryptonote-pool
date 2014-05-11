@@ -1,0 +1,19 @@
+{
+    "name": "cryptonote-pool",
+    "version": "0.0.1",
+    "license": "GPL-2.0",
+    "author": "Matthew Little",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/zone117x/node-cryptonote-pool.git"
+    },
+    "dependencies": {
+        "bignum": "*",
+        "async": "*",
+        "redis": "*",
+        "multi-hashing": "git://github.com/zone117x/node-multi-hashing.git"
+    },
+    "engines": {
+        "node": ">=0.10"
+    }
+}

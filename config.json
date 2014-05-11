@@ -1,0 +1,24 @@
+{
+
+    "startingTarget": 850000000,
+
+    "poolPort": 5555,
+
+    "daemon": {
+        "host": "127.0.0.1",
+        "port": 18081
+    },
+    "wallet": {
+        "host": "127.0.0.1",
+        "port": 8082,
+        "address": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn"
+    },
+
+    "minerTimeout": 600,
+
+    "redis": {
+        "host": "127.0.0.1",
+        "port": 6379
+    }
+
+}
