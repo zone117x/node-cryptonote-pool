@@ -138,6 +138,23 @@ function processBlockTemplate(template){
     CurrentJob.extraNonce = 0;
     CurrentJob.reserveOffset = template.reserved_offset;
     CurrentJob.buffer = new Buffer(CurrentJob.blob, 'hex');
+
+    for (var minerId in connectedMiners){
+        var miner = connectedMiners[minerId];
+        if (miner.longPoll){
+            console.log('sending new job to longpolled miner');
+            clearInterval(miner.longPoll.timeout);
+            miner.longPoll.reply(null, {
+                blob: CurrentJob.nextBlob(),
+                job_id: CurrentJob.id,
+                target: miner.getTargetHex()
+            });
+            miner.lastJobId = CurrentJob.id;
+            miner.extraNonce = CurrentJob.extraNonce;
+            delete miner.longPoll;
+        }
+    }
+
 }
 
 function jobRefresh(){
@@ -219,6 +236,12 @@ function handleMinerMethod(id, method, params, res){
         res.end(sendData);
     };
 
+    res.on('close', function(){
+        sendReply = function(){
+            console.log('tried writing to dead socket');
+        };
+    });
+
     switch(method){
         case 'login':
             if (!params.login){
@@ -252,11 +275,25 @@ function handleMinerMethod(id, method, params, res){
                 return;
             }
             if (miner.lastJobId === CurrentJob.id) {
-                sendReply(null, {
-                    blob: '',
-                    job_id: '',
-                    target: ''
-                });
+                if (!config.useLongPolling){
+                    sendReply(null, {
+                        blob: '',
+                        job_id: '',
+                        target: ''
+                    });
+                    return;
+                }
+                miner.longPoll = {
+                    timeout: setTimeout(function(){
+                        delete miner.longPoll;
+                        sendReply(null, {
+                            blob: '',
+                            job_id: '',
+                            target: ''
+                        });
+                    }, 5000),
+                    reply: sendReply
+                };
                 return;
             }
             sendReply(null, {

@@ -1,8 +1,10 @@
 {
 
-    "difficulty": 5,
+    "difficulty": 7,
 
     "poolPort": 5555,
+
+    "useLongPolling": false,
 
     "blockRefreshInterval": 1000,
 
