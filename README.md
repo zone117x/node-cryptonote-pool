@@ -36,13 +36,18 @@ Explanation for each field:
 
     "poolPort": 5555,
 
+    /* Initial difficulty miners are set to. */
     "difficulty": 10,
+
+    /* Variable difficulty is a feature that will automatically adjust difficulty for
+       individual miners based on their hashrate in order to lower networking and CPU
+       overhead. */
     "varDiff": {
-        "minDiff": 2,
+        "minDiff": 2, //Minimum difficulty
         "maxDiff": 512,
-        "targetTime": 15,
-        "retargetTime": 30,
-        "variancePercent": 30
+        "targetTime": 15, //Try to get 1 share per this many seconds
+        "retargetTime": 30, //Check to see if we should retarget every this many seconds
+        "variancePercent": 30 //Allow time to very this % from target without retargeting
     },
 
     /* Set to "auto" by default which will spawn one process/fork/worker for each CPU
