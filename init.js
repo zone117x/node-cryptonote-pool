@@ -1,357 +1,109 @@
 var fs = require('fs');
-var http = require('http');
+var cluster = require('cluster');
 
-var bignum = require('bignum');
+////simplewallet --wallet-file=wallet.bin --pass=test --rpc-bind-port=8082
 
-var multiHashing = require('multi-hashing');
+if (cluster.isWorker){
+    switch(process.env.workerType){
+        case 'pool':
+            require('./pool.js');
+            break;
+        case 'paymentProcessor':
+            require('./paymentProcessor.js');
+            break;
+        case 'api':
+            require('./api.js');
+            break;
+        case 'cli':
+            require('./cli.js');
+            break
+    }
+    return;
+}
 
 var config = JSON.parse(fs.readFileSync('config.json'));
 
-var cryptoNight = multiHashing['cryptonight'];
-
-var reserveSize = 4;
-
-var diff1 = bignum('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', 16);
-
-var connectedMiners = {};
-
-
-
-var rpc = function(host, port, method, params, callback){
-
-    var data = JSON.stringify({
-        id: "0",
-        jsonrpc: "2.0",
-        method: method,
-        params: params
-    });
-
-    var options = {
-        hostname: config.daemon.host,
-        port: config.daemon.port,
-        path: '/json_rpc',
-        method: 'POST',
-        headers: {
-            'Content-Length': data.length,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    };
-
-    var req = http.request(options, function(res){
-        var replyData = '';
-        res.setEncoding('utf8');
-        res.on('data', function(chunk){
-            replyData += chunk;
-        });
-        res.on('end', function(){
-            var replyJson;
-            try{
-                replyJson = JSON.parse(replyData);
-            }
-            catch(e){
-                callback(e);
-                return;
-            }
-            callback(replyJson.error, replyJson.result);
-        });
-    });
-
-    req.on('error', function(e){
-        callback(e);
-    });
-
-    req.end(data);
-};
-
-var rpcDaemon = function(method, params, callback){
-    rpc(config.daemon.host, config.daemon.port, method, params, callback);
-};
-
-var rpcWallet = function(method, params, callback){
-    rpc(config.wallet.host, config.wallet.port, method, params, callback);
-};
-
-
-//simplewallet --wallet-file=wallet.bin --pass=test --rpc-bind-port=8082
-
-var getBlockTemplate = function(reserveSize, callback){
-    rpcDaemon('getblocktemplate', {reserve_size: reserveSize, wallet_address: config.wallet.address}, callback);
-};
-
-
-
-
-
-function Miner(id, login, pass){
-    this.id = id;
-    this.login = login;
-    this.pass = pass;
-    this.heartbeat();
-    this.difficulty = config.difficulty;
-}
-Miner.prototype = {
-    heartbeat: function(){
-        this.lastBeat = Date.now();
-    },
-    getTargetHex: function(){
-        var buff = diff1.div(config.difficulty).toBuffer().slice(0, 4);
-        this.target = buff.readUInt32LE(0);
-        var hex = buff.toString('hex');
-        return hex;
-    }
-};
-
-setInterval(function(){
-    var now = Date.now();
-    var timeout = config.minerTimeout * 1000;
-    for (var minerId in connectedMiners){
-        if (now - connectedMiners[minerId].lastBeat > timeout){
-            delete connectedMiners[minerId];
-        }
-    }
-}, 10000);
-
-
-var uid = function(){
-    var min = 100000000000000;
-    var max = 999999999999999;
-    var id = Math.floor(Math.random() * (max - min + 1)) + min;
-    return id.toString();
-};
-
-
-
-var CurrentJob = {
-    height: 0,
-    nextBlob: function(){
-        this.buffer.writeUInt32BE(++this.extraNonce, this.reserveOffset);
-        return this.buffer.toString('hex');
-    }
-};
-
-function processBlockTemplate(template){
-    CurrentJob.id = uid();
-    CurrentJob.blob = template.blocktemplate_blob;
-    CurrentJob.difficulty = template.difficulty;
-    CurrentJob.height = template.height;
-    CurrentJob.extraNonce = 0;
-    CurrentJob.reserveOffset = template.reserved_offset;
-    CurrentJob.buffer = new Buffer(CurrentJob.blob, 'hex');
-
-    for (var minerId in connectedMiners){
-        var miner = connectedMiners[minerId];
-        if (miner.longPoll){
-            console.log('sending new job to longpolled miner');
-            clearInterval(miner.longPoll.timeout);
-            miner.longPoll.reply(null, {
-                blob: CurrentJob.nextBlob(),
-                job_id: CurrentJob.id,
-                target: miner.getTargetHex()
-            });
-            miner.lastJobId = CurrentJob.id;
-            miner.extraNonce = CurrentJob.extraNonce;
-            delete miner.longPoll;
-        }
-    }
-
-}
-
-function jobRefresh(){
-    getBlockTemplate(reserveSize, function(error, result){
-        if (error){
-            console.log('error polling getblocktemplate ' + JSON.stringify(error));
-            return;
-        }
-        if (result.height > CurrentJob.height){
-            console.log('found new  block at height ' + result.height + ' w/ difficulty of ' + result.difficulty);
-            processBlockTemplate(result);
-        }
-        setTimeout(jobRefresh, config.blockRefreshInterval);
-    })
-}
-jobRefresh();
-
-function processShare(miner, nonce, resultHash){
-    var shareBuffer = new Buffer(CurrentJob.buffer.length);
-    CurrentJob.buffer.copy(shareBuffer);
-    shareBuffer.writeUInt32BE(miner.extraNonce, CurrentJob.reserveOffset);
-    new Buffer(nonce, 'hex').copy(shareBuffer, 39);
-
-    var hash = cryptoNight(shareBuffer);
-    var hashHex = hash.toString('hex');
-
-    if (hashHex !== resultHash) {
-        console.log('bad hash ' + hashHex + ' vs ' + resultHash);
-        return false;
-    }
-
-    var hashArray = hash.toJSON();
-    hashArray.reverse();
-
-    var hashNum = bignum.fromBuffer(new Buffer(hashArray));
-    var hashDiff = diff1.div(hashNum);
-
-    if (hashDiff.ge(CurrentJob.difficulty)){
-        console.log('Block found!');
-        rpcDaemon('submitblock', [hashHex], function(error, result){
-            if (error){
-                console.log('error submitting block ' + JSON.stringify(error));
-                return;
-            }
-            console.log('Block submitted successfully ' + JSON.stringify(result));
-        });
-    }
-
-    if (hashDiff.lt(miner.difficulty)){
-        console.log('Rejected low difficulty share of ' + hashDiff.toString());
-        return false;
-    }
-
-    var hashTarget = hash.readUInt32LE(hash.length - 4);
-    var percent = (miner.target / hashTarget * 100).toFixed(2);
-
-    if (hashTarget > miner.target){
-        console.log('high target share ' + percent);
-        return false;
-    }
-    console.log('Accepted share at difficulty ' + hashDiff.toString() + ' - ' + percent + '% of target (' + miner.target + '/' + hashTarget + ')');
-
-    return true;
-}
-
-
-function handleMinerMethod(id, method, params, res){
-
-    var sendReply = function(error, result){
-        var sendData = JSON.stringify({
-            id: id,
-            jsonrpc: "2.0",
-            error: error ? {code: -1, message: error} : null,
-            result: result
-        });
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.setHeader('Content-Length', sendData.length);
-        res.end(sendData);
-    };
-
-    res.on('close', function(){
-        sendReply = function(){
-            console.log('tried writing to dead socket');
-        };
-    });
-
-    switch(method){
-        case 'login':
-            if (!params.login){
-                sendReply("missing login");
-                return;
-            }
-            if (!params.pass){
-                sendReply("missing pass");
-                return;
-            }
-            var minerId = uid();
-            var miner = new Miner(minerId, params.login, params.pass);
-            connectedMiners[minerId] = miner;
-            sendReply(null, {
-                id: minerId,
-                job: {
-                    blob: CurrentJob.nextBlob(),
-                    job_id: CurrentJob.id,
-                    target: miner.getTargetHex()
-                },
-                status: 'OK'
-            });
-            miner.lastJobId = CurrentJob.id;
-            miner.extraNonce = CurrentJob.extraNonce;
-            console.log('miner connected ' + params.login + ':' + params.pass);
-            break;
-        case 'getjob':
-            var miner = connectedMiners[params.id];
-            if (!miner){
-                sendReply('Unauthenticated');
-                return;
-            }
-            if (miner.lastJobId === CurrentJob.id) {
-                if (!config.useLongPolling){
-                    sendReply(null, {
-                        blob: '',
-                        job_id: '',
-                        target: ''
-                    });
-                    return;
-                }
-                miner.longPoll = {
-                    timeout: setTimeout(function(){
-                        delete miner.longPoll;
-                        sendReply(null, {
-                            blob: '',
-                            job_id: '',
-                            target: ''
-                        });
-                    }, 5000),
-                    reply: sendReply
-                };
-                return;
-            }
-            sendReply(null, {
-                blob: CurrentJob.nextBlob(),
-                job_id: CurrentJob.id,
-                target: miner.getTargetHex()
-            });
-            miner.lastJobId = CurrentJob.id;
-            miner.extraNonce = CurrentJob.extraNonce;
-            break;
-        case 'submit':
-            if (!(params.id in connectedMiners)){
-                sendReply('Unauthenticated');
-                return;
-            }
-            if (params.job_id !== CurrentJob.id){
-                sendReply('Invalid job id');
-                return;
-            }
-
-            var shareAccepted = processShare(connectedMiners[params.id], params.nonce, params.result);
-
-            if (!shareAccepted){
-                sendReply('Low difficulty share');
-                return;
-            }
-
-            sendReply(null, {status: 'OK'});
-            break;
-        default:
-            sendReply("invalid method");
-            console.log('invalid ' + method + ' ' + JSON.stringify(params));
-            break;
-    }
-}
-
-
-var getworkServer = http.createServer(function(req, res){
-    var data = '';
-    req.setEncoding('utf8');
-    req.on('data', function(chunk){
-        data += chunk;
-    });
-    req.on('end', function(){
-        var jsonData;
-        try{
-            jsonData = JSON.parse(data);
-        }
-        catch(e){
-            console.log('error parsing json ' + data);
-            return;
-        }
-        if (!jsonData.id || !jsonData.method){
-            console.log('miner rpc request missing id or method');
-            return;
-        }
-        handleMinerMethod(jsonData.id, jsonData.method, jsonData.params, res);
-    });
+var logger = require('./logUtil.js')({
+    logLevel: config.logLevel,
+    logColors: config.logColors
 });
 
-getworkServer.listen(config.poolPort);
+var logSystem = 'Master';
+var logSubsystem = null;
+
+var os = require('os');
+
+(function init(){
+    spawnPoolWorkers();
+    spawnPaymentProcessor();
+    spawnApi();
+    spawnCli();
+})();
+
+
+function spawnPoolWorkers(){
+
+    var numForks = (function(){
+        if (!config.clusterForks)
+            return 1;
+        if (config.clusterForks === 'auto')
+            return os.cpus().length;
+        if (isNaN(config.clusterForks))
+            return 1;
+        return config.clusterForks;
+    })();
+
+    var poolWorkers = {};
+
+    var createPoolWorker = function(forkId){
+        var worker = cluster.fork({
+            workerType: 'pool',
+            forkId: forkId
+        });
+        worker.forkId = forkId;
+        worker.type = 'pool';
+        poolWorkers[forkId] = worker;
+        worker.on('exit', function(code, signal){
+            //severity, system, subsystem, component, text
+            logger.error(logSystem, logSubsystem, 'Pool Spawner', 'Fork ' + forkId + ' died, spawning replacement worker...');
+            setTimeout(function(){
+                createPoolWorker(forkId);
+            }, 2000);
+        }).on('message', function(msg){
+            switch(msg.type){
+                case 'none':
+                    break;
+            }
+        });
+    };
+
+    var i = 0;
+    var spawnInterval = setInterval(function(){
+        createPoolWorker(i);
+        i++;
+        if (i === numForks){
+            clearInterval(spawnInterval);
+            logger.debug(logSystem, logSubsystem, 'Pool Spawner', 'Spawned pool on ' + numForks + ' thread(s)');
+        }
+    }, 10);
+}
+
+function spawnPaymentProcessor(){
+    var worker = cluster.fork({
+        workerType: 'paymentProcessor'
+    });
+    worker.on('exit', function(code, signal){
+        logger.error(logSystem, logSubsystem, 'Payment Processor', 'Payment processor died, spawning replacement...');
+        setTimeout(function(){
+            spawnPaymentProcessor();
+        }, 2000);
+    });
+}
+
+function spawnApi(){
+
+}
+
+function spawnCli(){
+
+}

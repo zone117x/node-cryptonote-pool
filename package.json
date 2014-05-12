@@ -11,6 +11,8 @@
         "bignum": "*",
         "async": "*",
         "redis": "*",
+        "colors": "*",
+        "dateformat": "*",
         "multi-hashing": "git://github.com/zone117x/node-multi-hashing.git"
     },
     "engines": {

@@ -1,8 +1,22 @@
 {
 
-    "difficulty": 7,
+    "coin": "monero",
 
     "poolPort": 5555,
+
+    "difficulty": 10,
+    "varDiff": {
+        "minDiff": 2,
+        "maxDiff": 512,
+        "targetTime": 15,
+        "retargetTime": 30,
+        "variancePercent": 30
+    },
+
+    "clusterForks": "auto",
+
+    "logLevel": "debug",
+    "logColors": true,
 
     "useLongPolling": false,
 
@@ -12,6 +26,7 @@
         "host": "127.0.0.1",
         "port": 18081
     },
+
     "wallet": {
         "host": "127.0.0.1",
         "port": 8082,
@@ -24,5 +39,4 @@
         "host": "127.0.0.1",
         "port": 6379
     }
-
 }
