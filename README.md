@@ -3,6 +3,25 @@ node-cryptonote-pool
 
 Mining pool for CryptoNote based coins such as Bytecoin and Monero
 
+#### TODO
+
+* Flooding detection
+* IP banning for low-diff shares (prevent CPU overload with low-diff share attacks)
+* Collecting stats and exposing via ajax/rest API
+  * Currency network/block difficulty
+  * Current block height
+  * Network hashrate
+  * Pool hashrate
+  * Each miners' hashrate
+  * Blocks found (pending, confirmed, and orphaned)
+  * Total paid out
+* Worker login validation (make sure miners are uing proper wallet addresses for mining)
+* Light-weight front-end using API to display pool data
+* Sending payments 
+  * Add pool fee percent to config
+  * Use redis data and wallet API to send out payments
+
+
 Usage
 ===
 
