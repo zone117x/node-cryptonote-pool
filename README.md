@@ -51,9 +51,14 @@ npm update
 Explanation for each field:
 ````javascript
 {
+    /* Used for storage in redis so multiple coins can share the same redis instance. */
     "coin": "monero",
 
+    /* Port that simpleminer is pointed to. */
     "poolPort": 5555,
+
+    /* Address where block rewards go, and miner payments come from. */
+    "poolAddress": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn"
 
     /* Initial difficulty miners are set to. */
     "difficulty": 10,
@@ -67,6 +72,15 @@ Explanation for each field:
         "targetTime": 15, //Try to get 1 share per this many seconds
         "retargetTime": 30, //Check to see if we should retarget every this many seconds
         "variancePercent": 30 //Allow time to very this % from target without retargeting
+    },
+
+    /* If under low-diff share attack we can ban their IP to reduce system/network load. */
+    "banning": {
+        "enabled": true,
+        "time": 600, //How many seconds to ban worker for
+        "invalidPercent": 50, //What percent of invalid shares triggers ban
+        "checkThreshold": 30, //Perform check when this many shares have been submitted
+        "purgeInterval": 300 //Every this many seconds clear out the list of old bans
     },
 
     /* Set to "auto" by default which will spawn one process/fork/worker for each CPU
@@ -83,8 +97,18 @@ Explanation for each field:
        log file then disable this feature to avoid nasty characters in your log file. */
     "logColors": true,
 
-    /* Disabled by default as simpleminer doesn't yet support it. */
-    "useLongPolling": false,
+    /* Only works with the new simpleminer with longpolling enabled. */
+    "longPolling": {
+        "enabled": true,
+        "timeout": 8500
+    },
+
+    /* Module that sends payments to miners according to their submitted shares. */
+    "payments": {
+        "enabled": true,
+        "interval": 30, //how often to run in seconds
+        "poolFee": 2 //2% pool fee
+    }
 
 
     /* Poll RPC daemons for new blocks every this many milliseconds. */
@@ -96,11 +120,10 @@ Explanation for each field:
         "port": 18081
     },
 
-    /* Wallet daemon connection details and address */
+    /* Wallet daemon connection details. */
     "wallet": {
         "host": "127.0.0.1",
-        "port": 8082,
-        "address": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn"
+        "port": 8082
     },
 
     /* How many seconds until we consider a miner disconnected. */

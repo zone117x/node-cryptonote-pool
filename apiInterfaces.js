@@ -1,17 +1,6 @@
 var http = require('http');
 
-function httpRequest(host, port, path, data, callback){
-
-}
-
-function rpc(host, port, method, params, callback){
-
-    var data = JSON.stringify({
-        id: "0",
-        jsonrpc: "2.0",
-        method: method,
-        params: params
-    });
+function jsonHttpRequest(host, port, data, callback){
 
     var options = {
         hostname: host,
@@ -40,7 +29,7 @@ function rpc(host, port, method, params, callback){
                 callback(e);
                 return;
             }
-            callback(replyJson.error, replyJson.result);
+            callback(null, replyJson);
         });
     });
 
@@ -51,11 +40,42 @@ function rpc(host, port, method, params, callback){
     req.end(data);
 }
 
+function rpc(host, port, method, params, callback){
+
+    var data = JSON.stringify({
+        id: "0",
+        jsonrpc: "2.0",
+        method: method,
+        params: params
+    });
+    jsonHttpRequest(host, port, data, function(error, replyJson){
+        if (error){
+            callback(error);
+            return;
+        }
+        callback(replyJson.error, replyJson.result)
+    });
+}
+
+function batchRpc(host, port, array, callback){
+    var rpcArray = [];
+    for (var i = 0; i < array.length; i++){
+        rpcArray.push({
+            id: i.toString(),
+            jsonrpc: "2.0",
+            method: array[i][0],
+            params: array[i][1]
+        });
+    }
+    var data = JSON.stringify(rpcArray);
+    jsonHttpRequest(host, port, data, callback);
+}
+
 
 module.exports = function(daemonConfig, walletConfig){
     return {
         batchRpcDaemon: function(batchArray, callback){
-
+            batchRpc(daemonConfig.host, daemonConfig.port, batchArray, callback);
         },
         rpcDaemon: function(method, params, callback){
             rpc(daemonConfig.host, daemonConfig.port, method, params, callback);

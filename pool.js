@@ -20,7 +20,6 @@ function log(severity, component, message){
 }
 
 
-
 var apiInterfaces = require('./apiInterfaces.js')(config.daemon, config.wallet);
 var utils = require('./utils.js');
 
@@ -30,6 +29,9 @@ var redisClient = redis.createClient(config.redis.port, config.redis.host);
 var cryptoNight = multiHashing['cryptonight'];
 
 var diff1 = bignum('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', 16);
+
+var validBlockTemplates = [];
+var currentBlockTemplate;
 
 var connectedMiners = {};
 
@@ -48,13 +50,67 @@ setInterval(function(){
 
 
 
-var CurrentJob = {
-    height: 0,
+function BlockTemplate(template){
+    this.blob = template.blocktemplate_blob;
+    this.difficulty = template.difficulty;
+    this.height = template.height;
+    this.reserveOffset = template.reserved_offset;
+    this.buffer = new Buffer(this.blob, 'hex');
+    this.extraNonce = 0;
+}
+BlockTemplate.prototype = {
     nextBlob: function(){
         this.buffer.writeUInt32BE(++this.extraNonce, this.reserveOffset);
         return this.buffer.toString('hex');
     }
 };
+
+
+
+function getBlockTemplate(callback){
+    apiInterfaces.rpcDaemon('getblocktemplate', {reserve_size: 4, wallet_address: config.poolAddress}, callback);
+}
+
+
+
+function jobRefresh(callback){
+    callback = callback || function(){};
+    getBlockTemplate(function(error, result){
+        if (error){
+            log('error', 'Job Refresher', 'Error polling getblocktemplate ' + JSON.stringify(error));
+            callback(false);
+            return;
+        }
+        if (!currentBlockTemplate || result.height > currentBlockTemplate.height){
+            log('debug', 'Job Refresher', 'Found new block at height ' + result.height + ' w/ difficulty of ' + result.difficulty);
+            processBlockTemplate(result);
+        }
+        setTimeout(jobRefresh, config.blockRefreshInterval);
+        callback(true);
+    })
+}
+
+
+function processBlockTemplate(template){
+
+    if (currentBlockTemplate)
+        validBlockTemplates.push(currentBlockTemplate);
+
+    if (validBlockTemplates.length > 10)
+        validBlockTemplates.shift();
+
+    currentBlockTemplate = new BlockTemplate(template);
+
+    for (var minerId in connectedMiners){
+        var miner = connectedMiners[minerId];
+        if (miner.longPoll){
+            log('debug', 'Long Polling', 'Sending new job to miner');
+            clearInterval(miner.longPoll.timeout);
+            miner.longPoll.reply(null, miner.getJob());
+            miner.longPoll = null;
+        }
+    }
+}
 
 
 var VarDiff = (function(){
@@ -89,6 +145,7 @@ function Miner(id, login, pass, ip){
     this.ip = ip;
     this.heartbeat();
     this.difficulty = config.difficulty;
+    this.validJobs = [];
 }
 Miner.prototype = {
     heartbeat: function(){
@@ -104,12 +161,12 @@ Miner.prototype = {
         var buffArray = buff.toJSON();
         buffArray.reverse();
         buff = new Buffer(buffArray);
-        this.target = buff.readUInt32LE(0);
+        this.target = buff.readUInt32BE(0);
         var hex = buff.toString('hex');
         return hex;
     },
     getJob: function(){
-        if (this.lastJobId === CurrentJob.id && !this.pendingDifficulty) {
+        if (this.lastBlockHeight === currentBlockTemplate.height && !this.pendingDifficulty) {
             return {
                 blob: '',
                 job_id: '',
@@ -117,15 +174,27 @@ Miner.prototype = {
             };
         }
 
+        var blob = currentBlockTemplate.nextBlob();
+        this.lastBlockHeight = currentBlockTemplate.height;
+        var target = this.getTargetHex();
+
         var newJob = {
-            blob: CurrentJob.nextBlob(),
-            job_id: CurrentJob.id,
-            target: this.getTargetHex()
+            id: utils.uid(),
+            extraNonce: currentBlockTemplate.extraNonce,
+            height: currentBlockTemplate.height,
+            difficulty: this.difficulty
         };
 
-        this.lastJobId = CurrentJob.id;
-        this.extraNonce = CurrentJob.extraNonce;
-        return newJob;
+        this.validJobs.push(newJob);
+
+        if (this.validJobs.length > 4)
+            this.validJobs.shift();
+
+        return {
+            blob: blob,
+            job_id: newJob.id,
+            target: target
+        };
 
     },
     retarget: function(){
@@ -172,64 +241,12 @@ Miner.prototype = {
 
 
 
-
-
-function getBlockTemplate(callback){
-    apiInterfaces.rpcDaemon('getblocktemplate', {reserve_size: 4, wallet_address: config.wallet.address}, callback);
-}
-
-
-
-function processBlockTemplate(template){
-    CurrentJob.id = utils.uid();
-    CurrentJob.blob = template.blocktemplate_blob;
-    CurrentJob.difficulty = template.difficulty;
-    CurrentJob.height = template.height;
-    CurrentJob.extraNonce = 0;
-    CurrentJob.reserveOffset = template.reserved_offset;
-    CurrentJob.buffer = new Buffer(CurrentJob.blob, 'hex');
-
-    for (var minerId in connectedMiners){
-        var miner = connectedMiners[minerId];
-        if (miner.longPoll){
-            log('debug', 'Long Polling', 'Sending new job to miner');
-            clearInterval(miner.longPoll.timeout);
-            miner.longPoll.reply(null, {
-                blob: CurrentJob.nextBlob(),
-                job_id: CurrentJob.id,
-                target: miner.getTargetHex()
-            });
-            miner.lastJobId = CurrentJob.id;
-            miner.extraNonce = CurrentJob.extraNonce;
-            delete miner.longPoll;
-        }
-    }
-
-}
-
-function jobRefresh(callback){
-    callback = callback || function(){};
-    getBlockTemplate(function(error, result){
-        if (error){
-            log('error', 'Job Refresher', 'Error polling getblocktemplate ' + JSON.stringify(error));
-            callback(false);
-            return;
-        }
-        if (result.height > CurrentJob.height){
-            log('debug', 'Job Refresher', 'Found new block at height ' + result.height + ' w/ difficulty of ' + result.difficulty);
-            processBlockTemplate(result);
-        }
-        setTimeout(jobRefresh, config.blockRefreshInterval);
-        callback(true);
-    })
-}
-
 function recordShareData(miner, difficulty){
 
     var dateNow = Date.now();
 
     redisClient.multi([
-        ['hincrby', config.coin + ':sharesHeight' + CurrentJob.height, miner.login, difficulty],
+        ['hincrby', config.coin + ':sharesHeight' + currentBlockTemplate.height, miner.login, difficulty],
         ['zadd', config.coin + ':hashrate', dateNow / 1000 | 0, [difficulty, miner.login, dateNow].join(':')]
     ]).exec(function(err, resplies){
         if (err){
@@ -239,10 +256,10 @@ function recordShareData(miner, difficulty){
 
 }
 
-function processShare(miner, nonce, resultHash){
-    var shareBuffer = new Buffer(CurrentJob.buffer.length);
-    CurrentJob.buffer.copy(shareBuffer);
-    shareBuffer.writeUInt32BE(miner.extraNonce, CurrentJob.reserveOffset);
+function processShare(miner, job, blockTemplate, nonce, resultHash){
+    var shareBuffer = new Buffer(blockTemplate.buffer.length);
+    blockTemplate.buffer.copy(shareBuffer);
+    shareBuffer.writeUInt32BE(job.extraNonce, blockTemplate.reserveOffset);
     new Buffer(nonce, 'hex').copy(shareBuffer, 39);
 
     var hash = cryptoNight(shareBuffer);
@@ -258,29 +275,21 @@ function processShare(miner, nonce, resultHash){
     var hashNum = bignum.fromBuffer(new Buffer(hashArray));
     var hashDiff = diff1.div(hashNum);
 
-    if (hashDiff.ge(CurrentJob.difficulty)){
-        log('special', 'Share Validator', 'Block found at height ' + CurrentJob.height + ' by miner ' + miner.login + '@' + miner.ip)
+    if (hashDiff.ge(blockTemplate.difficulty)){
+        log('special', 'Share Validator', 'Block found at height ' + job.height + ' by miner ' + miner.login + '@' + miner.ip)
         apiInterfaces.rpcDaemon('submitblock', [hashHex], function(error, result){
             if (error){
                 log('error', 'Share Validator', 'Error submitting block ' + JSON.stringify(error));
             }
         });
-        redisClient.lpush(config.coin + ':blocksPending', [CurrentJob.height, CurrentJob.difficulty, hashHex].join(':'), function(error){
+        redisClient.lpush(config.coin + ':blocksPending', [job.height, job.difficulty, hashHex].join(':'), function(error){
             log('error', 'Redis Writer', 'Error inserting block into redis ' + JSON.stringify(error));
         });
     }
 
-    var diffAccepted = miner.difficulty;
-
-    if (hashDiff.lt(miner.difficulty)){
-
-        if (!miner.lastDifficulty || hashDiff.lt(miner.lastDifficulty)){
-            log('error', 'Share Validator', 'Rejected low difficulty share of ' + hashDiff.toString());
-            return false;
-        }
-        else
-            diffAccepted = miner.lastDifficulty;
-
+    if (hashDiff.lt(job.difficulty)){
+        log('error', 'Share Validator', 'Rejected low difficulty share of ' + hashDiff.toString());
+        return false;
     }
 
     /*var hashTarget = hash.readUInt32LE(hash.length - 4);
@@ -293,9 +302,9 @@ function processShare(miner, nonce, resultHash){
     log('debug', 'Share Validator', 'Accepted share at difficulty ' + hashDiff.toString() + ' - ' + percent + '% of target (' + miner.target + '/' + hashTarget + ')');
     */
 
-    log('debug', 'Share Validator', 'Accepted share at difficulty ' + diffAccepted + '/' + hashDiff.toString() + ' from ' + miner.login + '@' + miner.ip);
+    log('debug', 'Share Validator', 'Accepted share at difficulty ' + job.difficulty + '/' + hashDiff.toString() + ' from ' + miner.login + '@' + miner.ip);
 
-    recordShareData(miner, diffAccepted);
+    recordShareData(miner, job.difficulty);
 
     return true;
 }
@@ -329,11 +338,15 @@ function handleMinerMethod(id, method, params, req, res){
     switch(method){
         case 'login':
             if (!params.login){
-                sendReply("missing login");
+                sendReply('missing login');
                 return;
             }
             if (!params.pass){
-                sendReply("missing pass");
+                sendReply('missing pass');
+                return;
+            }
+            if (!utils.isValidAddress(params.login)){
+                sendReply('invalid address used for login');
                 return;
             }
             var minerId = utils.uid();
@@ -352,7 +365,7 @@ function handleMinerMethod(id, method, params, req, res){
                 return;
             }
             miner.heartbeat();
-            if (!config.useLongPolling){
+            if (!config.longPolling || !config.longPolling.enabled){
                 sendReply(null, miner.getJob());
                 return;
             }
@@ -360,7 +373,7 @@ function handleMinerMethod(id, method, params, req, res){
                 timeout: setTimeout(function(){
                     delete miner.longPoll;
                     sendReply(null, miner.getJob());
-                }, 5000),
+                }, config.longPolling.timeout),
                 reply: sendReply
             };
             return;
@@ -374,11 +387,26 @@ function handleMinerMethod(id, method, params, req, res){
             }
             miner.heartbeat();
             miner.retarget();
-            if (params.job_id !== CurrentJob.id){
+
+            var job = miner.validJobs.filter(function(job){
+                return job.id === params.job_id;
+            })[0];
+
+            if (!job){
                 sendReply('Invalid job id');
                 return;
             }
-            var shareAccepted = processShare(connectedMiners[params.id], params.nonce, params.result);
+
+            var blockTemplate = currentBlockTemplate.height === job.height ? currentBlockTemplate : validBlockTemplates.filter(function(t){
+                return t.height === job.height;
+            })[0];
+
+            if (!blockTemplate){
+                sendReply('Block expired');
+                return;
+            }
+
+            var shareAccepted = processShare(miner, job, blockTemplate, params.nonce, params.result);
             if (!shareAccepted){
                 sendReply('Low difficulty share');
                 return;

@@ -4,6 +4,8 @@
 
     "poolPort": 5555,
 
+    "poolAddress": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn",
+
     "difficulty": 10,
     "varDiff": {
         "minDiff": 2,
@@ -13,12 +15,28 @@
         "variancePercent": 30
     },
 
-    "clusterForks": "auto",
+    "banning": {
+        "enabled": true,
+        "time": 600,
+        "invalidPercent": 50,
+        "checkThreshold": 30,
+        "purgeInterval": 300
+    },
+
+    "clusterForks": 1,
 
     "logLevel": "debug",
     "logColors": true,
 
-    "useLongPolling": false,
+    "longPolling": {
+        "enabled": true,
+        "timeout": 8500
+    },
+
+    "payments": {
+        "enabled": true,
+        "interval": 30
+    },
 
     "blockRefreshInterval": 1000,
 
@@ -29,8 +47,7 @@
 
     "wallet": {
         "host": "127.0.0.1",
-        "port": 8082,
-        "address": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn"
+        "port": 8082
     },
 
     "minerTimeout": 600,

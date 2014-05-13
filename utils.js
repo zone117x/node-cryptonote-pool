@@ -1,3 +1,5 @@
+var base58 = require('base58-native');
+
 exports.uid = function(){
     var min = 100000000000000;
     var max = 999999999999999;
@@ -38,4 +40,21 @@ exports.ringBuffer = function(maxSize){
             isFull = false;
         }
     };
+};
+
+exports.varIntEncode = function(n){
+
+};
+
+exports.isValidAddress = function(addr){
+
+    if (addr.length !== 95) return false;
+    try{
+        var decoded = base58.decode(addr);
+        return true;
+    }
+    catch(e){
+        return false;
+    }
+
 };

@@ -13,6 +13,7 @@
         "redis": "*",
         "colors": "*",
         "dateformat": "*",
+        "base58-native": "*",
         "multi-hashing": "git://github.com/zone117x/node-multi-hashing.git"
     },
     "engines": {
