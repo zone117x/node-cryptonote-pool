@@ -47,12 +47,12 @@
 
     "daemon": {
         "host": "127.0.0.1",
-        "port": 32837
+        "port": 18081
     },
 
     "wallet": {
         "host": "127.0.0.1",
-        "port": 8342
+        "port": 8082
     },
 
     "minerTimeout": 600,
