@@ -1,7 +1,13 @@
 var fs = require('fs');
 var cluster = require('cluster');
 
+var redis = require('redis');
+
 ////simplewallet --wallet-file=wallet.bin --pass=test --rpc-bind-port=8082
+
+
+//./simplewallet --wallet-file=wallet.bin --pass=test --rpc-bind-port=8342 --daemon-port=32837
+
 
 if (cluster.isWorker){
     switch(process.env.workerType){
@@ -34,12 +40,46 @@ var logSubsystem = null;
 var os = require('os');
 
 (function init(){
-    spawnPoolWorkers();
-    spawnPaymentProcessor();
-    spawnApi();
-    spawnCli();
+    checkRedisVersion(function(){
+        spawnPoolWorkers();
+        spawnPaymentProcessor();
+        spawnApi();
+        spawnCli();
+    });
 })();
 
+
+function checkRedisVersion(callback){
+    var redisClient = redis.createClient(config.redis.port, config.redis.host);
+    redisClient.info(function(error, response){
+        if (error){
+            logger.error(logSystem, logComponent, logSubCat, 'Redis version check failed');
+            return;
+        }
+        var parts = response.split('\r\n');
+        var version;
+        var versionString;
+        for (var i = 0; i < parts.length; i++){
+            if (parts[i].indexOf(':') !== -1){
+                var valParts = parts[i].split(':');
+                if (valParts[0] === 'redis_version'){
+                    versionString = valParts[1];
+                    version = parseFloat(versionString);
+                    break;
+                }
+            }
+        }
+        if (!version){
+            logger.error(logSystem, logSubsystem, null, 'Could not detect redis version - but be super old or broken');
+            return;
+        }
+        else if (version < 2.6){
+            logger.error(logSystem, logSubsystem, null, "You're using redis version " + versionString + " the minimum required version is 2.6. Follow the damn usage instructions...");
+            return;
+        }
+        callback();
+    });
+}
 
 function spawnPoolWorkers(){
 
@@ -89,6 +129,9 @@ function spawnPoolWorkers(){
 }
 
 function spawnPaymentProcessor(){
+
+    if (!config.payments || !config.payments.enabled) return;
+
     var worker = cluster.fork({
         workerType: 'paymentProcessor'
     });

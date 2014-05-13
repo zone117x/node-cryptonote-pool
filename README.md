@@ -54,6 +54,9 @@ Explanation for each field:
     /* Used for storage in redis so multiple coins can share the same redis instance. */
     "coin": "monero",
 
+    "coinUnits": 100000000,
+    "transferFee": 1000000,
+
     /* Port that simpleminer is pointed to. */
     "poolPort": 5555,
 
@@ -107,7 +110,8 @@ Explanation for each field:
     "payments": {
         "enabled": true,
         "interval": 30, //how often to run in seconds
-        "poolFee": 2 //2% pool fee
+        "poolFee": 2, //2% pool fee
+        "depth": 60 //block depth required to send payments (CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW)
     }
 
 

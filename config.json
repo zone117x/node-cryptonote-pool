@@ -2,9 +2,12 @@
 
     "coin": "monero",
 
+    "coinUnits": 100000000,
+    "transferFee": 1000000,
+
     "poolPort": 5555,
 
-    "poolAddress": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn",
+    "poolAddress": "KdvRKTrXzyC8eW76eCzcWNWdYBnpCs6bAZeheF2LdJj5bBLry4zs8MoV6uqMLBYPZPSJPU3RtZMjHgWn5qWwvYdTHKVxLKw",
 
     "difficulty": 10,
     "varDiff": {
@@ -23,31 +26,33 @@
         "purgeInterval": 300
     },
 
-    "clusterForks": 1,
+    "clusterForks": "auto",
 
     "logLevel": "debug",
     "logColors": true,
 
     "longPolling": {
-        "enabled": true,
+        "enabled": false,
         "timeout": 8500
     },
 
     "payments": {
         "enabled": true,
-        "interval": 30
+        "interval": 30,
+        "poolFee": 2,
+        "depth": 60
     },
 
     "blockRefreshInterval": 1000,
 
     "daemon": {
         "host": "127.0.0.1",
-        "port": 18081
+        "port": 32837
     },
 
     "wallet": {
         "host": "127.0.0.1",
-        "port": 8082
+        "port": 8342
     },
 
     "minerTimeout": 600,

@@ -1,5 +1,7 @@
 var fs = require('fs');
 var http = require('http');
+var crypto = require('crypto');
+
 
 var bignum = require('bignum');
 var redis = require('redis');
@@ -14,6 +16,7 @@ var logger = require('./logUtil.js')({
 
 var logSubSystem = 'Thread ' + (parseInt(process.env.forkId) + 1);
 
+var instanceId = crypto.randomBytes(4);
 
 function log(severity, component, message){
     logger[severity]('Pool', logSubSystem, component, message);
@@ -56,6 +59,7 @@ function BlockTemplate(template){
     this.height = template.height;
     this.reserveOffset = template.reserved_offset;
     this.buffer = new Buffer(this.blob, 'hex');
+    instanceId.copy(this.buffer, this.reserveOffset + 4);
     this.extraNonce = 0;
 }
 BlockTemplate.prototype = {
@@ -68,7 +72,7 @@ BlockTemplate.prototype = {
 
 
 function getBlockTemplate(callback){
-    apiInterfaces.rpcDaemon('getblocktemplate', {reserve_size: 4, wallet_address: config.poolAddress}, callback);
+    apiInterfaces.rpcDaemon('getblocktemplate', {reserve_size: 8, wallet_address: config.poolAddress}, callback);
 }
 
 
@@ -241,16 +245,23 @@ Miner.prototype = {
 
 
 
-function recordShareData(miner, difficulty){
+function recordShareData(miner, job, blockCandidate, hashHex){
 
     var dateNow = Date.now();
 
-    redisClient.multi([
-        ['hincrby', config.coin + ':sharesHeight' + currentBlockTemplate.height, miner.login, difficulty],
-        ['zadd', config.coin + ':hashrate', dateNow / 1000 | 0, [difficulty, miner.login, dateNow].join(':')]
-    ]).exec(function(err, resplies){
+    var redisCommands = [
+        ['hincrby', config.coin + ':shares:roundCurrent', miner.login, job.difficulty],
+        ['zadd', config.coin + ':hashrate', dateNow / 1000 | 0, [job.difficulty, miner.login, dateNow].join(':')]
+    ];
+
+    if (blockCandidate){
+        redisCommands.push(['sadd', config.coin + ':blocksPending', [job.height, job.difficulty, hashHex].join(':')]);
+        redisCommands.push(['rename', config.coin + ':shares:roundCurrent', config.coin + ':shares:round' + job.height])
+    }
+
+    redisClient.multi(redisCommands).exec(function(err, replies){
         if (err){
-            log('error', 'Redis Writer', 'Failed to insert share into redis ' + JSON.string(err));
+            log('error', 'Redis Writer', 'Failed to insert share data into redis ' + JSON.string(err));
         }
     });
 
@@ -275,16 +286,16 @@ function processShare(miner, job, blockTemplate, nonce, resultHash){
     var hashNum = bignum.fromBuffer(new Buffer(hashArray));
     var hashDiff = diff1.div(hashNum);
 
+    var blockCandidate = false;
+
     if (hashDiff.ge(blockTemplate.difficulty)){
         log('special', 'Share Validator', 'Block found at height ' + job.height + ' by miner ' + miner.login + '@' + miner.ip)
-        apiInterfaces.rpcDaemon('submitblock', [hashHex], function(error, result){
+        apiInterfaces.rpcDaemon('submitblock', [shareBuffer.toString('hex')], function(error, result){
             if (error){
                 log('error', 'Share Validator', 'Error submitting block ' + JSON.stringify(error));
             }
         });
-        redisClient.lpush(config.coin + ':blocksPending', [job.height, job.difficulty, hashHex].join(':'), function(error){
-            log('error', 'Redis Writer', 'Error inserting block into redis ' + JSON.stringify(error));
-        });
+        blockCandidate = true;
     }
 
     if (hashDiff.lt(job.difficulty)){
@@ -304,7 +315,7 @@ function processShare(miner, job, blockTemplate, nonce, resultHash){
 
     log('debug', 'Share Validator', 'Accepted share at difficulty ' + job.difficulty + '/' + hashDiff.toString() + ' from ' + miner.login + '@' + miner.ip);
 
-    recordShareData(miner, job.difficulty);
+    recordShareData(miner, job, blockCandidate, hashHex);
 
     return true;
 }
