@@ -23,6 +23,7 @@
         }
         body {
             padding-top: 90px;
+            padding-bottom: 70px;
         }
         .container{
             font-size: 1.2em;
@@ -39,16 +40,22 @@
             width: auto;
         }
         .stats > div{
-
             padding: 5px 0;
+        }
+        .stats > div > .fa {
+            width: 25px;
         }
         .stats > div > span{
             font-weight: bold;
         }
         #yourStatsInput{
-            width: 800px;
+            width: 820px;
             display: inline-block;
             vertical-align: bottom;
+            font-family: monospace;
+        }
+        #yourAddressDisplay > span {
+            font-family: monospace;
         }
         #yourHashrateHolder, #yourAddressDisplay{
             display: none;
@@ -68,6 +75,21 @@
         .getting_started_windows{
             line-height: 40px;
         }
+
+        footer{
+            position: fixed;
+            bottom: 0;
+            height: 60px;
+            width: 100%;
+            background-color: #f5f5f5;
+        }
+
+        footer > div{
+            margin: 0 auto;
+            text-align: center;
+            margin-top: 22px;
+        }
+
     </style>
 
 </head>
@@ -113,23 +135,25 @@
         pageRouter();
 
 
+        var lookupBtnHtml = $('#lookUp').html();
+
         var addressEventSource;
         $('#lookUp').click(function(){
             $('#addressError').hide();
             $('#yourHashrateHolder').hide();
             $('#yourAddressDisplay').hide();
-            $(this).text('Searching...');
+            $(this).html('<i class="fa fa-refresh fa-spin"></i> Searching...');
             var address = $('#yourStatsInput').val().trim();
             if (!address) return;
             if (addressEventSource) addressEventSource.close();
             addressEventSource = new EventSource(api + '/stats_address?address=' + address);
             addressEventSource.addEventListener('message', function(e){
-                $('#lookUp').text('Lookup');
+                $('#lookUp').html(lookupBtnHtml);
                 var data = JSON.parse(e.data);
                 if (data.stats){
                     $('#addressError').hide();
-                    $('#yourHashrateHolder').show().children(":first").text(data.stats + '/sec');
-                    $('#yourAddressDisplay').show().children(":first").text(address);
+                    $('#yourHashrateHolder').show().children("span").text(data.stats + '/sec');
+                    $('#yourAddressDisplay').show().children("span").text(address);
                     docCookies.setItem('mining_address', address, Infinity);
                     return;
                 }
@@ -138,15 +162,15 @@
                 $('#addressError').text(data.error).show();
             });
             addressEventSource.addEventListener('open', function(e){
-                $('#lookUp').text('Lookup');
+                $('#lookUp').html(lookupBtnHtml);
             });
             addressEventSource.addEventListener('error', function(e){
-                $('#lookUp').text('Lookup');
+                $('#lookUp').html(lookupBtnHtml);
                 if ($('#addressError').is(':hidden'))
                     $('#addressError').text('Connection error').show();
             });
             addressEventSource.addEventListener('close', function(e){
-                $('#lookUp').text('Lookup');
+                $('#lookUp').html(lookupBtnHtml);
                 $('#addressError').text('Connection closed').show();
             })
         });
@@ -247,9 +271,9 @@
             <ul class="nav navbar-nav">
                 <li class="active"><a class="hot_link" data-page="page_home" href="#"><i class="fa fa-home"></i> Home</a></li>
                 <li><a class="hot_link" data-page="page_getting_started" href="#getting_started"><i class="fa fa-rocket"></i> Getting Started</a></li>
-                <li><a class="hot_link" data-page="page_contact" href="#contact"><i class="fa fa-pencil"></i> Contact</a></li>
+                <li><a class="hot_link" data-page="page_contact" href="#contact"><i class="fa fa-envelope-o"></i> Contact</a></li>
             </ul>
-            <div id="stats_updated">Stats Updated</div>
+            <div id="stats_updated">Stats Updated &nbsp;<i class="fa fa-bolt"></i></div>
         </div>
 
     </div>
@@ -261,43 +285,43 @@
 
         <div class="stats">
             <h3>Network</h3>
-            <div>Hash Rate: <span id="networkHashrate"></span></div>
-            <div>Difficulty: <span id="networkDifficulty"></span></div>
-            <div>Blockchain Height: <span id="blockchainHeight"></span></div>
+            <div><i class="fa fa-tachometer"></i> Hash Rate: <span id="networkHashrate"></span></div>
+            <div><i class="fa fa-unlock-alt"></i> Difficulty: <span id="networkDifficulty"></span></div>
+            <div><i class="fa fa-bars"></i> Blockchain Height: <span id="blockchainHeight"></span></div>
         </div>
 
         <div class="stats">
             <h3>Pool</h3>
-            <div>Hash Rate: <span id="poolHashrate"></span></div>
-            <div>Connected Miners: <span id="poolMiners"></span></div>
-            <div>Mining Fee: <span id="poolFee"></span></div>
+            <div><i class="fa fa-tachometer"></i> Hash Rate: <span id="poolHashrate"></span></div>
+            <div><i class="fa fa-users"></i> Connected Miners: <span id="poolMiners"></span></div>
+            <div><i class="fa fa-money"></i> Mining Fee: <span id="poolFee"></span></div>
         </div>
 
         <div class="stats">
             <h3>Your Stats</h3>
-            <label for="yourStatsInput">Address</label><br>
+            <label for="yourStatsInput"><i class="fa fa-key"></i> Address</label><br>
             <input class="form-control" id="yourStatsInput" type="text">
-            <button class="btn btn-default" id="lookUp">Lookup</button>
+            <button class="btn btn-default" id="lookUp"><i class="fa fa-search"></i> Lookup</button>
             <div id="addressError"></div>
-            <div id="yourAddressDisplay">Address: <span></span></div>
-            <div id="yourHashrateHolder">Hash Rate: <span></span></div>
+            <div id="yourAddressDisplay"><i class="fa fa-key"></i> Address: <span></span></div>
+            <div id="yourHashrateHolder"><i class="fa fa-tachometer"></i> Hash Rate: <span></span></div>
         </div>
 
     </div>
 
     <div class="page" id="page_getting_started">
         <h1>Getting Started</h1>
-        <h3>For Windows users</h3>
+        <h3>For <i class="fa fa-windows"></i> Windows users</h3>
         <br>
         <p class="getting_started_windows">
-            You can <a class="btn btn-default btn-sm" target="_blank" id="easyminer_link">Download</a> and run <a target="_blank" href="https://github.com/zone117x/cryptonote-easy-miner">cryptonote-easy-miner</a> which will automatically generate your wallet address
+            You can <a class="btn btn-default btn-sm" target="_blank" id="easyminer_link"><i class="fa fa-download"></i> Download</a> and run <a target="_blank" href="https://github.com/zone117x/cryptonote-easy-miner">cryptonote-easy-miner</a> <i class="fa fa-github"></i> which will automatically generate your wallet address
             and manage multiple instances of simpleminer to take advantage of all your CPU Cores.
         </p>
         <hr>
         <h3>Or download the the binaries for your system</h3>
         <br>
         <ol>
-            <li><a target="_blank" class="btn btn-default btn-sm" href="http://bit.ly/monerostarterpack">Download</a> simpleminer and simplewallet for your system<br><br></li>
+            <li><a target="_blank" class="btn btn-default btn-sm" href="http://bit.ly/monerostarterpack"><i class="fa fa-download"></i> Download</a> simpleminer and simplewallet for your system<br><br></li>
             <li>Run simplewallet to generate your public address<br><br></li>
             <li>Run simpleminer pointed to our pool with your address:
                 <br><br>
@@ -312,6 +336,13 @@
     </div>
 
 </div>
+
+<footer>
+    <div class="text-muted">
+        This site is powered by the open source <a target="_blank" href="//github.com/zone117x/node-cryptonote-pool"><i class="fa fa-github"></i> node-cryptonote-pool</a>
+        project created by Matthew Little and licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html">GPL</a>
+    </div>
+</footer>
 
 
 </body>
