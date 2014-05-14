@@ -12,16 +12,16 @@ var redis = require('redis');
 if (cluster.isWorker){
     switch(process.env.workerType){
         case 'pool':
-            require('./pool.js');
+            require('./lib/pool.js');
             break;
         case 'paymentProcessor':
-            require('./paymentProcessor.js');
+            require('./lib/paymentProcessor.js');
             break;
         case 'api':
-            require('./api.js');
+            require('./lib/api.js');
             break;
         case 'cli':
-            require('./cli.js');
+            require('./lib/cli.js');
             break
     }
     return;
@@ -29,7 +29,7 @@ if (cluster.isWorker){
 
 var config = JSON.parse(fs.readFileSync('config.json'));
 
-var logger = require('./logUtil.js')({
+var logger = require('./lib/logUtil.js')({
     logLevel: config.logLevel,
     logColors: config.logColors
 });
@@ -111,7 +111,12 @@ function spawnPoolWorkers(){
             }, 2000);
         }).on('message', function(msg){
             switch(msg.type){
-                case 'none':
+                case 'banIP':
+                    Object.keys(cluster.workers).forEach(function(id) {
+                        if (cluster.workers[id].type === 'pool'){
+                            cluster.workers[id].send({type: 'banIP', ip: msg.ip});
+                        }
+                    });
                     break;
             }
         });
@@ -144,7 +149,17 @@ function spawnPaymentProcessor(){
 }
 
 function spawnApi(){
+    if (!config.api || !config.api.enabled) return;
 
+    var worker = cluster.fork({
+        workerType: 'api'
+    });
+    worker.on('exit', function(code, signal){
+        logger.error(logSystem, logSubsystem, 'API', 'API died, spawning replacement...');
+        setTimeout(function(){
+            spawnApi();
+        }, 2000);
+    });
 }
 
 function spawnCli(){

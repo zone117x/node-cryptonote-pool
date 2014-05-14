@@ -3,11 +3,15 @@ node-cryptonote-pool
 
 Mining pool for CryptoNote based coins such as Bytecoin and Monero
 
-#### TODO
+#### Features
 
-* Flooding detection
-* IP banning for low-diff shares (prevent CPU overload with low-diff share attacks)
-* Collecting stats and exposing via ajax/rest API
+* Variable difficulty / share limiter
+* IP banning to prevent low-diff share attacks
+* Socket flooding detection
+* Payment processing
+* Detailed logging
+* Clustering for vertical scaling
+* Live stats API
   * Currency network/block difficulty
   * Current block height
   * Network hashrate
@@ -15,11 +19,11 @@ Mining pool for CryptoNote based coins such as Bytecoin and Monero
   * Each miners' hashrate
   * Blocks found (pending, confirmed, and orphaned)
   * Total paid out
-* Worker login validation (make sure miners are uing proper wallet addresses for mining)
+
+#### TODO
+
+* Worker login validation (make sure miners are using proper wallet addresses for mining)
 * Light-weight front-end using API to display pool data
-* Sending payments 
-  * Add pool fee percent to config
-  * Use redis data and wallet API to send out payments
 
 
 Usage
@@ -60,6 +64,12 @@ Explanation for each field:
     /* Port that simpleminer is pointed to. */
     "poolPort": 5555,
 
+    /* Host that simpleminer is pointed to.  */
+    "poolHost": "example.com",
+
+    /* Contact email address. */
+    "email": "support@cryppit.com",
+
     /* Address where block rewards go, and miner payments come from. */
     "poolAddress": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn"
 
@@ -82,8 +92,7 @@ Explanation for each field:
         "enabled": true,
         "time": 600, //How many seconds to ban worker for
         "invalidPercent": 50, //What percent of invalid shares triggers ban
-        "checkThreshold": 30, //Perform check when this many shares have been submitted
-        "purgeInterval": 300 //Every this many seconds clear out the list of old bans
+        "checkThreshold": 30 //Perform check when this many shares have been submitted
     },
 
     /* Set to "auto" by default which will spawn one process/fork/worker for each CPU
@@ -117,6 +126,14 @@ Explanation for each field:
 
     /* Poll RPC daemons for new blocks every this many milliseconds. */
     "blockRefreshInterval": 1000,
+
+    /* REST API used for front-end website. */
+    "api": {
+        "enabled": true,
+        "hashrateWindow": 15,
+        "updateInterval": 0.5,
+        "port": 8117
+    },
 
     /* Coin daemon connection details. */
     "daemon": {

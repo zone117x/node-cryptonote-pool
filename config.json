@@ -6,15 +6,18 @@
     "transferFee": 1000000,
 
     "poolPort": 5555,
+    "poolHost": "cryppit.com",
 
-    "poolAddress": "KdvRKTrXzyC8eW76eCzcWNWdYBnpCs6bAZeheF2LdJj5bBLry4zs8MoV6uqMLBYPZPSJPU3RtZMjHgWn5qWwvYdTHKVxLKw",
+    "email": "support@cryppit.com",
 
-    "difficulty": 10,
+    "poolAddress": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn",
+
+    "difficulty": 200,
     "varDiff": {
         "minDiff": 2,
         "maxDiff": 512,
-        "targetTime": 15,
-        "retargetTime": 30,
+        "targetTime": 60,
+        "retargetTime": 10,
         "variancePercent": 30
     },
 
@@ -22,8 +25,7 @@
         "enabled": true,
         "time": 600,
         "invalidPercent": 50,
-        "checkThreshold": 30,
-        "purgeInterval": 300
+        "checkThreshold": 30
     },
 
     "clusterForks": "auto",
@@ -44,6 +46,13 @@
     },
 
     "blockRefreshInterval": 1000,
+
+    "api": {
+        "enabled": true,
+        "hashrateWindow": 300,
+        "updateInterval": 3.5,
+        "port": 8117
+    },
 
     "daemon": {
         "host": "127.0.0.1",

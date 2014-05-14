@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Cryptonote Mining Pool</title>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            padding-top: 90px;
+        }
+        .container{
+            font-size: 1.2em;
+        }
+        .page{
+            display: none;
+        }
+        .stats {
+            display: inline-block;
+            width: 40%;
+            margin-bottom: 40px;
+        }
+        .stats:last-child{
+            width: auto;
+        }
+        .stats > div{
+
+            padding: 5px 0;
+        }
+        .stats > div > span{
+            font-weight: bold;
+        }
+        #yourStatsInput{
+            width: 550px;
+        }
+        #yourHashrateHolder, #yourAddressDisplay{
+            display: none;
+        }
+        #addressError{
+            color: red;
+        }
+    </style>
+
+</head>
+<body>
+<script>
+
+    var api = 'http://cryppit.com:8117';
+
+    $(function(){
+        $.get(api + '/stats', function(data){
+            renderStats(data);
+        });
+
+        var source = new EventSource(api + '/live_stats');
+        source.addEventListener('message', function(e){
+            var data = JSON.parse(e.data);
+            renderStats(data);
+        });
+
+        window.onhashchange = function(){
+            pageRouter();
+        };
+
+        pageRouter();
+
+
+        var addressEventSource;
+        $('#lookUp').click(function(){
+            $(this).text('Searching...');
+            var address = $('#yourStatsInput').val().trim();
+            if (!address) return;
+            if (addressEventSource) addressEventSource.close();
+            addressEventSource = new EventSource(api + '/stats_address?address=' + address);
+            addressEventSource.addEventListener('message', function(e){
+                $('#lookUp').text('Lookup');
+                var data = JSON.parse(e.data);
+                if (data.stats){
+                    $('#addressError').hide();
+                    $('#yourHashrateHolder').show().children(":first").text(data.stats + '/sec');
+                    $('#yourAddressDisplay').show().children(":first").text(address);
+                    return;
+                }
+                $('#yourHashrateHolder').hide();
+                $('#yourAddressDisplay').hide();
+                $('#addressError').text(data.error).show();
+            });
+            addressEventSource.addEventListener('open', function(e){
+                $('#lookUp').text('Lookup');
+            });
+            addressEventSource.addEventListener('error', function(e){
+                $('#lookUp').text('Lookup');
+                $('#addressError').text('Connection error').show();
+            });
+            addressEventSource.addEventListener('close', function(e){
+                $('#lookUp').text('Lookup');
+                $('#addressError').text('Connection closed').show();
+            })
+        });
+
+    });
+
+
+    function getReadableHashRateString(hashrate){
+        var i = 0;
+        var byteUnits = [' H', ' KH', ' MH', ' GH', ' TH', ' PH' ];
+        while (hashrate > 1024){
+            hashrate = hashrate / 1024;
+            i++;
+        }
+        return hashrate.toFixed(2) + byteUnits[i];
+    }
+
+    function renderStats(stats){
+        $('#networkHashrate').text(getReadableHashRateString(stats.network.difficulty / 60) + '/sec');
+        $('#networkDifficulty').text(stats.network.difficulty);
+        $('#blockchainHeight').text(stats.network.height);
+
+        $('#poolHashrate').text(stats.pool.hashrate + '/sec');
+        $('#poolMiners').text(stats.pool.miners);
+        $('#poolFee').text(stats.config.fee + '%');
+
+        $('#simpleminer_code').text('simpleminer --pool-addr=' + stats.config.poolHost + ':' + stats.config.poolPort + ' --login=address --pass x');
+
+        $('#emailLink').attr('href', 'mailto:' + stats.config.email).text(stats.config.email);
+    }
+
+    function pageRouter(){
+        $('.page').hide();
+        $('.hot_link').parent().removeClass('active');
+        var $link = $('a.hot_link[href="' + (window.location.hash || '#') + '"]');
+
+        $link.parent().addClass('active');
+        var page = $link.data('page');
+        $('#' + page).show();
+    }
+
+</script>
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand">CryptoNote Mining Pool</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a class="hot_link" data-page="page_home" href="#"><i class="fa fa-home"></i> Home</a></li>
+                <li><a class="hot_link" data-page="page_getting_started" href="#getting_started"><i class="fa fa-rocket"></i> Getting Started</a></li>
+                <li><a class="hot_link" data-page="page_contact" href="#contact"><i class="fa fa-pencil"></i> Contact</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="page" id="page_home">
+
+        <div class="stats">
+            <h3>Network</h3>
+            <div>Hash Rate: <span id="networkHashrate"></span></div>
+            <div>Difficulty: <span id="networkDifficulty"></span></div>
+            <div>Blockchain Height: <span id="blockchainHeight"></span></div>
+        </div>
+
+        <div class="stats">
+            <h3>Pool</h3>
+            <div>Hash Rate: <span id="poolHashrate"></span></div>
+            <div>Connected Miners: <span id="poolMiners"></span></div>
+            <div>Mining Fee: <span id="poolFee"></span></div>
+        </div>
+
+        <div class="stats">
+            <h3>Your Stats</h3>
+            <div>Address: <input id="yourStatsInput" type="text"> <button id="lookUp">Lookup</button></div>
+            <div id="addressError"></div>
+            <div id="yourAddressDisplay">Address: <span></span></div>
+            <div id="yourHashrateHolder">Hash Rate: <span></span></div>
+        </div>
+
+    </div>
+
+    <div class="page" id="page_getting_started">
+        <h1>Getting Started</h1>
+        <br>
+        <ol>
+            <li><a target="_blank" href="http://bit.ly/monerostarterpack">Download simpleminer and simplewallet</a> for your system<br><br></li>
+            <li>Run simplewallet to generate your public address<br><br></li>
+            <li>Run simpleminer pointed to our pool with your address:
+                <br><br>
+                <code id="simpleminer_code"></code>
+            </li>
+        </ol>
+    </div>
+
+    <div class="page" id="page_contact">
+        <h1>Contact</h1>
+        <p>Email pool support at <a id="emailLink" href=""></a></p>
+    </div>
+
+</div>
+
+
+</body>
+</html>
