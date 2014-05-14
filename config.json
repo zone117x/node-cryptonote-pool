@@ -15,17 +15,10 @@
     "difficulty": 200,
     "varDiff": {
         "minDiff": 2,
-        "maxDiff": 512,
-        "targetTime": 60,
-        "retargetTime": 10,
+        "maxDiff": 10000,
+        "targetTime": 100,
+        "retargetTime": 15,
         "variancePercent": 30
-    },
-
-    "banning": {
-        "enabled": true,
-        "time": 600,
-        "invalidPercent": 50,
-        "checkThreshold": 30
     },
 
     "clusterForks": "auto",
@@ -33,9 +26,20 @@
     "logLevel": "debug",
     "logColors": true,
 
+    "blockRefreshInterval": 1000,
+
+    "minerTimeout": 900,
+
     "longPolling": {
         "enabled": false,
         "timeout": 8500
+    },
+
+    "banning": {
+        "enabled": true,
+        "time": 600,
+        "invalidPercent": 25,
+        "checkThreshold": 30
     },
 
     "payments": {
@@ -45,12 +49,10 @@
         "depth": 60
     },
 
-    "blockRefreshInterval": 1000,
-
     "api": {
         "enabled": true,
-        "hashrateWindow": 300,
-        "updateInterval": 3.5,
+        "hashrateWindow": 600,
+        "updateInterval": 3,
         "port": 8117
     },
 
@@ -63,8 +65,6 @@
         "host": "127.0.0.1",
         "port": 8082
     },
-
-    "minerTimeout": 600,
 
     "redis": {
         "host": "127.0.0.1",

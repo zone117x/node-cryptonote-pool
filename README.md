@@ -76,25 +76,17 @@ Explanation for each field:
     "poolAddress": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn"
 
     /* Initial difficulty miners are set to. */
-    "difficulty": 10,
+    "difficulty": 200,
 
     /* Variable difficulty is a feature that will automatically adjust difficulty for
        individual miners based on their hashrate in order to lower networking and CPU
        overhead. */
     "varDiff": {
         "minDiff": 2, //Minimum difficulty
-        "maxDiff": 512,
-        "targetTime": 15, //Try to get 1 share per this many seconds
-        "retargetTime": 30, //Check to see if we should retarget every this many seconds
+        "maxDiff": 10000,
+        "targetTime": 100, //Try to get 1 share per this many seconds
+        "retargetTime": 15, //Check to see if we should retarget every this many seconds
         "variancePercent": 30 //Allow time to very this % from target without retargeting
-    },
-
-    /* If under low-diff share attack we can ban their IP to reduce system/network load. */
-    "banning": {
-        "enabled": true,
-        "time": 600, //How many seconds to ban worker for
-        "invalidPercent": 50, //What percent of invalid shares triggers ban
-        "checkThreshold": 30 //Perform check when this many shares have been submitted
     },
 
     /* Set to "auto" by default which will spawn one process/fork/worker for each CPU
@@ -111,10 +103,24 @@ Explanation for each field:
        log file then disable this feature to avoid nasty characters in your log file. */
     "logColors": true,
 
+    /* Poll RPC daemons for new blocks every this many milliseconds. */
+    "blockRefreshInterval": 1000,
+
+    /* How many seconds until we consider a miner disconnected. */
+    "minerTimeout": 900,
+
     /* Only works with the new simpleminer with longpolling enabled. */
     "longPolling": {
         "enabled": true,
         "timeout": 8500
+    },
+
+    /* If under low-diff share attack we can ban their IP to reduce system/network load. */
+    "banning": {
+        "enabled": true,
+        "time": 600, //How many seconds to ban worker for
+        "invalidPercent": 25, //What percent of invalid shares triggers ban
+        "checkThreshold": 30 //Perform check when this many shares have been submitted
     },
 
     /* Module that sends payments to miners according to their submitted shares. */
@@ -125,15 +131,11 @@ Explanation for each field:
         "depth": 60 //block depth required to send payments (CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW)
     }
 
-
-    /* Poll RPC daemons for new blocks every this many milliseconds. */
-    "blockRefreshInterval": 1000,
-
     /* REST API used for front-end website. */
     "api": {
         "enabled": true,
-        "hashrateWindow": 15,
-        "updateInterval": 0.5,
+        "hashrateWindow": 600, //how many second worth of shares used to estimate hash rate
+        "updateInterval": 3, //gather stats and broadcast every this many seconds
         "port": 8117
     },
 
@@ -148,9 +150,6 @@ Explanation for each field:
         "host": "127.0.0.1",
         "port": 8082
     },
-
-    /* How many seconds until we consider a miner disconnected. */
-    "minerTimeout": 600,
 
     /* Redis connection into. */
     "redis": {

@@ -18,6 +18,9 @@
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 
     <style>
+        #coinName{
+            text-transform: capitalize;
+        }
         body {
             padding-top: 90px;
         }
@@ -43,7 +46,7 @@
             font-weight: bold;
         }
         #yourStatsInput{
-            width: 550px;
+            width: 700px;
         }
         #yourHashrateHolder, #yourAddressDisplay{
             display: none;
@@ -60,6 +63,14 @@
     $(function(){
         $.get(api + '/stats', function(data){
             renderStats(data);
+
+            var address = docCookies.getItem('mining_address');
+
+            if (address){
+                $('#yourStatsInput').val(address);
+                $('#lookUp').click();
+            }
+
         });
 
         var source = new EventSource(api + '/live_stats');
@@ -77,6 +88,9 @@
 
         var addressEventSource;
         $('#lookUp').click(function(){
+            $('#addressError').hide();
+            $('#yourHashrateHolder').hide();
+            $('#yourAddressDisplay').hide();
             $(this).text('Searching...');
             var address = $('#yourStatsInput').val().trim();
             if (!address) return;
@@ -89,6 +103,7 @@
                     $('#addressError').hide();
                     $('#yourHashrateHolder').show().children(":first").text(data.stats + '/sec');
                     $('#yourAddressDisplay').show().children(":first").text(address);
+                    docCookies.setItem('mining_address', address, Infinity);
                     return;
                 }
                 $('#yourHashrateHolder').hide();
@@ -100,7 +115,8 @@
             });
             addressEventSource.addEventListener('error', function(e){
                 $('#lookUp').text('Lookup');
-                $('#addressError').text('Connection error').show();
+                if ($('#addressError').is(':hidden'))
+                    $('#addressError').text('Connection error').show();
             });
             addressEventSource.addEventListener('close', function(e){
                 $('#lookUp').text('Lookup');
@@ -110,6 +126,44 @@
 
     });
 
+
+    var docCookies = {
+        getItem: function (sKey) {
+            return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+        },
+        setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
+            if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
+            var sExpires = "";
+            if (vEnd) {
+                switch (vEnd.constructor) {
+                    case Number:
+                        sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+                        break;
+                    case String:
+                        sExpires = "; expires=" + vEnd;
+                        break;
+                    case Date:
+                        sExpires = "; expires=" + vEnd.toUTCString();
+                        break;
+                }
+            }
+            document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+            return true;
+        },
+        removeItem: function (sKey, sPath, sDomain) {
+            if (!sKey || !this.hasItem(sKey)) { return false; }
+            document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + ( sDomain ? "; domain=" + sDomain : "") + ( sPath ? "; path=" + sPath : "");
+            return true;
+        },
+        hasItem: function (sKey) {
+            return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+        },
+        keys: /* optional method: you can safely remove it! */ function () {
+            var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
+            for (var nIdx = 0; nIdx < aKeys.length; nIdx++) { aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]); }
+            return aKeys;
+        }
+    };
 
     function getReadableHashRateString(hashrate){
         var i = 0;
@@ -122,6 +176,9 @@
     }
 
     function renderStats(stats){
+
+        $('#coinName').text(stats.config.coin);
+
         $('#networkHashrate').text(getReadableHashRateString(stats.network.difficulty / 60) + '/sec');
         $('#networkDifficulty').text(stats.network.difficulty);
         $('#blockchainHeight').text(stats.network.height);
@@ -156,7 +213,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand">CryptoNote Mining Pool</a>
+            <a class="navbar-brand"><span id="coinName"></span> Mining Pool</a>
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
