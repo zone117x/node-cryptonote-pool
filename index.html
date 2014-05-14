@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <title>Cryptonote Mining Pool</title>
 
+    <script>
+
+        var api = 'http://cryppit.com:8117';
+
+    </script>
+
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
@@ -50,8 +56,6 @@
 </head>
 <body>
 <script>
-
-    var api = 'http://cryppit.com:8117';
 
     $(function(){
         $.get(api + '/stats', function(data){

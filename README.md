@@ -53,7 +53,7 @@ npm update
 #### 2) Configuration
 
 Explanation for each field:
-````javascript
+```javascript
 {
     /* Used for storage in redis so multiple coins can share the same redis instance. */
     "coin": "monero",
@@ -156,7 +156,7 @@ Explanation for each field:
         "port": 6379
     }
 }
-````
+```
 
 
 #### 3) Start the pool
@@ -165,6 +165,19 @@ Explanation for each field:
 node init.js
 ```
 
+#### 4) Host the front-end
+
+Edit `index.html` to use your pool API configuration
+
+```html
+    <script>
+
+        var api = 'http://poolhost:8117';
+
+    </script>
+```
+
+Then simply serve the file via nginx, Apache, Google Drive, or anything that can host static content.
 
 
 License
