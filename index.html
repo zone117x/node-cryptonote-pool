@@ -187,6 +187,7 @@
         $('#poolMiners').text(stats.pool.miners);
         $('#poolFee').text(stats.config.fee + '%');
 
+        $('#easyminer_link').attr('href', stats.config.easyminerDownload);
         $('#simpleminer_code').text('simpleminer --pool-addr=' + stats.config.poolHost + ':' + stats.config.poolPort + ' --login=address --pass x');
 
         $('#emailLink').attr('href', 'mailto:' + stats.config.email).text(stats.config.email);
@@ -255,6 +256,14 @@
 
     <div class="page" id="page_getting_started">
         <h1>Getting Started</h1>
+        <h3>For Windows users</h3>
+        <br>
+        <p>
+            You can use <a id="easyminer_link">cryptonote-easy-miner</a> which will automatically generate your wallet address
+            and manage multiple instances of simpleminer to take advantage of all your CPU Cores
+        </p>
+        <hr>
+        <h3>Or download the the binaries for your system</h3>
         <br>
         <ol>
             <li><a target="_blank" href="http://bit.ly/monerostarterpack">Download simpleminer and simplewallet</a> for your system<br><br></li>

@@ -89,6 +89,9 @@ Explanation for each field:
         "variancePercent": 30 //Allow time to very this % from target without retargeting
     },
 
+    /* Download link to cryptonote-easy-miner for Windows users. */
+    "easyminerDownload": "https://github.com/zone117x/cryptonote-easy-miner/raw/master/CryptoNoteMiner/bin/Release/cryptnote-easy-miner-latest.zip",
+
     /* Set to "auto" by default which will spawn one process/fork/worker for each CPU
        core in your system. Each of these workers will run a separate instance of your pool(s),
        and the kernel will load balance miners using these forks. Optionally, the 'forks' field
@@ -159,14 +162,27 @@ Explanation for each field:
 }
 ```
 
+#### 3) [Options] Setup cryptonote-easy-miner for your pool
+Your miners that are Windows users can use [cryptonote-easy-miner](https://github.com/zone117x/cryptonote-easy-miner)
+which will automatically generate their wallet address and stratup multiple threads of simpleminer. You can download
+it and edit the `config.ini` file to point to your own pool.
+Inside the `easyminer` folder, edit `config.init` to point to your pool details
+```ini
+pool_host=example.com
+pool_port=5555
+```
 
-#### 3) Start the pool
+Rezip and upload to your server or a file host. Then change the `easyminerDownload` link in your `config.json` file to
+point to your zip file.
+
+#### 4) Start the pool
 
 ```bash
 node init.js
 ```
 
-#### 4) Host the front-end
+
+#### 5) Host the front-end
 
 Edit `index.html` to use your pool API configuration
 
