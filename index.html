@@ -46,13 +46,27 @@
             font-weight: bold;
         }
         #yourStatsInput{
-            width: 700px;
+            width: 800px;
+            display: inline-block;
+            vertical-align: bottom;
         }
         #yourHashrateHolder, #yourAddressDisplay{
             display: none;
         }
         #addressError{
             color: red;
+        }
+        #stats_updated{
+            opacity: 0;
+            float: right;
+            margin-left: 30px;
+            color: #e8e8e8;
+            line-height: 47px;
+            font-size: 0.9em;
+        }
+
+        .getting_started_windows{
+            line-height: 40px;
         }
     </style>
 
@@ -73,11 +87,24 @@
 
         });
 
-        var source = new EventSource(api + '/live_stats');
-        source.addEventListener('message', function(e){
-            var data = JSON.parse(e.data);
-            renderStats(data);
-        });
+        if (window.EventSource) {
+
+            var stats_update = $('#stats_updated')[0];
+
+            var source = new EventSource(api + '/live_stats');
+            source.addEventListener('message', function (e) {
+                var data = JSON.parse(e.data);
+                renderStats(data);
+
+                stats_update.style.transition = 'opacity 100ms ease-out';
+                stats_update.style.opacity = 1;
+                setTimeout(function(){
+                    stats_update.style.transition = 'opacity 7000ms linear';
+                    stats_update.style.opacity = 0;
+                }, 500);
+
+            });
+        }
 
         window.onhashchange = function(){
             pageRouter();
@@ -222,7 +249,9 @@
                 <li><a class="hot_link" data-page="page_getting_started" href="#getting_started"><i class="fa fa-rocket"></i> Getting Started</a></li>
                 <li><a class="hot_link" data-page="page_contact" href="#contact"><i class="fa fa-pencil"></i> Contact</a></li>
             </ul>
+            <div id="stats_updated">Stats Updated</div>
         </div>
+
     </div>
 </div>
 
@@ -246,7 +275,9 @@
 
         <div class="stats">
             <h3>Your Stats</h3>
-            <div>Address: <input id="yourStatsInput" type="text"> <button id="lookUp">Lookup</button></div>
+            <label for="yourStatsInput">Address</label><br>
+            <input class="form-control" id="yourStatsInput" type="text">
+            <button class="btn btn-default" id="lookUp">Lookup</button>
             <div id="addressError"></div>
             <div id="yourAddressDisplay">Address: <span></span></div>
             <div id="yourHashrateHolder">Hash Rate: <span></span></div>
@@ -258,15 +289,15 @@
         <h1>Getting Started</h1>
         <h3>For Windows users</h3>
         <br>
-        <p>
-            You can use <a id="easyminer_link">cryptonote-easy-miner</a> which will automatically generate your wallet address
-            and manage multiple instances of simpleminer to take advantage of all your CPU Cores
+        <p class="getting_started_windows">
+            You can <a class="btn btn-default btn-sm" target="_blank" id="easyminer_link">Download</a> and run <a target="_blank" href="https://github.com/zone117x/cryptonote-easy-miner">cryptonote-easy-miner</a> which will automatically generate your wallet address
+            and manage multiple instances of simpleminer to take advantage of all your CPU Cores.
         </p>
         <hr>
         <h3>Or download the the binaries for your system</h3>
         <br>
         <ol>
-            <li><a target="_blank" href="http://bit.ly/monerostarterpack">Download simpleminer and simplewallet</a> for your system<br><br></li>
+            <li><a target="_blank" class="btn btn-default btn-sm" href="http://bit.ly/monerostarterpack">Download</a> simpleminer and simplewallet for your system<br><br></li>
             <li>Run simplewallet to generate your public address<br><br></li>
             <li>Run simpleminer pointed to our pool with your address:
                 <br><br>
