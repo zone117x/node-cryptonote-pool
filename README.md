@@ -19,11 +19,13 @@ Mining pool for CryptoNote based coins such as Bytecoin and Monero
   * Each miners' hashrate
   * Blocks found (pending, confirmed, and orphaned)
   * Total paid out
+* Light-weight front-end using API to display pool data
+
 
 #### TODO
 
 * Worker login validation (make sure miners are using proper wallet addresses for mining)
-* Light-weight front-end using API to display pool data
+
 
 
 Usage
