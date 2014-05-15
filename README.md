@@ -11,7 +11,7 @@ Mining pool for CryptoNote based coins such as Bytecoin and Monero
 * Payment processing
 * Detailed logging
 * Clustering for vertical scaling
-* Live stats API
+* Live stats API (using CORS with AJAX and HTML5 EventSource)
   * Currency network/block difficulty
   * Current block height
   * Network hashrate
@@ -134,7 +134,7 @@ Explanation for each field:
         "depth": 60 //block depth required to send payments (CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW)
     }
 
-    /* REST API used for front-end website. */
+    /* AJAX/EventSource API used for front-end website. */
     "api": {
         "enabled": true,
         "hashrateWindow": 600, //how many second worth of shares used to estimate hash rate
