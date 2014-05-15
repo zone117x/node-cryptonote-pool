@@ -21,7 +21,7 @@
         "variancePercent": 30
     },
 
-    "easyminerDownload": "https://github.com/zone117x/cryptonote-easy-miner/raw/master/CryptoNoteMiner/bin/Release/cryptnote-easy-miner-latest.zip",
+    "easyminerDownload": "https://github.com/zone117x/cryptonote-easy-miner/releases/",
 
     "clusterForks": "auto",
 
