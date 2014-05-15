@@ -196,6 +196,13 @@ Edit `index.html` to use your pool API configuration
 
 Then simply serve the file via nginx, Apache, Google Drive, or anything that can host static content.
 
+Credits
+===
+
+* [LucasJones](//github.com/LucasJones) - Co-dev on this project; did tons of debugging for binary structures and fixing them. Pool couldn't have been made without him.
+* [surfer43](//github.com/iamasupernova) - Did lots of testing during development to help figure out bugs and get them fixed
+* [Wolf0](https://bitcointalk.org/index.php?action=profile;u=80740) - Helped try to deobfuscate some of the daemon code for getting a bug fixed
+* [Tacotime](https://bitcointalk.org/index.php?action=profile;u=19270) - helping with figuring out certain problems and lead the bounty for this project's creation
 
 License
 -------
