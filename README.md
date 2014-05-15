@@ -15,7 +15,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
   * [Downloading & Installing](#1-downloading--installing)
   * [Configuration](#2-configuration)
   * [Configure Easyminer](#3-options-configure-cryptonote-easy-miner-for-your-pool)
-  * [Starting the Pool](#4-start-the-portal)
+  * [Starting the Pool](#4-start-the-pool)
   * [Upgrading](#upgrading)
 * [Setting up Testnet](#setting-up-testnet)
 * [Donations](#donations)
