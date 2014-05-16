@@ -18,6 +18,8 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
   * [Starting the Pool](#4-start-the-pool)
   * [Upgrading](#upgrading)
 * [Setting up Testnet](#setting-up-testnet)
+* [JSON-RPC Commands from CLI](#json-rpc-commands-from-cli)
+* [Monitoring Your Pool](#monitoring-your-pool)
 * [Donations](#donations)
 * [Credits](#credits)
 * [License](#license)
@@ -251,6 +253,23 @@ No cryptonote based coins have a testnet mode (yet) but you can effectively crea
 * You should now have a local testnet setup. The ports can be changes as long as the second instance is pointed to the first instance, obviously
 
 *Credit to surfer43 for these instructions*
+
+
+### JSON-RPC Commands from CLI
+
+Curl can be used to use the JSON-RPC commands from command-line. Here is an example of calling `getblockheaderbyheight` for block 100:
+
+```bash
+curl -X POST http://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"test","method":"getblockheaderbyheight","params":{"height":100}}'
+```
+
+
+### Monitoring Your Pool
+
+* To inspect and make changes to redis I suggest using [redis-commander](https://github.com/joeferner/redis-commander)
+* To monitor server load for CPU, Network, IO, etc - I suggest using [New Relic](http://newrelic.com/)
+* To keep your pool node script running in background, logging to file, and automatically restarting if it crashes - I suggest using [forever](https://github.com/nodejitsu/forever)
+
 
 Donations
 ---------
