@@ -31,6 +31,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * Payment processing
 * Detailed logging
 * Clustering for vertical scaling
+* Modular components for horizontal scaling (database, stats/API, payment processing, front-end)
 * Live stats API (using CORS with AJAX and HTML5 EventSource)
   * Currency network/block difficulty
   * Current block height
