@@ -253,7 +253,7 @@
         else{
             $('#poolLastBlockFound').removeAttr('title').text('Never');
         }
-        $('#poolRoundShares').text(stats.pool.roundShares);
+        $('#poolRoundHashes').text(stats.pool.roundHashes);
         $('#poolMiners').text(stats.pool.miners);
         $('#poolFee').text(stats.config.fee + '%');
 
@@ -315,7 +315,7 @@
             <h3>Pool</h3>
             <div><i class="fa fa-tachometer"></i> Hash Rate: <span id="poolHashrate"></span></div>
             <div><i class="fa fa-clock-o"></i> Block Found: <span id="poolLastBlockFound"></span></div>
-            <div><i class="fa fa-cloud-upload"></i> Round Shares: <span id="poolRoundShares"></span></div>
+            <div><i class="fa fa-cloud-upload"></i> Round Hashes: <span id="poolRoundHashes"></span></div>
             <div><i class="fa fa-users"></i> Connected Miners: <span id="poolMiners"></span></div>
             <div><i class="fa fa-money"></i> Mining Fee: <span id="poolFee"></span></div>
         </div>
