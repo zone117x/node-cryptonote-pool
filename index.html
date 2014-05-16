@@ -141,6 +141,7 @@
 
         pageRouter();
 
+        $('#networkLastBlockFound,#poolLastBlockFound').timeago();
 
         var lookupBtnHtml = $('#lookUp').html();
 
@@ -239,7 +240,7 @@
 
         $('#networkHashrate').text(getReadableHashRateString(stats.network.difficulty / 60) + '/sec');
 
-        $('#networkLastBlockFound').attr('title', new Date(stats.network.timestamp * 1000).toISOString()).timeago();
+        $('#networkLastBlockFound').timeago('update', new Date(stats.network.timestamp * 1000).toISOString());
         $('#networkDifficulty').text(stats.network.difficulty);
         $('#blockchainHeight').text(stats.network.height);
 
@@ -247,11 +248,11 @@
 
 
         if (stats.pool.lastBlockFound){
-            var d = new Date(parseInt(stats.pool.lastBlockFound));
-            $('#poolLastBlockFound').attr('title', d.toISOString()).timeago();
+            var d = new Date(parseInt(stats.pool.lastBlockFound)).toISOString();
+            $('#poolLastBlockFound').timeago('update', d);
         }
         else{
-            $('#poolLastBlockFound').removeAttr('title').text('Never');
+            $('#poolLastBlockFound').removeAttr('title').data('ts', '').text('Never');
         }
         $('#poolRoundHashes').text(stats.pool.roundHashes);
         $('#poolMiners').text(stats.pool.miners);
