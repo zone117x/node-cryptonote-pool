@@ -54,8 +54,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * [CryptoNote Forum](https://forum.cryptonote.org/)
 * [Bytecoin Github](https://github.com/amjuarez/bytecoin)
 * [Monero Github](https://github.com/monero-project/bitmonero)
-
-* IRC
+* IRC (freenode)
   * Support / general discussion join #monero: https://webchat.freenode.net/?channels=#monero
   * Development discussion join #monero-dev: https://webchat.freenode.net/?channels=#monero-dev
 
@@ -71,9 +70,12 @@ Usage
 Those are legitimate requirements. If you use old versions of Node.js or Redis that may come with your system package manager then you will have problems. Follow the linked instructions to get the last stable versions.
 
 
-#### 1) Downloading & Installing
+[**Redis security warning**](http://redis.io/topics/security): be sure firewall access to redis - an easy way is to
+include `bind 127.0.0.1` in your `redis.conf` file. Also it's a good idea to learn about and understand software that
+you are using - a good place to start with redis is [data persistence](http://redis.io/topics/persistence).
 
-[**Redis security warning**](http://redis.io/topics/security): be sure firewall access to redis - an easy way is to include `bind 127.0.0.1` in your `redis.conf` file
+
+#### 1) Downloading & Installing
 
 Clone the repository and run `npm update` for all the dependencies to be installed:
 
