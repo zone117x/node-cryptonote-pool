@@ -257,6 +257,11 @@ No cryptonote based coins have a testnet mode (yet) but you can effectively crea
 
 ### JSON-RPC Commands from CLI
 
+Documentation for JSON-RPC commands can be found here:
+* Daemon https://wiki.bytecoin.org/wiki/Daemon_JSON_RPC_API
+* Wallet https://wiki.bytecoin.org/wiki/Wallet_JSON_RPC_API
+
+
 Curl can be used to use the JSON-RPC commands from command-line. Here is an example of calling `getblockheaderbyheight` for block 100:
 
 ```bash
