@@ -1,7 +1,7 @@
 node-cryptonote-pool
 ====================
 
-High performance Node.js (with native C addons) mining pool for CryptoNote based coins such as Bytecoin and Monero.
+High performance Node.js (with native C addons) mining pool for CryptoNote based coins such as Bytecoin, Monero, QuazarCoin, Fantomcoin, HoneyPenny, etc..
 Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 
@@ -51,8 +51,13 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 ### Community / Support
 
-* Support / general discussion join #monero: https://webchat.freenode.net/?channels=#monero
-* Development discussion join #monero-dev: https://webchat.freenode.net/?channels=#monero-dev
+* [CryptoNote Forum](https://forum.cryptonote.org/)
+* [Bytecoin Github](https://github.com/amjuarez/bytecoin)
+* [Monero Github](https://github.com/monero-project/bitmonero)
+
+* IRC
+  * Support / general discussion join #monero: https://webchat.freenode.net/?channels=#monero
+  * Development discussion join #monero-dev: https://webchat.freenode.net/?channels=#monero-dev
 
 Usage
 ===
@@ -246,7 +251,7 @@ No cryptonote based coins have a testnet mode (yet) but you can effectively crea
 
 Donations
 ---------
-* MRO: `asdf`
+* MRO: `48Y4SoUJM5L3YXBEfNQ8bFNsvTNsqcH5Rgq8RF7BwpgvTBj2xr7CmWVanaw7L4U9MnZ4AG7U6Pn1pBhfQhFyFZ1rL1efL8z`
 * BCN: `asdf`
 
 Credits
