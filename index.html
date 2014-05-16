@@ -12,6 +12,8 @@
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.4.0/jquery.timeago.min.js"></script>
+
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
@@ -35,6 +37,7 @@
             display: inline-block;
             width: 40%;
             margin-bottom: 40px;
+            vertical-align: top;
         }
         .stats:last-child{
             width: auto;
@@ -235,12 +238,25 @@
         $('#coinName').text(stats.config.coin);
 
         $('#networkHashrate').text(getReadableHashRateString(stats.network.difficulty / 60) + '/sec');
+
+        $('#networkLastBlockFound').attr('title', new Date(stats.network.timestamp * 1000).toISOString()).timeago();
         $('#networkDifficulty').text(stats.network.difficulty);
         $('#blockchainHeight').text(stats.network.height);
 
         $('#poolHashrate').text(stats.pool.hashrate + '/sec');
+
+
+        if (stats.pool.lastBlockFound){
+            var d = new Date(parseInt(stats.pool.lastBlockFound));
+            $('#poolLastBlockFound').attr('title', d.toISOString()).timeago();
+        }
+        else{
+            $('#poolLastBlockFound').removeAttr('title').text('Never');
+        }
+        $('#poolRoundShares').text(stats.pool.roundShares);
         $('#poolMiners').text(stats.pool.miners);
         $('#poolFee').text(stats.config.fee + '%');
+
 
         $('#easyminer_link').attr('href', stats.config.easyminerDownload);
         $('#simpleminer_code').text('simpleminer --pool-addr=' + stats.config.poolHost + ':' + stats.config.poolPort + ' --login=address --pass x');
@@ -290,6 +306,7 @@
         <div class="stats">
             <h3>Network</h3>
             <div><i class="fa fa-tachometer"></i> Hash Rate: <span id="networkHashrate"></span></div>
+            <div><i class="fa fa-clock-o"></i> Block Found: <span id="networkLastBlockFound"></span></div>
             <div><i class="fa fa-unlock-alt"></i> Difficulty: <span id="networkDifficulty"></span></div>
             <div><i class="fa fa-bars"></i> Blockchain Height: <span id="blockchainHeight"></span></div>
         </div>
@@ -297,6 +314,8 @@
         <div class="stats">
             <h3>Pool</h3>
             <div><i class="fa fa-tachometer"></i> Hash Rate: <span id="poolHashrate"></span></div>
+            <div><i class="fa fa-clock-o"></i> Block Found: <span id="poolLastBlockFound"></span></div>
+            <div><i class="fa fa-cloud-upload"></i> Round Shares: <span id="poolRoundShares"></span></div>
             <div><i class="fa fa-users"></i> Connected Miners: <span id="poolMiners"></span></div>
             <div><i class="fa fa-money"></i> Mining Fee: <span id="poolFee"></span></div>
         </div>

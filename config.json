@@ -12,7 +12,7 @@
 
     "poolAddress": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn",
 
-    "difficulty": 200,
+    "difficulty": 100,
     "varDiff": {
         "minDiff": 2,
         "maxDiff": 10000,
