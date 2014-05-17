@@ -90,6 +90,9 @@ npm update
 
 #### 2) Configuration
 
+Copy the `config_example.json` file to `config.json` then overview each options and change any to match your preferred setup.
+
+
 Explanation for each field:
 ```javascript
 {
