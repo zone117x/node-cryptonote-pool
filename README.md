@@ -27,11 +27,12 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 #### Features
 
-* Variable difficulty / share limiter
 * IP banning to prevent low-diff share attacks
 * Socket flooding detection
 * Payment processing
 * Detailed logging
+* Ability to configure multiple ports - each with their own difficulty
+* Variable difficulty / share limiter
 * Clustering for vertical scaling
 * Modular components for horizontal scaling (pool server, database, stats/API, payment processing, front-end)
 * Live stats API (using CORS with AJAX and HTML5 EventSource)
@@ -41,16 +42,14 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
   * Pool hashrate
   * Each miners' hashrate
   * Blocks found (pending, confirmed, and orphaned)
-  * Total paid out
-* Light-weight front-end using API to display pool data
+* Light-weight front-end using API to display data
+* Worker login validation (make sure miners are using proper wallet addresses for mining)
 
 
 #### Under Development
 
-* Worker login validation (make sure miners are using proper wallet addresses for mining)
 * New tab showing blocks (pending, unlocked, and orphaned)
 * More stats for individual worker (total shares submitted, total paid out)
-* Ability to configure multiple ports - each with their own diff and vardiff settings
 
 ### Community / Support
 
