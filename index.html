@@ -83,6 +83,14 @@
             line-height: 40px;
         }
 
+        #miningPorts > .stats{
+            width: auto !important;
+            margin-right: 70px;
+        }
+        #miningPorts > .stats:last-child{
+            margin-right: 0;
+        }
+
         footer{
             position: fixed;
             bottom: 0;
@@ -143,6 +151,10 @@
 
         $('#networkLastBlockFound,#poolLastBlockFound').timeago();
 
+        var $miningPorts = $('#miningPorts');
+        var miningPortTemplate = $miningPorts.html();
+        $miningPorts.empty();
+
         var lookupBtnHtml = $('#lookUp').html();
 
         var addressEventSource;
@@ -182,6 +194,52 @@
                 $('#addressError').text('Connection closed').show();
             })
         });
+
+
+
+        function renderStats(stats){
+
+            $('#coinName').text(stats.config.coin);
+
+            $('#networkHashrate').text(getReadableHashRateString(stats.network.difficulty / 60) + '/sec');
+
+            $('#networkLastBlockFound').timeago('update', new Date(stats.network.timestamp * 1000).toISOString());
+            $('#networkDifficulty').text(stats.network.difficulty);
+            $('#blockchainHeight').text(stats.network.height);
+
+            $('#poolHashrate').text(stats.pool.hashrate + '/sec');
+
+
+            if (stats.pool.lastBlockFound){
+                var d = new Date(parseInt(stats.pool.lastBlockFound)).toISOString();
+                $('#poolLastBlockFound').timeago('update', d);
+            }
+            else{
+                $('#poolLastBlockFound').removeAttr('title').data('ts', '').text('Never');
+            }
+            $('#poolRoundHashes').text(stats.pool.roundHashes);
+            $('#poolMiners').text(stats.pool.miners);
+            $('#poolFee').text(stats.config.fee + '%');
+
+
+            var $miningPortChildren = [];
+            for (var i = 0; i < stats.config.ports.length; i++){
+                var portData = stats.config.ports[i];
+                var $portChild = $(miningPortTemplate);
+                $portChild.find('.miningPort').text(portData.port);
+                $portChild.find('.miningPortDiff').text(portData.difficulty);
+                $portChild.find('.miningPortDesc').text(portData.desc);
+                $miningPortChildren.push($portChild);
+            }
+            $miningPorts.empty().append($miningPortChildren);
+
+
+            $('#easyminer_link').attr('href', stats.config.easyminerDownload);
+            $('#simpleminer_code').text('simpleminer --pool-addr=' + stats.config.poolHost + ':' + stats.config.ports[0].port + ' --login=address --pass x');
+
+            $('#emailLink').attr('href', 'mailto:' + stats.config.email).text(stats.config.email);
+        }
+
 
     });
 
@@ -234,36 +292,6 @@
         return hashrate.toFixed(2) + byteUnits[i];
     }
 
-    function renderStats(stats){
-
-        $('#coinName').text(stats.config.coin);
-
-        $('#networkHashrate').text(getReadableHashRateString(stats.network.difficulty / 60) + '/sec');
-
-        $('#networkLastBlockFound').timeago('update', new Date(stats.network.timestamp * 1000).toISOString());
-        $('#networkDifficulty').text(stats.network.difficulty);
-        $('#blockchainHeight').text(stats.network.height);
-
-        $('#poolHashrate').text(stats.pool.hashrate + '/sec');
-
-
-        if (stats.pool.lastBlockFound){
-            var d = new Date(parseInt(stats.pool.lastBlockFound)).toISOString();
-            $('#poolLastBlockFound').timeago('update', d);
-        }
-        else{
-            $('#poolLastBlockFound').removeAttr('title').data('ts', '').text('Never');
-        }
-        $('#poolRoundHashes').text(stats.pool.roundHashes);
-        $('#poolMiners').text(stats.pool.miners);
-        $('#poolFee').text(stats.config.fee + '%');
-
-
-        $('#easyminer_link').attr('href', stats.config.easyminerDownload);
-        $('#simpleminer_code').text('simpleminer --pool-addr=' + stats.config.poolHost + ':' + stats.config.poolPort + ' --login=address --pass x');
-
-        $('#emailLink').attr('href', 'mailto:' + stats.config.email).text(stats.config.email);
-    }
 
     function pageRouter(){
         $('.page').hide();
@@ -335,19 +363,35 @@
 
     <div class="page" id="page_getting_started">
         <h1>Getting Started</h1>
+
+        <hr>
+
+        <h3>Mining Ports</h3>
+        <div id="miningPorts">
+            <div class="stats">
+                <div><i class="fa fa-tachometer"></i> Port: <span class="miningPort"></span></div>
+                <div><i class="fa fa-unlock-alt"></i> Starting Difficulty: <span class="miningPortDiff"></span></div>
+                <div><i class="fa fa-question"></i> Description: <span class="miningPortDesc"></span></div>
+            </div>
+        </div>
+
+        <hr>
+
         <h3>For <i class="fa fa-windows"></i> Windows users</h3>
         <br>
         <p class="getting_started_windows">
             You can <a class="btn btn-default btn-sm" target="_blank" id="easyminer_link"><i class="fa fa-download"></i> Download</a> and run <a target="_blank" href="https://github.com/zone117x/cryptonote-easy-miner">cryptonote-easy-miner</a> <i class="fa fa-github"></i> which will automatically generate your wallet address
             and manage multiple instances of simpleminer to take advantage of all your CPU Cores.
         </p>
+
         <hr>
+
         <h3>Or download the the binaries for your system</h3>
         <br>
         <ol>
             <li><a target="_blank" class="btn btn-default btn-sm" href="http://bit.ly/monero-starter-pack"><i class="fa fa-download"></i> Download</a> simpleminer and simplewallet for your system<br><br></li>
             <li>Run simplewallet to generate your public address<br><br></li>
-            <li>Run simpleminer pointed to our pool with your address:
+            <li>Choose a port and run simpleminer pointed to our pool with your address, for example:
                 <br><br>
                 <code id="simpleminer_code"></code>
             </li>

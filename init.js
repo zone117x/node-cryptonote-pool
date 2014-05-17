@@ -83,6 +83,8 @@ function checkRedisVersion(callback){
 
 function spawnPoolWorkers(){
 
+    if (!config.poolServer || !config.poolServer.enabled || !config.poolServer.ports || config.poolServer.ports.length === 0) return;
+
     var numForks = (function(){
         if (!config.clusterForks)
             return 1;

@@ -33,7 +33,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * Payment processing
 * Detailed logging
 * Clustering for vertical scaling
-* Modular components for horizontal scaling (database, stats/API, payment processing, front-end)
+* Modular components for horizontal scaling (pool server, database, stats/API, payment processing, front-end)
 * Live stats API (using CORS with AJAX and HTML5 EventSource)
   * Currency network/block difficulty
   * Current block height
@@ -99,9 +99,6 @@ Explanation for each field:
     "coinUnits": 100000000,
     "transferFee": 1000000,
 
-    /* Port that simpleminer is pointed to. */
-    "poolPort": 5555,
-
     /* Host that simpleminer is pointed to.  */
     "poolHost": "example.com",
 
@@ -111,18 +108,37 @@ Explanation for each field:
     /* Address where block rewards go, and miner payments come from. */
     "poolAddress": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn"
 
-    /* Initial difficulty miners are set to. */
-    "difficulty": 200,
+    /* Modular Pool Server */
+    "poolServer": {
+        "enabled": true,
+        "ports": [
+            {
+                "port": 3333, //Port for mining apps to connect to
+                "difficulty": 50, //Initial difficulty miners are set to
+                "desc": "Low end CPUs" //Description of port
+            },
+            {
+                "port": 5555,
+                "difficulty": 200,
+                "desc": "Mid range CPUs"
+            },
+            {
+                "port": 7777,
+                "difficulty": 2000,
+                "desc": "High end CPUs"
+            }
+        ],
 
-    /* Variable difficulty is a feature that will automatically adjust difficulty for
-       individual miners based on their hashrate in order to lower networking and CPU
-       overhead. */
-    "varDiff": {
-        "minDiff": 2, //Minimum difficulty
-        "maxDiff": 10000,
-        "targetTime": 100, //Try to get 1 share per this many seconds
-        "retargetTime": 15, //Check to see if we should retarget every this many seconds
-        "variancePercent": 30 //Allow time to very this % from target without retargeting
+        /* Variable difficulty is a feature that will automatically adjust difficulty for
+           individual miners based on their hashrate in order to lower networking and CPU
+           overhead. */
+        "varDiff": {
+            "minDiff": 2, //Minimum difficulty
+            "maxDiff": 10000,
+            "targetTime": 100, //Try to get 1 share per this many seconds
+            "retargetTime": 30, //Check to see if we should retarget every this many seconds
+            "variancePercent": 30 //Allow time to very this % from target without retargeting
+        }
     },
 
     /* Download link to cryptonote-easy-miner for Windows users. */
