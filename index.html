@@ -55,6 +55,9 @@
         .stats > div > span{
             font-weight: bold;
         }
+        #networkLastReward{
+            text-transform: uppercase;
+        }
         #yourStatsInput{
             width: 820px;
             display: inline-block;
@@ -77,6 +80,14 @@
             color: #e8e8e8;
             line-height: 47px;
             font-size: 0.9em;
+        }
+
+        #page_getting_started > .stats:first-of-type{
+            margin-bottom: 15px;
+        }
+
+        #page_getting_started .stats {
+            margin-bottom: 10px;
         }
 
         .getting_started_windows{
@@ -206,6 +217,7 @@
             $('#networkLastBlockFound').timeago('update', new Date(stats.network.timestamp * 1000).toISOString());
             $('#networkDifficulty').text(stats.network.difficulty);
             $('#blockchainHeight').text(stats.network.height);
+            $('#networkLastReward').text(stats.network.reward + ' ' + stats.config.symbol);
 
             $('#poolHashrate').text(stats.pool.hashrate + '/sec');
 
@@ -222,6 +234,8 @@
             $('#poolFee').text(stats.config.fee + '%');
 
 
+            $('#miningPoolHost').text(stats.config.poolHost);
+
             var $miningPortChildren = [];
             for (var i = 0; i < stats.config.ports.length; i++){
                 var portData = stats.config.ports[i];
@@ -236,6 +250,11 @@
 
             $('#easyminer_link').attr('href', stats.config.easyminerDownload);
             $('#simpleminer_code').text('simpleminer --pool-addr=' + stats.config.poolHost + ':' + stats.config.ports[0].port + ' --login=address --pass x');
+
+            var kiwiIrc = 'https://kiwiirc.com/client/' + stats.config.irc;
+            if ($('#kiwi_irc').attr('src') !== kiwiIrc){
+                $('#kiwi_irc').attr('src', kiwiIrc);
+            }
 
             $('#emailLink').attr('href', 'mailto:' + stats.config.email).text(stats.config.email);
         }
@@ -320,7 +339,7 @@
             <ul class="nav navbar-nav">
                 <li class="active"><a class="hot_link" data-page="page_home" href="#"><i class="fa fa-home"></i> Home</a></li>
                 <li><a class="hot_link" data-page="page_getting_started" href="#getting_started"><i class="fa fa-rocket"></i> Getting Started</a></li>
-                <li><a class="hot_link" data-page="page_contact" href="#contact"><i class="fa fa-envelope-o"></i> Contact</a></li>
+                <li><a class="hot_link" data-page="page_community" href="#community"><i class="fa fa-comments"></i> Community</a></li>
             </ul>
             <div id="stats_updated">Stats Updated &nbsp;<i class="fa fa-bolt"></i></div>
         </div>
@@ -338,6 +357,7 @@
             <div><i class="fa fa-clock-o"></i> Block Found: <span id="networkLastBlockFound"></span></div>
             <div><i class="fa fa-unlock-alt"></i> Difficulty: <span id="networkDifficulty"></span></div>
             <div><i class="fa fa-bars"></i> Blockchain Height: <span id="blockchainHeight"></span></div>
+            <div><i class="fa fa-money"></i> Last Reward: <span id="networkLastReward"></span></div>
         </div>
 
         <div class="stats">
@@ -366,7 +386,12 @@
 
         <hr>
 
-        <h3>Mining Ports</h3>
+        <div class="stats">
+            <h4>Mining Host</h4>
+            <div><i class="fa fa-cloud"></i> Pool Address: <span id="miningPoolHost"></span></div>
+        </div>
+
+        <h4>Mining Ports</h4>
         <div id="miningPorts">
             <div class="stats">
                 <div><i class="fa fa-tachometer"></i> Port: <span class="miningPort"></span></div>
@@ -377,7 +402,7 @@
 
         <hr>
 
-        <h3>For <i class="fa fa-windows"></i> Windows users</h3>
+        <h4>For <i class="fa fa-windows"></i> Windows users</h4>
         <br>
         <p class="getting_started_windows">
             You can <a class="btn btn-default btn-sm" target="_blank" id="easyminer_link"><i class="fa fa-download"></i> Download</a> and run <a target="_blank" href="https://github.com/zone117x/cryptonote-easy-miner">cryptonote-easy-miner</a> <i class="fa fa-github"></i> which will automatically generate your wallet address
@@ -386,7 +411,7 @@
 
         <hr>
 
-        <h3>Or download the the binaries for your system</h3>
+        <h4>Or download the the binaries for your system</h4>
         <br>
         <ol>
             <li><a target="_blank" class="btn btn-default btn-sm" href="http://bit.ly/monero-starter-pack"><i class="fa fa-download"></i> Download</a> simpleminer and simplewallet for your system<br><br></li>
@@ -398,8 +423,10 @@
         </ol>
     </div>
 
-    <div class="page" id="page_contact">
-        <h1>Contact</h1>
+    <div class="page" id="page_community">
+        <h3>Chat Room</h3>
+        <iframe id="kiwi_irc" style="border:0; width:100%; height:500px;"></iframe>
+        <h3>Contact</h3>
         <p>Email pool support at <a id="emailLink" href=""></a></p>
     </div>
 

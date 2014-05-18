@@ -42,7 +42,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
   * Pool hashrate
   * Each miners' hashrate
   * Blocks found (pending, confirmed, and orphaned)
-* Light-weight front-end using API to display data
+* An easily extendable, responsive, light-weight front-end using API to display data
 * Worker login validation (make sure miners are using proper wallet addresses for mining)
 
 
@@ -103,6 +103,9 @@ Explanation for each field:
 
     /* Host that simpleminer is pointed to.  */
     "poolHost": "example.com",
+
+    /* IRC Server and room used for embedded KiwiIRC chat on fron-end. */
+    "irc": "irc.freenode.net/#monero",
 
     /* Contact email address. */
     "email": "support@cryppit.com",
