@@ -139,7 +139,8 @@ Explanation for each field:
             "maxDiff": 10000,
             "targetTime": 100, //Try to get 1 share per this many seconds
             "retargetTime": 30, //Check to see if we should retarget every this many seconds
-            "variancePercent": 30 //Allow time to very this % from target without retargeting
+            "variancePercent": 30, //Allow time to very this % from target without retargeting
+            "maxJump": 1000 //Limit how much diff can increase/decrease in a single retargetting
         }
     },
 
