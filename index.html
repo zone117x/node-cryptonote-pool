@@ -257,6 +257,52 @@
             }
 
             $('#emailLink').attr('href', 'mailto:' + stats.config.email).text(stats.config.email);
+
+            renderBlocks(stats.pool.blocks);
+
+        }
+
+        var lastBlocksJson = '';
+
+        function renderBlocks(blocksResults){
+            var blocks = [];
+            for (var status in blocksResults){
+                var blockArray = blocksResults[status];
+                for (var i = 0; i < blockArray.length; i++){
+                    var blockData = blockArray[i].split(':');
+                    blockData[0] = parseInt(blockData[0]);
+                    blockData.unshift(status);
+                    blocks.push(blockData);
+                }
+            }
+            blocks.sort(function(a, b){
+                return a[1] - b[1];
+            });
+
+            var blocksJson = JSON.stringify(blocks);
+            if (lastBlocksJson === blocksJson) return;
+            lastBlocksJson = blocksJson;
+
+            var blockStatusClasses = {
+                'pending': '',
+                'unlocked': 'success',
+                'orphaned': 'danger'
+            };
+
+            var formatDate = function(time){
+                if (!time) return '';
+                return new Date(parseInt(time) * 1000).toLocaleString();
+            };
+
+            var rows = '';
+
+            for (var i = 0; i < blocks.length; i++){
+                var block = blocks[i];
+                rows += ('<tr title="' + block[0] + '" class="' + blockStatusClasses[block[0]] + '"><td>' + block[1] + '</td><td>' + block[2] + '</td><td>' + block[3] + '</td><td>' + formatDate(block[4]) + '</td></tr>');
+            }
+
+            $('#blocks_rows').empty().append(rows);
+
         }
 
 
@@ -338,7 +384,7 @@
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <li class="active"><a class="hot_link" data-page="page_home" href="#"><i class="fa fa-home"></i> Home</a></li>
-                <!--<li><a class="hot_link" data-page="page_pool_blocks" href="#pool_blocks"><i class="fa fa-cubes"></i> Pool Blocks</a></li>-->
+                <li><a class="hot_link" data-page="page_pool_blocks" href="#pool_blocks"><i class="fa fa-cubes"></i> Pool Blocks</a></li>
                 <li><a class="hot_link" data-page="page_getting_started" href="#getting_started"><i class="fa fa-rocket"></i> Getting Started</a></li>
                 <li><a class="hot_link" data-page="page_community" href="#community"><i class="fa fa-comments"></i> Community</a></li>
             </ul>
@@ -382,15 +428,21 @@
 
     </div>
 
-    <!--<div class="page" id="page_pool_blocks">
-        <table class="table">
+    <div class="page" id="page_pool_blocks">
+        <table class="table table-hover">
             <thead>
             <tr>
-                <th></th>
+                <th>Height</th>
+                <th>Difficulty</th>
+                <th>Block Hash</th>
+                <th>Time Found</th>
             </tr>
             </thead>
+            <tbody id="blocks_rows">
+
+            </tbody>
         </table>
-    </div>-->
+    </div>
 
     <div class="page" id="page_getting_started">
         <h1>Getting Started</h1>

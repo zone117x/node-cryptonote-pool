@@ -49,7 +49,6 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 #### Under Development
 
-* New tab showing blocks (pending, unlocked, and orphaned)
 * More stats for individual worker (total shares submitted, total paid out)
 * Stratum protocol (push-based TCP sockets) to help reduce server load
 
@@ -66,7 +65,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 #### Pools Using This Software
 
 * http://moneropool.org
-* http://moneropool.org
+* http://moneropool.com
 * http://extremepool.org
 * http://mon.hashharder.com
 
