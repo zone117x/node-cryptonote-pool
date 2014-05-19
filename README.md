@@ -51,6 +51,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 * New tab showing blocks (pending, unlocked, and orphaned)
 * More stats for individual worker (total shares submitted, total paid out)
+* Stratum protocol (push-based TCP sockets) to help reduce server load
 
 ### Community / Support
 
