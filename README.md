@@ -10,6 +10,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * [Features](#features)
 * [Under Development](#under-development)
 * [Community Support](#community--support)
+* [Pools Using This Software](#pools-using-this-software)
 * [Usage](#usage)
   * [Requirements](#requirements)
   * [Downloading & Installing](#1-downloading--installing)
@@ -59,6 +60,15 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * IRC (freenode)
   * Support / general discussion join #monero: https://webchat.freenode.net/?channels=#monero
   * Development discussion join #monero-dev: https://webchat.freenode.net/?channels=#monero-dev
+
+
+#### Pools Using This Software
+
+* http://moneropool.org
+* http://moneropool.org
+* http://extremepool.org
+* http://mon.hashharder.com
+
 
 Usage
 ===
