@@ -82,6 +82,19 @@
             font-size: 0.9em;
         }
 
+        #blocksCountHolder > h4{
+            display: inline-block;
+            margin-right: 10px;
+        }
+        #blocksCountHolder > span{
+            border-radius: 5px;
+            padding: 5px 10px;
+            border: 1px solid #e5e5e5;
+            margin-right: 10px;
+        }
+        #blocksCountHolder > span > span{
+
+        }
         #page_getting_started > .stats:first-of-type{
             margin-bottom: 15px;
         }
@@ -302,6 +315,9 @@
             }
 
             $('#blocks_rows').empty().append(rows);
+            $('#blocksCountPending').text(Object.keys(blocksResults['pending']).length);
+            $('#blocksCountUnlocked').text(Object.keys(blocksResults['unlocked']).length);
+            $('#blocksCountOrphaned').text(Object.keys(blocksResults['orphaned']).length);
 
         }
 
@@ -429,6 +445,13 @@
     </div>
 
     <div class="page" id="page_pool_blocks">
+        <div id="blocksCountHolder">
+            <h4>Block Candidates</h4>
+            <span>Pending: <span id="blocksCountPending"></span></span>
+            <span class="bg-success">Unlocked: <span id="blocksCountUnlocked"></span></span>
+            <span class="bg-danger">Orphaned: <span id="blocksCountOrphaned"></span></span>
+        </div>
+        <hr>
         <div class="table-responsive">
             <table class="table table-hover">
                 <thead>
