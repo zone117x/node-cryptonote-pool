@@ -108,6 +108,9 @@ Explanation for each field:
     /* Used for storage in redis so multiple coins can share the same redis instance. */
     "coin": "monero",
 
+    /* Used for front-end display */
+    "symbol": "MRO",
+
     "coinUnits": 100000000,
     "transferFee": 1000000,
 

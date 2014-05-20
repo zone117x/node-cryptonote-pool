@@ -183,12 +183,17 @@
 
         var addressEventSource;
         $('#lookUp').click(function(){
+
+            var address = $('#yourStatsInput').val().trim();
+            if (!address){
+                $('#yourStatsInput').focus();
+                return;
+            }
+
             $('#addressError').hide();
             $('#yourHashrateHolder').hide();
             $('#yourAddressDisplay').hide();
             $(this).html('<i class="fa fa-refresh fa-spin"></i> Searching...');
-            var address = $('#yourStatsInput').val().trim();
-            if (!address) return;
             if (addressEventSource) addressEventSource.close();
             addressEventSource = new EventSource(api + '/stats_address?address=' + address);
             addressEventSource.addEventListener('message', function(e){
@@ -262,7 +267,7 @@
 
 
             $('#easyminer_link').attr('href', stats.config.easyminerDownload);
-            $('#simpleminer_code').text('simpleminer --pool-addr=' + stats.config.poolHost + ':' + stats.config.ports[0].port + ' --login=address --pass x');
+            $('#simpleminer_code').text('simpleminer --pool-addr=' + stats.config.poolHost + ':' + stats.config.ports[0].port + ' --login=address --pass=x');
 
             var kiwiIrc = 'https://kiwiirc.com/client/' + stats.config.irc;
             if ($('#kiwi_irc').attr('src') !== kiwiIrc){
