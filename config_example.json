@@ -39,6 +39,13 @@
             "retargetTime": 30,
             "variancePercent": 30,
             "maxJump": 1000
+        },
+        "shareTrust": {
+            "enabled": true,
+            "min": 10,
+            "stepDown": 3,
+            "threshold": 10,
+            "penalty": 30
         }
     },
 

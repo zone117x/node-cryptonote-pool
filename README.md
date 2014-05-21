@@ -34,6 +34,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * Detailed logging
 * Ability to configure multiple ports - each with their own difficulty
 * Variable difficulty / share limiter
+* Share trust algorithm to reduce share validation hashing CPU load
 * Clustering for vertical scaling
 * Modular components for horizontal scaling (pool server, database, stats/API, payment processing, front-end)
 * Live stats API (using CORS with AJAX and HTML5 EventSource)
@@ -156,6 +157,15 @@ Explanation for each field:
             "retargetTime": 30, //Check to see if we should retarget every this many seconds
             "variancePercent": 30, //Allow time to very this % from target without retargeting
             "maxJump": 1000 //Limit how much diff can increase/decrease in a single retargetting
+        },
+
+        /* Feature to trust share difficulties from miners which can significantly reduce CPU load */
+        "shareTrust": {
+            "enabled": true,
+            "min": 10, //Minimum percent probability for share hashing
+            "stepDown": 3, //Increase trust probability percent this much with each valid share
+            "threshold": 10, //Amount of valid shares required before trusting begins
+            "penalty": 30 //Upon breaking trust require this many valid share before re-trusting
         }
     },
 
