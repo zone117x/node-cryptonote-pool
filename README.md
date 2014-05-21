@@ -41,7 +41,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
   * Current block height
   * Network hashrate
   * Pool hashrate
-  * Each miners' hashrate
+  * Each miners' individual stats (hashrate, shares submitted, total paid, etc)
   * Blocks found (pending, confirmed, and orphaned)
 * An easily extendable, responsive, light-weight front-end using API to display data
 * Worker login validation (make sure miners are using proper wallet addresses for mining)
@@ -49,7 +49,6 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 #### Under Development
 
-* More stats for individual worker (total shares submitted, total paid out)
 * Stratum protocol (push-based TCP sockets) to help reduce server load
 
 ### Community / Support

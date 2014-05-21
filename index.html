@@ -67,7 +67,7 @@
         #yourAddressDisplay > span {
             font-family: monospace;
         }
-        #yourHashrateHolder, #yourAddressDisplay{
+        .yourStats{
             display: none;
         }
         #addressError{
@@ -82,19 +82,26 @@
             font-size: 0.9em;
         }
 
-        #blocksCountHolder > h4{
+        .blocksStatHolder > h4{
             display: inline-block;
             margin-right: 10px;
         }
-        #blocksCountHolder > span{
+        .blocksStatHolder > span{
             border-radius: 5px;
             padding: 5px 10px;
             border: 1px solid #e5e5e5;
             margin-right: 10px;
         }
-        #blocksCountHolder > span > span{
+        .blocksStatHolder > span > span{
 
         }
+
+
+        #blocks_rows > tr > td:nth-child(4){
+            font-family: monospace;
+            font-size: 0.75em;
+        }
+
         #page_getting_started > .stats:first-of-type{
             margin-bottom: 15px;
         }
@@ -173,7 +180,7 @@
 
         pageRouter();
 
-        $('#networkLastBlockFound,#poolLastBlockFound').timeago();
+        $('#networkLastBlockFound,#poolLastBlockFound,#yourLastShare').timeago();
 
         var $miningPorts = $('#miningPorts');
         var miningPortTemplate = $miningPorts.html();
@@ -191,8 +198,7 @@
             }
 
             $('#addressError').hide();
-            $('#yourHashrateHolder').hide();
-            $('#yourAddressDisplay').hide();
+            $('.yourStats').hide();
             $(this).html('<i class="fa fa-refresh fa-spin"></i> Searching...');
             if (addressEventSource) addressEventSource.close();
             addressEventSource = new EventSource(api + '/stats_address?address=' + address);
@@ -201,13 +207,17 @@
                 var data = JSON.parse(e.data);
                 if (data.stats){
                     $('#addressError').hide();
-                    $('#yourHashrateHolder').show().children("span").text(data.stats + '/sec');
-                    $('#yourAddressDisplay').show().children("span").text(address);
+                    $('#yourAddressDisplay').text(address);
+                    $('#yourLastShare').timeago('update', new Date(parseInt(data.stats.lastShare) * 1000).toISOString());
+                    $('#yourHashrateHolder').text((data.stats.hashrate || '0 H') + '/sec');
+                    $('#yourHashes').text(data.stats.hashes || '0');
+                    $('#yourPaid').text(data.stats.paid);
+
+                    $('.yourStats').show();
                     docCookies.setItem('mining_address', address, Infinity);
                     return;
                 }
-                $('#yourHashrateHolder').hide();
-                $('#yourAddressDisplay').hide();
+                $('.yourStats').hide();
                 $('#addressError').text(data.error).show();
             });
             addressEventSource.addEventListener('open', function(e){
@@ -276,13 +286,24 @@
 
             $('#emailLink').attr('href', 'mailto:' + stats.config.email).text(stats.config.email);
 
-            renderBlocks(stats.pool.blocks);
+            $('#blocksMaturityCount').text(stats.config.depth);
 
+            renderBlocks(stats.pool.blocks, stats.config.depth, stats.network.height);
+
+            $('#blocks_rows').find('tr[class=""]').each(function(){
+                var height = parseInt(this.children[0].innerText);
+                this.children[1].innerText = getMaturity(stats.config.depth, stats.network.height, height);
+            });
+
+        }
+
+        function getMaturity(depth, chainHeight, blockHeight){
+            return '' + depth - (chainHeight - blockHeight) + ' to go';
         }
 
         var lastBlocksJson = '';
 
-        function renderBlocks(blocksResults){
+        function renderBlocks(blocksResults, depth, chainHeight){
             var blocks = [];
             for (var status in blocksResults){
                 var blockArray = blocksResults[status];
@@ -316,7 +337,13 @@
 
             for (var i = 0; i < blocks.length; i++){
                 var block = blocks[i];
-                rows += ('<tr title="' + block[0] + '" class="' + blockStatusClasses[block[0]] + '"><td>' + block[1] + '</td><td>' + block[2] + '</td><td>' + block[3] + '</td><td>' + formatDate(block[4]) + '</td></tr>');
+                rows += ('<tr title="' + block[0] + '" class="' + blockStatusClasses[block[0]] + '">' +
+                        '<td>' + block[1] + '</td>' +
+                        '<td>' + (block[0] === 'pending' ? getMaturity(depth, chainHeight, blocks[1]) : '') + '</td>' +
+                        '<td>' + block[2] + '</td>' +
+                        '<td>' + block[3] + '</td>' +
+                        '<td>' + formatDate(block[4]) + '</td>' +
+                    '</tr>');
             }
 
             $('#blocks_rows').empty().append(rows);
@@ -443,18 +470,22 @@
             <input class="form-control" id="yourStatsInput" type="text">
             <button class="btn btn-default" id="lookUp"><i class="fa fa-search"></i> Lookup</button>
             <div id="addressError"></div>
-            <div id="yourAddressDisplay"><i class="fa fa-key"></i> Address: <span></span></div>
-            <div id="yourHashrateHolder"><i class="fa fa-tachometer"></i> Hash Rate: <span></span></div>
+            <div class="yourStats"><i class="fa fa-key"></i> Address: <span  id="yourAddressDisplay"></span></div>
+            <div class="yourStats"><i class="fa fa-clock-o"></i> Last Share Submitted: <span id="yourLastShare"></span></div>
+            <div class="yourStats"><i class="fa fa-tachometer"></i> Hash Rate: <span id="yourHashrateHolder"></span></div>
+            <div class="yourStats"><i class="fa fa-cloud-upload"></i> Total Hashes Submitted: <span id="yourHashes"></span></div>
+            <div class="yourStats"><i class="fa fa-money"></i> Total Paid: <span id="yourPaid"></span></div>
         </div>
 
     </div>
 
     <div class="page" id="page_pool_blocks">
-        <div id="blocksCountHolder">
+        <div class="blocksStatHolder">
             <h4>Block Candidates</h4>
-            <span>Pending: <span id="blocksCountPending"></span></span>
-            <span class="bg-success">Unlocked: <span id="blocksCountUnlocked"></span></span>
-            <span class="bg-danger">Orphaned: <span id="blocksCountOrphaned"></span></span>
+            <span><span id="blocksCountPending"></span> Pending Maturity</span>
+            <span class="bg-success"><span id="blocksCountUnlocked"></span> Unlocked</span>
+            <span class="bg-danger"><span id="blocksCountOrphaned"></span> Orphaned</span>
+            <span class="bg-info">Maturity requires <span id="blocksMaturityCount"></span> blocks</span>
         </div>
         <hr>
         <div class="table-responsive">
@@ -462,6 +493,7 @@
                 <thead>
                 <tr>
                     <th><i class="fa fa-bars"></i> Height</th>
+                    <th title="How many more blocks network must mine before this block is matured"><i class="fa fa-link"></i> Maturity</th>
                     <th><i class="fa fa-unlock-alt"></i> Difficulty</th>
                     <th><i class="fa fa-paw"></i> Block Hash</th>
                     <th><i class="fa fa-clock-o"></i> Time Found</th>
