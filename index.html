@@ -291,14 +291,16 @@
             renderBlocks(stats.pool.blocks, stats.config.depth, stats.network.height);
 
             $('#blocks_rows').find('tr[class=""]').each(function(){
-                var height = parseInt(this.children[0].innerText);
-                this.children[1].innerText = getMaturity(stats.config.depth, stats.network.height, height);
+                var height = parseInt(this.children[0].innerHTML);
+                this.children[1].innerHTML = getMaturity(stats.config.depth, stats.network.height, height);
             });
 
         }
 
         function getMaturity(depth, chainHeight, blockHeight){
-            return '' + depth - (chainHeight - blockHeight) + ' to go';
+            var toGo = depth - (chainHeight - blockHeight);
+            if (toGo < 1) return '';
+            return '' + toGo + ' to go';
         }
 
         var lastBlocksJson = '';
