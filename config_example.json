@@ -53,6 +53,8 @@
 
     "easyminerDownload": "https://github.com/zone117x/cryptonote-easy-miner/releases/",
 
+    "blockchainExplorer": "http://monerochain.info/block/",
+
     "clusterForks": "auto",
 
     "logLevel": "debug",
@@ -78,7 +80,8 @@
         "enabled": true,
         "interval": 30,
         "poolFee": 2,
-        "depth": 60
+        "depth": 60,
+        "maxAddresses": 50
     },
 
     "api": {

@@ -317,7 +317,7 @@
 
             $('#blocksMaturityCount').text(stats.config.depth);
 
-            renderBlocks(stats.pool.blocks, stats.config.depth, stats.network.height);
+            renderBlocks(stats.pool.blocks, stats.config.depth, stats.network.height, stats.config.blockchainExplorer);
 
             $('#blocks_rows').find('tr[class=""]').each(function(){
                 var height = parseInt(this.children[0].innerHTML);
@@ -334,7 +334,7 @@
 
         var lastBlocksJson = '';
 
-        function renderBlocks(blocksResults, depth, chainHeight){
+        function renderBlocks(blocksResults, depth, chainHeight, explorer){
             var blocks = [];
             for (var status in blocksResults){
                 var blockArray = blocksResults[status];
@@ -372,7 +372,7 @@
                         '<td>' + block[1] + '</td>' +
                         '<td>' + (block[0] === 'pending' ? getMaturity(depth, chainHeight, blocks[1]) : '') + '</td>' +
                         '<td>' + block[2] + '</td>' +
-                        '<td>' + block[3] + '</td>' +
+                        '<td><a target="_blank" href="' + explorer + block[3] + '">' + block[3] + '</a></td>' +
                         '<td>' + formatDate(block[4]) + '</td>' +
                     '</tr>');
             }
@@ -383,7 +383,6 @@
             $('#blocksCountOrphaned').text(Object.keys(blocksResults['orphaned']).length);
 
         }
-
 
     });
 

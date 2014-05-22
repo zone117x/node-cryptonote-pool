@@ -159,7 +159,7 @@ Explanation for each field:
             "maxJump": 1000 //Limit how much diff can increase/decrease in a single retargetting
         },
 
-        /* Feature to trust share difficulties from miners which can significantly reduce CPU load */
+        /* Feature to trust share difficulties from miners which can significantly reduce CPU load. */
         "shareTrust": {
             "enabled": true,
             "min": 10, //Minimum percent probability for share hashing
@@ -174,6 +174,10 @@ Explanation for each field:
 
     /* Download link to cryptonote-easy-miner for Windows users. */
     "easyminerDownload": "https://github.com/zone117x/cryptonote-easy-miner/raw/master/CryptoNoteMiner/bin/Release/cryptnote-easy-miner-latest.zip",
+
+    /* Used for front-end block links. For other coins it can be changed, for example with
+       Bytecoin you can use "https://minergate.com/blockchain/bcn/block/". */
+    "blockchainExplorer": "http://monerochain.info/block/",
 
     /* Set to "auto" by default which will spawn one process/fork/worker for each CPU
        core in your system. Each of these workers will run a separate instance of your pool(s),
@@ -214,7 +218,8 @@ Explanation for each field:
         "enabled": true,
         "interval": 30, //how often to run in seconds
         "poolFee": 2, //2% pool fee
-        "depth": 60 //block depth required to send payments (CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW)
+        "depth": 60, //block depth required to send payments (CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW)
+        "maxAddresses": 50 //split up payments if sending to more than this many addresses
     }
 
     /* AJAX/EventSource API used for front-end website. */
