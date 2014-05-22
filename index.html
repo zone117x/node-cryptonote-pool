@@ -66,6 +66,7 @@
         }
         #yourStatsInput{
             width: 820px;
+            max-width: 100%;
             display: inline-block;
             vertical-align: bottom;
             font-family: monospace;
@@ -75,6 +76,13 @@
         }
         .yourStats{
             display: none;
+        }
+        #yourAddressDisplay{
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: middle;
         }
         #addressError{
             color: red;
@@ -130,6 +138,11 @@
         }
         #miningPorts > .stats:last-child{
             margin-right: 0;
+        }
+
+        #simpleminer_code{
+            display: inline-block;
+            white-space: normal;
         }
 
         footer{
