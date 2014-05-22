@@ -34,10 +34,7 @@
             display: none;
         }
         .stats {
-            display: inline-block;
-            width: 40%;
             margin-bottom: 40px;
-            vertical-align: top;
         }
         .stats:last-child{
             width: auto;
@@ -54,6 +51,12 @@
         }
         .stats > div > span{
             font-weight: bold;
+        }
+        #crypto-widget-view{
+            width: 100%;
+            height: 146px;
+            border: none;
+            overflow-y: hidden;
         }
         #networkLastReward{
             text-transform: uppercase;
@@ -117,6 +120,8 @@
         #miningPorts > .stats{
             width: auto !important;
             margin-right: 70px;
+            margin-left: 15px;
+            display: inline-block;
         }
         #miningPorts > .stats:last-child{
             margin-right: 0;
@@ -234,7 +239,7 @@
             })
         });
 
-
+        var lastPortsJson = '';
 
         function renderStats(stats){
 
@@ -249,6 +254,10 @@
 
             $('#poolHashrate').text(stats.pool.hashrate + '/sec');
 
+            var cryptonatorUrl = 'https://www.cryptonator.com/widget/multi?border_corners=square&' + stats.config.cryptonatorWidget;
+            if ($('#crypto-widget-view').attr('src') !== cryptonatorUrl){
+                $('#crypto-widget-view').attr('src', cryptonatorUrl);
+            }
 
             if (stats.pool.lastBlockFound){
                 var d = new Date(parseInt(stats.pool.lastBlockFound)).toISOString();
@@ -264,16 +273,20 @@
 
             $('#miningPoolHost').text(stats.config.poolHost);
 
-            var $miningPortChildren = [];
-            for (var i = 0; i < stats.config.ports.length; i++){
-                var portData = stats.config.ports[i];
-                var $portChild = $(miningPortTemplate);
-                $portChild.find('.miningPort').text(portData.port);
-                $portChild.find('.miningPortDiff').text(portData.difficulty);
-                $portChild.find('.miningPortDesc').text(portData.desc);
-                $miningPortChildren.push($portChild);
+            var portsJson = JSON.stringify(stats.config.ports);
+            if (lastPortsJson !== portsJson) {
+                lastPortsJson = portsJson;
+                var $miningPortChildren = [];
+                for (var i = 0; i < stats.config.ports.length; i++) {
+                    var portData = stats.config.ports[i];
+                    var $portChild = $(miningPortTemplate);
+                    $portChild.find('.miningPort').text(portData.port);
+                    $portChild.find('.miningPortDiff').text(portData.difficulty);
+                    $portChild.find('.miningPortDesc').text(portData.desc);
+                    $miningPortChildren.push($portChild);
+                }
+                $miningPorts.empty().append($miningPortChildren);
             }
-            $miningPorts.empty().append($miningPortChildren);
 
 
             $('#easyminer_link').attr('href', stats.config.easyminerDownload);
@@ -448,22 +461,29 @@
 
     <div class="page" id="page_home">
 
-        <div class="stats">
-            <h3>Network</h3>
-            <div><i class="fa fa-tachometer"></i> Hash Rate: <span id="networkHashrate"></span></div>
-            <div><i class="fa fa-clock-o"></i> Block Found: <span id="networkLastBlockFound"></span></div>
-            <div><i class="fa fa-unlock-alt"></i> Difficulty: <span id="networkDifficulty"></span></div>
-            <div><i class="fa fa-bars"></i> Blockchain Height: <span id="blockchainHeight"></span></div>
-            <div><i class="fa fa-money"></i> Last Reward: <span id="networkLastReward"></span></div>
-        </div>
+        <div class="row">
+            <div class="col-md-4 stats">
+                <h3>Network</h3>
+                <div><i class="fa fa-tachometer"></i> Hash Rate: <span id="networkHashrate"></span></div>
+                <div><i class="fa fa-clock-o"></i> Block Found: <span id="networkLastBlockFound"></span></div>
+                <div><i class="fa fa-unlock-alt"></i> Difficulty: <span id="networkDifficulty"></span></div>
+                <div><i class="fa fa-bars"></i> Blockchain Height: <span id="blockchainHeight"></span></div>
+                <div><i class="fa fa-money"></i> Last Reward: <span id="networkLastReward"></span></div>
+            </div>
 
-        <div class="stats">
-            <h3>Pool</h3>
-            <div><i class="fa fa-tachometer"></i> Hash Rate: <span id="poolHashrate"></span></div>
-            <div><i class="fa fa-clock-o"></i> Block Found: <span id="poolLastBlockFound"></span></div>
-            <div><i class="fa fa-cloud-upload"></i> Round Hashes: <span id="poolRoundHashes"></span></div>
-            <div><i class="fa fa-users"></i> Connected Miners: <span id="poolMiners"></span></div>
-            <div><i class="fa fa-money"></i> Mining Fee: <span id="poolFee"></span></div>
+            <div class="col-md-4 stats">
+                <h3>Pool</h3>
+                <div><i class="fa fa-tachometer"></i> Hash Rate: <span id="poolHashrate"></span></div>
+                <div><i class="fa fa-clock-o"></i> Block Found: <span id="poolLastBlockFound"></span></div>
+                <div><i class="fa fa-cloud-upload"></i> Round Hashes: <span id="poolRoundHashes"></span></div>
+                <div><i class="fa fa-users"></i> Connected Miners: <span id="poolMiners"></span></div>
+                <div><i class="fa fa-money"></i> Mining Fee: <span id="poolFee"></span></div>
+            </div>
+
+            <div class="col-md-4 stats">
+                <h3>Market</h3>
+                <iframe id="crypto-widget-view" allowTransparency="true" scrolling="no" frameborder="0"></iframe>
+            </div>
         </div>
 
         <div class="stats">
@@ -519,7 +539,7 @@
         </div>
 
         <h4>Mining Ports</h4>
-        <div id="miningPorts">
+        <div id="miningPorts" class="row">
             <div class="stats">
                 <div><i class="fa fa-tachometer"></i> Port: <span class="miningPort"></span></div>
                 <div><i class="fa fa-unlock-alt"></i> Starting Difficulty: <span class="miningPortDiff"></span></div>
