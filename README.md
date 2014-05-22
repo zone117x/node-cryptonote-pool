@@ -30,7 +30,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 * IP banning to prevent low-diff share attacks
 * Socket flooding detection
-* Payment processing
+* Payment processing (with splintered transactions to deal with max transaction size)
 * Detailed logging
 * Ability to configure multiple ports - each with their own difficulty
 * Variable difficulty / share limiter
