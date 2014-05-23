@@ -8,7 +8,6 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 #### Table of Contents
 * [Features](#features)
-* [Under Development](#under-development)
 * [Community Support](#community--support)
 * [Pools Using This Software](#pools-using-this-software)
 * [Usage](#usage)
@@ -28,6 +27,9 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 #### Features
 
+* TCP (stratum-like) protocol for server-push based jobs
+  * Compared to old HTTP protocol, this has a higher hash rate, lower network/CPU server load, lower orphan
+    block percent, and less error prone
 * IP banning to prevent low-diff share attacks
 * Socket flooding detection
 * Payment processing (with splintered transactions to deal with max transaction size)
@@ -47,10 +49,6 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * An easily extendable, responsive, light-weight front-end using API to display data
 * Worker login validation (make sure miners are using proper wallet addresses for mining)
 
-
-#### Under Development
-
-* Stratum protocol (push-based TCP sockets) to help reduce server load
 
 ### Community / Support
 
@@ -111,39 +109,75 @@ Explanation for each field:
     /* Used for front-end display */
     "symbol": "MRO",
 
-    "coinUnits": 100000000,
-    "transferFee": 1000000,
+    /* Specifies the level of log output verbosity. Anything more severe than the level specified
+       will also be logged. */
+    "logLevel": "debug", //or "warn", "error"
+
+    /* By default the pool logs to console and gives pretty colors. If you direct that output to a
+       log file then disable this feature to avoid nasty characters in your log file. */
+    "logColors": true,
+
+    /* Minimum units in a single coin, for Bytecoin its 100000000. */
+    "coinUnits": 1000000000000,
 
     /* Host that simpleminer is pointed to.  */
     "poolHost": "example.com",
 
-    /* IRC Server and room used for embedded KiwiIRC chat on fron-end. */
+    /* IRC Server and room used for embedded KiwiIRC chat on front-end. */
     "irc": "irc.freenode.net/#monero",
 
     /* Contact email address. */
     "email": "support@cryppit.com",
 
-    /* Address where block rewards go, and miner payments come from. */
-    "poolAddress": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn"
+    /* Market display widget params from https://www.cryptonator.com/widget */
+    "cryptonatorWidget": "num=2&base_0=Monero%20(MRO)&target_0=Bitcoin%20(BTC)&base_1=Monero%20(MRO)&target_1=US%20Dollar%20(USD)",
+
+    /* Download link to cryptonote-easy-miner for Windows users. */
+    "easyminerDownload": "https://github.com/zone117x/cryptonote-easy-miner/raw/master/CryptoNoteMiner/bin/Release/cryptnote-easy-miner-latest.zip",
+
+    /* Used for front-end block links. For other coins it can be changed, for example with
+       Bytecoin you can use "https://minergate.com/blockchain/bcn/block/". */
+    "blockchainExplorer": "http://monerochain.info/block/",
 
     /* Modular Pool Server */
     "poolServer": {
         "enabled": true,
+
+        /* Set to "auto" by default which will spawn one process/fork/worker for each CPU
+           core in your system. Each of these workers will run a separate instance of your pool(s),
+           and the kernel will load balance miners using these forks. Optionally, the 'forks' field
+           can be a number for how many forks will be spawned. */
+        "clusterForks": "auto",
+
+        /* Address where block rewards go, and miner payments come from. */
+        "poolAddress": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn"
+
+        /* Poll RPC daemons for new blocks every this many milliseconds. */
+        "blockRefreshInterval": 1000,
+
+        /* How many seconds until we consider a miner disconnected. */
+        "minerTimeout": 900,
+
         "ports": [
             {
-                "port": 3333, //Port for mining apps to connect to
-                "difficulty": 50, //Initial difficulty miners are set to
-                "desc": "Low end CPUs" //Description of port
-            },
-            {
-                "port": 5555,
-                "difficulty": 200,
-                "desc": "Mid range CPUs"
+                "port": 5555, //Port for mining apps to connect to
+                "protocol": "tcp",
+                "difficulty": 200, //Initial difficulty miners are set to
+                "desc": "Mid range CPUs" //Description of port
             },
             {
                 "port": 7777,
+                "protocol": "tcp",
                 "difficulty": 2000,
                 "desc": "High end CPUs"
+            },
+            /* Old, inefficient protocol which has worse hashrate, higher network/CPU server load,
+               higher orphan block percent, more error prone, etc. */
+            {
+                "port": 1111,
+                "protocol": "http",
+                "difficulty": 500,
+                "desc": "Old protocol"
             }
         ],
 
@@ -166,56 +200,27 @@ Explanation for each field:
             "stepDown": 3, //Increase trust probability percent this much with each valid share
             "threshold": 10, //Amount of valid shares required before trusting begins
             "penalty": 30 //Upon breaking trust require this many valid share before re-trusting
+        },
+
+        /* Only used with old http protocol and only works with the simpleminer. */
+        "longPolling": {
+            "enabled": true,
+            "timeout": 8500
+        },
+
+        /* If under low-diff share attack we can ban their IP to reduce system/network load. */
+        "banning": {
+            "enabled": true,
+            "time": 600, //How many seconds to ban worker for
+            "invalidPercent": 25, //What percent of invalid shares triggers ban
+            "checkThreshold": 30 //Perform check when this many shares have been submitted
         }
-    },
-
-    /* Market display widget params from https://www.cryptonator.com/widget */
-    "cryptonatorWidget": "num=2&base_0=Monero%20(MRO)&target_0=Bitcoin%20(BTC)&base_1=Monero%20(MRO)&target_1=US%20Dollar%20(USD)",
-
-    /* Download link to cryptonote-easy-miner for Windows users. */
-    "easyminerDownload": "https://github.com/zone117x/cryptonote-easy-miner/raw/master/CryptoNoteMiner/bin/Release/cryptnote-easy-miner-latest.zip",
-
-    /* Used for front-end block links. For other coins it can be changed, for example with
-       Bytecoin you can use "https://minergate.com/blockchain/bcn/block/". */
-    "blockchainExplorer": "http://monerochain.info/block/",
-
-    /* Set to "auto" by default which will spawn one process/fork/worker for each CPU
-       core in your system. Each of these workers will run a separate instance of your pool(s),
-       and the kernel will load balance miners using these forks. Optionally, the 'forks' field
-       can be a number for how many forks will be spawned. */
-    "clusterForks": "auto",
-
-    /* Specifies the level of log output verbosity. Anything more severe than the level specified
-       will also be logged. */
-    "logLevel": "debug", //or "warn", "error"
-
-    /* By default the pool logs to console and gives pretty colors. If you direct that output to a
-       log file then disable this feature to avoid nasty characters in your log file. */
-    "logColors": true,
-
-    /* Poll RPC daemons for new blocks every this many milliseconds. */
-    "blockRefreshInterval": 1000,
-
-    /* How many seconds until we consider a miner disconnected. */
-    "minerTimeout": 900,
-
-    /* Only works with the new simpleminer with longpolling enabled. */
-    "longPolling": {
-        "enabled": true,
-        "timeout": 8500
-    },
-
-    /* If under low-diff share attack we can ban their IP to reduce system/network load. */
-    "banning": {
-        "enabled": true,
-        "time": 600, //How many seconds to ban worker for
-        "invalidPercent": 25, //What percent of invalid shares triggers ban
-        "checkThreshold": 30 //Perform check when this many shares have been submitted
     },
 
     /* Module that sends payments to miners according to their submitted shares. */
     "payments": {
         "enabled": true,
+        "transferFee": 1000000,
         "interval": 30, //how often to run in seconds
         "poolFee": 2, //2% pool fee
         "depth": 60, //block depth required to send payments (CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW)
