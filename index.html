@@ -60,6 +60,7 @@
             height: 146px;
             border: none;
             overflow-y: hidden;
+            margin-left: -10px;
         }
         #networkLastReward{
             text-transform: uppercase;
@@ -270,7 +271,7 @@
 
             $('#poolHashrate').text(stats.pool.hashrate + '/sec');
 
-            var cryptonatorUrl = 'https://www.cryptonator.com/widget/multi?border_corners=square&' + stats.config.cryptonatorWidget;
+            var cryptonatorUrl = 'https://www.cryptonator.com/widget/multi?border_corners=square&border_color=ffffff&' + stats.config.cryptonatorWidget;
             if ($('#crypto-widget-view').attr('src') !== cryptonatorUrl){
                 $('#crypto-widget-view').attr('src', cryptonatorUrl);
             }
