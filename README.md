@@ -133,7 +133,7 @@ Explanation for each field:
     "cryptonatorWidget": "num=2&base_0=Monero%20(MRO)&target_0=Bitcoin%20(BTC)&base_1=Monero%20(MRO)&target_1=US%20Dollar%20(USD)",
 
     /* Download link to cryptonote-easy-miner for Windows users. */
-    "easyminerDownload": "https://github.com/zone117x/cryptonote-easy-miner/raw/master/CryptoNoteMiner/bin/Release/cryptnote-easy-miner-latest.zip",
+    "easyminerDownload": "https://github.com/zone117x/cryptonote-easy-miner/releases/",
 
     /* Download link to simplewallet for your configured coin. */
     "simplewalletDownload": "http://bit.ly/monero-starter-pack",
