@@ -18,6 +18,8 @@
 
     "easyminerDownload": "https://github.com/zone117x/cryptonote-easy-miner/releases/",
 
+    "simplewalletDownload": "http://bit.ly/monero-starter-pack",
+
     "blockchainExplorer": "http://monerochain.info/block/",
 
     "poolServer": {

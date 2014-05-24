@@ -135,6 +135,9 @@ Explanation for each field:
     /* Download link to cryptonote-easy-miner for Windows users. */
     "easyminerDownload": "https://github.com/zone117x/cryptonote-easy-miner/raw/master/CryptoNoteMiner/bin/Release/cryptnote-easy-miner-latest.zip",
 
+    /* Download link to simplewallet for your configured coin. */
+    "simplewalletDownload": "http://bit.ly/monero-starter-pack",
+
     /* Used for front-end block links. For other coins it can be changed, for example with
        Bytecoin you can use "https://minergate.com/blockchain/bcn/block/". */
     "blockchainExplorer": "http://monerochain.info/block/",

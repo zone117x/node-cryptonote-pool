@@ -109,10 +109,6 @@
             margin: 5px;
 
         }
-        .blocksStatHolder > span > span{
-
-        }
-
 
         #blocks_rows > tr > td:nth-child(4){
             font-family: monospace;
@@ -141,7 +137,11 @@
             margin-right: 0;
         }
 
-        #simpleminer_code{
+        #getting_started_list > li{
+            margin-bottom: 20px;
+        }
+
+        #cpuminer_code{
             display: inline-block;
             white-space: normal;
         }
@@ -298,6 +298,7 @@
                     var portData = stats.config.ports[i];
                     var $portChild = $(miningPortTemplate);
                     $portChild.find('.miningPort').text(portData.port);
+                    $portChild.find('.miningPortProtocol').text(portData.protocol).addClass(portData.protocol === 'tcp' ? 'label label-success' : 'label label-warning');
                     $portChild.find('.miningPortDiff').text(portData.difficulty);
                     $portChild.find('.miningPortDesc').text(portData.desc);
                     $miningPortChildren.push($portChild);
@@ -307,7 +308,11 @@
 
 
             $('#easyminer_link').attr('href', stats.config.easyminerDownload);
-            $('#simpleminer_code').text('simpleminer --pool-addr=' + stats.config.poolHost + ':' + stats.config.ports[0].port + ' --login=address --pass=x');
+            $('#simplewallet_download').attr('href', stats.config.simplewalletDownload);
+            $('#cpuminer_code').text('minerd  -a cryptonight -o stratum+tcp://'
+                    + stats.config.poolHost + ':'
+                    + (stats.config.ports.filter(function(p){return p.protocol === 'tcp'})[0] || {}).port
+                    + ' -u address -p x');
 
             var kiwiIrc = 'https://kiwiirc.com/client/' + stats.config.irc;
             if ($('#kiwi_irc').attr('src') !== kiwiIrc){
@@ -558,6 +563,7 @@
         <div id="miningPorts" class="row">
             <div class="stats">
                 <div><i class="fa fa-tachometer"></i> Port: <span class="miningPort"></span></div>
+                <div><i class="fa fa-cog"></i> Protocol: <span class="miningPortProtocol"></span></div>
                 <div><i class="fa fa-unlock-alt"></i> Starting Difficulty: <span class="miningPortDiff"></span></div>
                 <div><i class="fa fa-question"></i> Description: <span class="miningPortDesc"></span></div>
             </div>
@@ -576,12 +582,13 @@
 
         <h4>Or download the the binaries for your system</h4>
         <br>
-        <ol>
-            <li><a target="_blank" class="btn btn-default btn-sm" href="http://bit.ly/monero-starter-pack"><i class="fa fa-download"></i> Download</a> simpleminer and simplewallet for your system<br><br></li>
-            <li>Run simplewallet to generate your public address<br><br></li>
-            <li>Choose a port and run simpleminer pointed to our pool with your address, for example:
+        <ol id="getting_started_list">
+            <li><a id="simplewallet_download" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-download"></i> Download</a> simplewallet for your system</li>
+            <li>Run simplewallet to generate your public address</li>
+            <li><a target="_blank" class="btn btn-default btn-sm" href="https://github.com/LucasJones/cpuminer-multi/releases/"><i class="fa fa-download"></i> Download</a> CPUMiner-multi</li>
+            <li>Choose a port and point your miner to our pool with your address, for example:
                 <br><br>
-                <code id="simpleminer_code"></code>
+                <code id="cpuminer_code"></code>
             </li>
         </ol>
     </div>
