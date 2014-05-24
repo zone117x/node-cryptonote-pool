@@ -85,14 +85,20 @@ function spawnPoolWorkers(){
 
     if (!config.poolServer || !config.poolServer.enabled || !config.poolServer.ports || config.poolServer.ports.length === 0) return;
 
+    if (config.poolServer.ports.filter(function(portData){return portData.protocol === 'tcp' || portData.protocol === 'http'}).length === 0){
+        logger.error(logSystem, logSubsystem, null, 'Pool server enabled but not tcp or http ports specified');
+        return;
+    }
+
+
     var numForks = (function(){
-        if (!config.clusterForks)
+        if (!config.poolServer.clusterForks)
             return 1;
-        if (config.clusterForks === 'auto')
+        if (config.poolServer.clusterForks === 'auto')
             return os.cpus().length;
-        if (isNaN(config.clusterForks))
+        if (isNaN(config.poolServer.clusterForks))
             return 1;
-        return config.clusterForks;
+        return config.poolServer.clusterForks;
     })();
 
     var poolWorkers = {};
