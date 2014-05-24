@@ -14,7 +14,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
   * [Requirements](#requirements)
   * [Downloading & Installing](#1-downloading--installing)
   * [Configuration](#2-configuration)
-  * [Configure Easyminer](#3-options-configure-cryptonote-easy-miner-for-your-pool)
+  * [Configure Easyminer](#3-optional-configure-cryptonote-easy-miner-for-your-pool)
   * [Starting the Pool](#4-start-the-pool)
   * [Upgrading](#upgrading)
 * [Setting up Testnet](#setting-up-testnet)
@@ -258,7 +258,7 @@ Explanation for each field:
 }
 ```
 
-#### 3) [Options] Configure cryptonote-easy-miner for your pool
+#### 3) [Optional] Configure cryptonote-easy-miner for your pool
 Your miners that are Windows users can use [cryptonote-easy-miner](https://github.com/zone117x/cryptonote-easy-miner)
 which will automatically generate their wallet address and stratup multiple threads of simpleminer. You can download
 it and edit the `config.ini` file to point to your own pool.
