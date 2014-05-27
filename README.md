@@ -223,7 +223,7 @@ Explanation for each field:
     /* Module that sends payments to miners according to their submitted shares. */
     "payments": {
         "enabled": true,
-        "transferFee": 1000000,
+        "transferFee": 5000000000,
         "interval": 30, //how often to run in seconds
         "poolFee": 2, //2% pool fee
         "depth": 60, //block depth required to send payments (CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW)

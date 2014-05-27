@@ -78,7 +78,7 @@
 
     "payments": {
         "enabled": true,
-        "transferFee": 1000000,
+        "transferFee": 5000000000,
         "interval": 30,
         "poolFee": 2,
         "depth": 60,
