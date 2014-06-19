@@ -299,6 +299,12 @@ point to your zip file.
 node init.js
 ```
 
+The file `config.json` is used by default but a file can be specified using the `-config=file` command argument, for example:
+
+```bash
+node init.js -config=config_backup.json
+```
+
 
 #### 5) Host the front-end
 

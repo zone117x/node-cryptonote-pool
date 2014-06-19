@@ -1,13 +1,26 @@
 var fs = require('fs');
 var cluster = require('cluster');
+var os = require('os');
 
 var redis = require('redis');
 
-////simplewallet --wallet-file=wallet.bin --pass=test --rpc-bind-port=8082
-
-
 //./simplewallet --wallet-file=wallet.bin --pass=test --rpc-bind-port=8342 --daemon-port=32837
 
+var configFile = 'config.json';
+
+process.argv.forEach(function (val, index, array) {
+    if (val.indexOf('-config=') === 0){
+        configFile = val.split('=')[1];
+    }
+});
+
+try {
+    global.config = JSON.parse(fs.readFileSync(configFile));
+}
+catch(e){
+    console.error('Failed to read config file ' + configFile + '\n\n' + e);
+    return;
+}
 
 if (cluster.isWorker){
     switch(process.env.workerType){
@@ -30,8 +43,6 @@ if (cluster.isWorker){
     return;
 }
 
-var config = JSON.parse(fs.readFileSync('config.json'));
-
 var logger = require('./lib/logUtil.js')({
     logLevel: config.logLevel,
     logColors: config.logColors
@@ -40,7 +51,7 @@ var logger = require('./lib/logUtil.js')({
 var logSystem = 'Master';
 var logSubsystem = null;
 
-var os = require('os');
+
 
 (function init(){
     checkRedisVersion(function(){
