@@ -1,7 +1,7 @@
 {
 
     "coin": "monero",
-    "symbol": "MRO",
+    "symbol": "XMR",
 
     "logLevel": "debug",
     "logColors": true,
@@ -78,11 +78,18 @@
 
     "payments": {
         "enabled": true,
+        "interval": 60,
+        "maxAddresses": 50,
         "transferFee": 5000000000,
+        "minPayment": 100000000000,
+        "denomination": 100000000000
+    },
+
+    "blockUnlocker": {
+        "enabled": true,
         "interval": 30,
-        "poolFee": 2,
         "depth": 60,
-        "maxAddresses": 50
+        "poolFee": 2
     },
 
     "api": {

@@ -14,6 +14,9 @@ if (cluster.isWorker){
         case 'pool':
             require('./lib/pool.js');
             break;
+        case 'blockUnlocker':
+            require('./lib/blockUnlocker.js');
+            break;
         case 'paymentProcessor':
             require('./lib/paymentProcessor.js');
             break;
@@ -42,6 +45,7 @@ var os = require('os');
 (function init(){
     checkRedisVersion(function(){
         spawnPoolWorkers();
+        spawnBlockUnlocker();
         spawnPaymentProcessor();
         spawnApi();
         spawnCli();
@@ -139,6 +143,22 @@ function spawnPoolWorkers(){
             logger.debug(logSystem, logSubsystem, 'Pool Spawner', 'Spawned pool on ' + numForks + ' thread(s)');
         }
     }, 10);
+}
+
+function spawnBlockUnlocker(){
+
+    if (!config.blockUnlocker || !config.blockUnlocker.enabled) return;
+
+    var worker = cluster.fork({
+        workerType: 'blockUnlocker'
+    });
+    worker.on('exit', function(code, signal){
+       logger.error(logSystem, logSubsystem, 'Block Unlocker', 'Block unlocker died, spawning replacement...');
+        setTimeout(function(){
+            spawnBlockUnlocker();
+        }, 2000);
+    });
+
 }
 
 function spawnPaymentProcessor(){

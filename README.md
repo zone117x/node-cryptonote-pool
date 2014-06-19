@@ -32,19 +32,22 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
     block percent, and less error prone
 * IP banning to prevent low-diff share attacks
 * Socket flooding detection
-* Payment processing (with splintered transactions to deal with max transaction size)
+* Payment processing
+  * Splintered transactions to deal with max transaction size
+  * Minimum payment threshold before balance will be paid out
+  * Minimum denomination for truncating payment amount precision to reduce size/complexity of block transactions
 * Detailed logging
 * Ability to configure multiple ports - each with their own difficulty
 * Variable difficulty / share limiter
 * Share trust algorithm to reduce share validation hashing CPU load
 * Clustering for vertical scaling
 * Modular components for horizontal scaling (pool server, database, stats/API, payment processing, front-end)
-* Live stats API (using CORS with AJAX and HTML5 EventSource)
+* Live stats API (using AJAX long polling with CORS)
   * Currency network/block difficulty
   * Current block height
   * Network hashrate
   * Pool hashrate
-  * Each miners' individual stats (hashrate, shares submitted, total paid, etc)
+  * Each miners' individual stats (hashrate, shares submitted, pending balance, total paid, etc)
   * Blocks found (pending, confirmed, and orphaned)
 * An easily extendable, responsive, light-weight front-end using API to display data
 * Worker login validation (make sure miners are using proper wallet addresses for mining)
@@ -62,10 +65,20 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 #### Pools Using This Software
 
-* http://moneropool.org
 * http://moneropool.com
+* http://monero.farm
+* http://extremehash.com
 * http://extremepool.org
-* http://mon.hashharder.com
+* http://hashinvest.net
+* http://moneropool.com.br
+* http://monerominers.net
+* http://monero.crypto-pool.fr
+* http://cryptonotepool.org.uk
+* http://minexmr.com
+* http://kippo.eu
+* http://pool.cryptoescrow.eu
+* http://coinmine.pl/xmr
+* http://moneropool.org
 
 
 Usage
@@ -223,12 +236,21 @@ Explanation for each field:
     /* Module that sends payments to miners according to their submitted shares. */
     "payments": {
         "enabled": true,
-        "transferFee": 5000000000,
         "interval": 30, //how often to run in seconds
-        "poolFee": 2, //2% pool fee
+        "maxAddresses": 50, //split up payments if sending to more than this many addresses
+        "transferFee": 5000000000, //(min units) fee to pay for each transaction
+        "minPayment": 100000000000, //(min units) miner balance required before sending payment
+        "denomination": 100000000000 //(min units) truncate to this precision and store remainder
+    },
+
+    /* Module that monitors the submitted block maturities and manages rounds. Confirmed blocks
+       mark the end of a round where workers' balances are increased in proportion to their shares. */
+    "blockUnlocker": {
+        "enabled": true,
+        "interval": 30, //how often to check block statuses in seconds
         "depth": 60, //block depth required to send payments (CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW)
-        "maxAddresses": 50 //split up payments if sending to more than this many addresses
-    }
+        "poolFee": 2 //2% pool fee
+    },
 
     /* AJAX/EventSource API used for front-end website. */
     "api": {
