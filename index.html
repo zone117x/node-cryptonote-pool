@@ -55,12 +55,9 @@
         .stats > div > span{
             font-weight: bold;
         }
-        #crypto-widget-view{
-            width: 100%;
-            height: 180px;
-            border: none;
-            overflow-y: hidden;
-            margin-left: -10px;
+        #marketCredit{
+            font-size: 10px;
+            opacity: 0.6;
         }
         #networkLastReward{
             text-transform: uppercase;
@@ -169,6 +166,7 @@
 
         $.get(api + '/stats', function(data){
             renderStats(data);
+            updateMarkets();
         });
 
 
@@ -197,7 +195,7 @@
 
         pageRouter();
 
-        $('#networkLastBlockFound,#poolLastBlockFound,#yourLastShare').timeago();
+        $('#networkLastBlockFound,#poolLastBlockFound,#yourLastShare,#marketLastUpdated').timeago();
 
         var $miningPorts = $('#miningPorts');
         var miningPortTemplate = $miningPorts.html();
@@ -281,6 +279,34 @@
         var lastPortsJson = '';
         var stats_update = $('#stats_updated')[0];
 
+
+        var cryptonatorMarkets;
+
+        function updateMarkets(){
+            var completedFetches = 0;
+            var marketsData = [];
+            for (var i = 0; i < cryptonatorMarkets.length; i++){
+                (function(i){
+                    $.get('https://www.cryptonator.com/api/ticker/' + cryptonatorMarkets[i], function(data){
+                        marketsData[i] = data;
+                        completedFetches++;
+                        if (completedFetches !== cryptonatorMarkets.length) return;
+
+                        var $marketHeader = $('#marketHeader');
+                        $('.marketTicker').remove();
+                        for (var f = marketsData.length - 1; f >= 0 ; f--){
+                            var price = parseFloat(marketsData[f].ticker.price);
+                            if (price > 1) price = Math.round(price * 100) / 100;
+                            $marketHeader.after('<div class="marketTicker">' + marketsData[f].ticker.base + ': <span>' + price + ' ' + marketsData[f].ticker.target + '</span></div>');
+                        }
+                        $('#marketLastUpdated').timeago('update', new Date(marketsData[0].timestamp * 1000).toISOString());
+                    }, 'json');
+                })(i);
+            }
+        }
+
+        setInterval(updateMarkets, 15000);
+
         function renderStats(stats){
 
             $('#coinName').text(stats.config.coin);
@@ -294,10 +320,9 @@
 
             $('#poolHashrate').text(stats.pool.hashrate + '/sec');
 
-            var cryptonatorUrl = 'https://www.cryptonator.com/widget/multi?border_corners=square&border_color=ffffff&' + stats.config.cryptonatorWidget;
-            if ($('#crypto-widget-view').attr('src') !== cryptonatorUrl){
-                $('#crypto-widget-view').attr('src', cryptonatorUrl);
-            }
+
+            cryptonatorMarkets = stats.config.cryptonatorWidget;
+
 
             if (stats.pool.lastBlockFound){
                 var d = new Date(parseInt(stats.pool.lastBlockFound)).toISOString();
@@ -540,8 +565,9 @@
             </div>
 
             <div class="col-md-4 stats">
-                <h3>Market</h3>
-                <iframe id="crypto-widget-view" allowTransparency="true" scrolling="no" frameborder="0"></iframe>
+                <h3 id="marketHeader">Market</h3>
+                <div>Updated: <span id="marketLastUpdated"></span></div>
+                <div id="marketCredit">Powered by <a href="https://www.cryptonator.com/">Cryptonator</a></div>
             </div>
         </div>
 

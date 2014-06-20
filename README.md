@@ -142,8 +142,8 @@ Explanation for each field:
     /* Contact email address. */
     "email": "support@cryppit.com",
 
-    /* Market display widget params from https://www.cryptonator.com/widget */
-    "cryptonatorWidget": "num=2&base_0=Monero%20(MRO)&target_0=Bitcoin%20(BTC)&base_1=Monero%20(MRO)&target_1=US%20Dollar%20(USD)",
+    /* Market stat display params from https://www.cryptonator.com/widget */
+    "cryptonatorWidget": ["XMR-BTC", "XMR-USD", "XMR-EUR"],
 
     /* Download link to cryptonote-easy-miner for Windows users. */
     "easyminerDownload": "https://github.com/zone117x/cryptonote-easy-miner/releases/",
