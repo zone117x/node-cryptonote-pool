@@ -55,7 +55,7 @@
         .stats > div > span{
             font-weight: bold;
         }
-        #marketCredit{
+        .marketFooter{
             font-size: 10px;
             opacity: 0.6;
         }
@@ -318,7 +318,7 @@
             $('#blockchainHeight').text(stats.network.height);
             $('#networkLastReward').text(stats.network.reward + ' ' + stats.config.symbol);
 
-            $('#poolHashrate').text(stats.pool.hashrate + '/sec');
+            $('#poolHashrate').text(getReadableHashRateString(stats.pool.hashrate) + '/sec');
 
 
             cryptonatorMarkets = stats.config.cryptonatorWidget;
@@ -377,6 +377,8 @@
                 var height = parseInt(this.children[0].innerHTML);
                 this.children[1].innerHTML = getMaturity(stats.config.depth, stats.network.height, height);
             });
+
+            $('#poolVersion').text(stats.config.version);
 
             stats_update.style.transition = 'opacity 100ms ease-out';
             stats_update.style.opacity = 1;
@@ -566,8 +568,8 @@
 
             <div class="col-md-4 stats">
                 <h3 id="marketHeader">Market</h3>
-                <div>Updated: <span id="marketLastUpdated"></span></div>
-                <div id="marketCredit">Powered by <a href="https://www.cryptonator.com/">Cryptonator</a></div>
+                <div class="marketFooter">Updated: <span id="marketLastUpdated"></span></div>
+                <div class="marketFooter">Powered by <a href="https://www.cryptonator.com/">Cryptonator</a></div>
             </div>
         </div>
 
@@ -669,8 +671,9 @@
 
 <footer>
     <div class="text-muted">
-        This site is powered by the open source <a target="_blank" href="//github.com/zone117x/node-cryptonote-pool"><i class="fa fa-github"></i> node-cryptonote-pool</a>
-        project created by Matthew Little and licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html">GPL</a>
+        This site is powered by <a target="_blank" href="//github.com/zone117x/node-cryptonote-pool"><i class="fa fa-github"></i> node-cryptonote-pool</a>
+        <span id="poolVersion"></span>
+        created by Matthew Little and open sourced under the <a href="http://www.gnu.org/licenses/gpl-2.0.html">GPL</a>
     </div>
 </footer>
 

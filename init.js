@@ -22,6 +22,8 @@ catch(e){
     return;
 }
 
+global.config.version = "v0.85";
+
 if (cluster.isWorker){
     switch(process.env.workerType){
         case 'pool':
@@ -68,7 +70,7 @@ function checkRedisVersion(callback){
     var redisClient = redis.createClient(config.redis.port, config.redis.host);
     redisClient.info(function(error, response){
         if (error){
-            logger.error(logSystem, logComponent, logSubCat, 'Redis version check failed');
+            logger.error(logSystem, logSubsystem, null, 'Redis version check failed');
             return;
         }
         var parts = response.split('\r\n');

@@ -88,6 +88,9 @@ Usage
 * Coin daemon(s) (find the coin's repo and build latest version from source)
 * [Node.js](http://nodejs.org/) v0.10+ ([follow these installation instructions](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager))
 * [Redis](http://redis.io/) key-value store v2.6+ ([follow these instructions](http://redis.io/topics/quickstart))
+* libssl required for the node-multi-hashing module
+  * For Ubuntu: `sudo apt-get install libssl-dev`
+
 
 ##### Seriously
 Those are legitimate requirements. If you use old versions of Node.js or Redis that may come with your system package manager then you will have problems. Follow the linked instructions to get the last stable versions.
@@ -99,6 +102,7 @@ you are using - a good place to start with redis is [data persistence](http://re
 
 
 #### 1) Downloading & Installing
+
 
 Clone the repository and run `npm update` for all the dependencies to be installed:
 
@@ -236,7 +240,7 @@ Explanation for each field:
     /* Module that sends payments to miners according to their submitted shares. */
     "payments": {
         "enabled": true,
-        "interval": 30, //how often to run in seconds
+        "interval": 600, //how often to run in seconds
         "maxAddresses": 50, //split up payments if sending to more than this many addresses
         "transferFee": 5000000000, //(min units) fee to pay for each transaction
         "minPayment": 100000000000, //(min units) miner balance required before sending payment
