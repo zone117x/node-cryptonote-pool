@@ -22,7 +22,7 @@ catch(e){
     return;
 }
 
-global.config.version = "v0.85";
+global.config.version = "v0.9";
 
 if (cluster.isWorker){
     switch(process.env.workerType){

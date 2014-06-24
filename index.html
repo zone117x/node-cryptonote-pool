@@ -62,6 +62,10 @@
         #networkLastReward{
             text-transform: uppercase;
         }
+        #lastHash{
+            font-family: monospace;
+            font-size: 0.8em;
+        }
         #yourStatsInput{
             width: 820px;
             max-width: 100%;
@@ -151,7 +155,7 @@
         }
 
         footer > div{
-            margin: 15px auto;
+            margin: 10px auto;
             text-align: center;
         }
 
@@ -320,6 +324,7 @@
             $('#networkDifficulty').text(stats.network.difficulty);
             $('#blockchainHeight').text(stats.network.height);
             $('#networkLastReward').text(stats.network.reward + ' ' + stats.config.symbol);
+            $('#lastHash').attr('href', stats.config.blockchainExplorer + stats.network.hash).text(stats.network.hash.substr(0, 13) + '...');
 
             $('#poolHashrate').text(getReadableHashRateString(stats.pool.hashrate) + '/sec');
 
@@ -337,7 +342,7 @@
             $('#poolRoundHashes').text(stats.pool.roundHashes);
             $('#poolMiners').text(stats.pool.miners);
             $('#poolFee').text(stats.config.fee + '%');
-
+            $('#blockSolvedTime').text(getReadableTime(stats.network.difficulty / stats.pool.hashrate));
 
             $('#miningPoolHost').text(stats.config.poolHost);
 
@@ -488,6 +493,33 @@
             }
         };
 
+        function getReadableTime(seconds){
+
+            var units = [
+                    [60, 'second'],
+                    [60, 'minute'],
+                    [24, 'hour'],
+                    [12, 'day'],
+                    [7, 'week'],
+                    [30, 'month'],
+                    [12, 'year']
+            ];
+
+            function formatAmounts(amount, unit){
+                var rounded = Math.round(amount);
+                return '' + rounded + ' ' + unit + (rounded > 1 ? 's' : '');
+            }
+
+            var amount = seconds;
+            for (var i = 0; i < units.length; i++){
+                if (amount < units[i][0])
+                    return formatAmounts(amount, units[i][1]);
+                amount = amount / units[i][0];
+            }
+            return formatAmounts(amount,  units[units.length - 1][1]);
+
+        }
+
         function getReadableHashRateString(hashrate){
             var i = 0;
             var byteUnits = [' H', ' KH', ' MH', ' GH', ' TH', ' PH' ];
@@ -558,6 +590,7 @@
                 <div><i class="fa fa-unlock-alt"></i> Difficulty: <span id="networkDifficulty"></span></div>
                 <div><i class="fa fa-bars"></i> Blockchain Height: <span id="blockchainHeight"></span></div>
                 <div><i class="fa fa-money"></i> Last Reward: <span id="networkLastReward"></span></div>
+                <div><i class="fa fa-paw"></i> Last Hash: <a id="lastHash" target="_blank"></a></div>
             </div>
 
             <div class="col-md-4 stats">
@@ -567,6 +600,7 @@
                 <div><i class="fa fa-cloud-upload"></i> Round Hashes: <span id="poolRoundHashes"></span></div>
                 <div><i class="fa fa-users"></i> Connected Miners: <span id="poolMiners"></span></div>
                 <div><i class="fa fa-money"></i> Mining Fee: <span id="poolFee"></span></div>
+                <div><i class="fa fa-history"></i> Block Found Every: <span id="blockSolvedTime"></span> (est.)</div>
             </div>
 
             <div class="col-md-4 stats">
