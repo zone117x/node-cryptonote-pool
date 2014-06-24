@@ -296,7 +296,10 @@
                         $('.marketTicker').remove();
                         for (var f = marketsData.length - 1; f >= 0 ; f--){
                             var price = parseFloat(marketsData[f].ticker.price);
+
                             if (price > 1) price = Math.round(price * 100) / 100;
+                            else price = marketsData[f].ticker.price;
+
                             $marketHeader.after('<div class="marketTicker">' + marketsData[f].ticker.base + ': <span>' + price + ' ' + marketsData[f].ticker.target + '</span></div>');
                         }
                         $('#marketLastUpdated').timeago('update', new Date(marketsData[0].timestamp * 1000).toISOString());
