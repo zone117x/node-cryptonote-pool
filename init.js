@@ -22,7 +22,7 @@ catch(e){
     return;
 }
 
-config.version = "v0.96";
+config.version = "v0.97";
 
 require('./lib/logger.js');
 
