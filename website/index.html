@@ -350,7 +350,7 @@
             $('#networkLastBlockFound').timeago('update', new Date(stats.network.timestamp * 1000).toISOString());
             $('#networkDifficulty').text(stats.network.difficulty);
             $('#blockchainHeight').text(stats.network.height);
-            $('#networkLastReward').text(stats.network.reward + ' ' + stats.config.symbol);
+            $('#networkLastReward').text((stats.network.reward / coinUnits).toFixed(4) + ' ' + stats.config.symbol);
             $('#lastHash').attr('href', blockchainExplorer + stats.network.hash).text(stats.network.hash.substr(0, 13) + '...');
 
             $('#poolHashrate').text(getReadableHashRateString(stats.pool.hashrate) + '/sec');
