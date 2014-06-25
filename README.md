@@ -1,7 +1,7 @@
 node-cryptonote-pool
 ====================
 
-High performance Node.js (with native C addons) mining pool for CryptoNote based coins such as Bytecoin, Monero, QuazarCoin, Fantomcoin, HoneyPenny, etc..
+High performance Node.js (with native C addons) mining pool for CryptoNote based coins such as Bytecoin, Monero, QuazarCoin, HoneyPenny, etc..
 Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 
@@ -16,6 +16,8 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
   * [Configuration](#2-configuration)
   * [Configure Easyminer](#3-optional-configure-cryptonote-easy-miner-for-your-pool)
   * [Starting the Pool](#4-start-the-pool)
+  * [Host the front-end](#5-host-the-front-end)
+  * [Customizing your website](#6-customize-your-website)
   * [Upgrading](#upgrading)
 * [Setting up Testnet](#setting-up-testnet)
 * [JSON-RPC Commands from CLI](#json-rpc-commands-from-cli)
@@ -126,38 +128,28 @@ Explanation for each field:
     /* Used for front-end display */
     "symbol": "MRO",
 
-    /* Specifies the level of log output verbosity. Anything more severe than the level specified
-       will also be logged. */
-    "logLevel": "debug", //or "warn", "error"
+    "logging": {
 
-    /* By default the pool logs to console and gives pretty colors. If you direct that output to a
-       log file then disable this feature to avoid nasty characters in your log file. */
-    "logColors": true,
+        "files": {
 
-    /* Minimum units in a single coin, for Bytecoin its 100000000. */
-    "coinUnits": 1000000000000,
+            /* Specifies the level of log output verbosity. This level and anything
+               more severe will be logged. */
+            "level": "info", or "warn", "error"
 
-    /* Host that simpleminer is pointed to.  */
-    "poolHost": "example.com",
+            /* Directory where to write log files. */
+            "directory": "logs",
 
-    /* IRC Server and room used for embedded KiwiIRC chat on front-end. */
-    "irc": "irc.freenode.net/#monero",
+            /* How often (in seconds) to append data to the log files. */
+            "flushInterval": 5
+        },
 
-    /* Contact email address. */
-    "email": "support@cryppit.com",
-
-    /* Market stat display params from https://www.cryptonator.com/widget */
-    "cryptonatorWidget": ["XMR-BTC", "XMR-USD", "XMR-EUR"],
-
-    /* Download link to cryptonote-easy-miner for Windows users. */
-    "easyminerDownload": "https://github.com/zone117x/cryptonote-easy-miner/releases/",
-
-    /* Download link to simplewallet for your configured coin. */
-    "simplewalletDownload": "http://bit.ly/monero-starter-pack",
-
-    /* Used for front-end block links. For other coins it can be changed, for example with
-       Bytecoin you can use "https://minergate.com/blockchain/bcn/block/". */
-    "blockchainExplorer": "http://monerochain.info/block/",
+        "console": {
+            "level": "info",
+            /* Gives console output useful colors. If you direct that output to a log file
+               then disable this feature to avoid nasty characters in the file. */
+            "colors": true
+        }
+    },
 
     /* Modular Pool Server */
     "poolServer": {
@@ -180,24 +172,19 @@ Explanation for each field:
 
         "ports": [
             {
-                "port": 5555, //Port for mining apps to connect to
-                "protocol": "tcp",
-                "difficulty": 200, //Initial difficulty miners are set to
-                "desc": "Mid range CPUs" //Description of port
+                "port": 3333, //Port for mining apps to connect to
+                "difficulty": 100, //Initial difficulty miners are set to
+                "desc": "Low end hardware" //Description of port
+            },
+            {
+                "port": 5555,
+                "difficulty": 2000,
+                "desc": "Mid range hardware"
             },
             {
                 "port": 7777,
-                "protocol": "tcp",
-                "difficulty": 2000,
-                "desc": "High end CPUs"
-            },
-            /* Old, inefficient protocol which has worse hashrate, higher network/CPU server load,
-               higher orphan block percent, more error prone, etc. */
-            {
-                "port": 1111,
-                "protocol": "http",
-                "difficulty": 500,
-                "desc": "Old protocol"
+                "difficulty": 10000,
+                "desc": "High end hardware"
             }
         ],
 
@@ -220,12 +207,6 @@ Explanation for each field:
             "stepDown": 3, //Increase trust probability percent this much with each valid share
             "threshold": 10, //Amount of valid shares required before trusting begins
             "penalty": 30 //Upon breaking trust require this many valid share before re-trusting
-        },
-
-        /* Only used with old http protocol and only works with the simpleminer. */
-        "longPolling": {
-            "enabled": true,
-            "timeout": 8500
         },
 
         /* If under low-diff share attack we can ban their IP to reduce system/network load. */
@@ -312,17 +293,53 @@ node init.js -config=config_backup.json
 
 #### 5) Host the front-end
 
-Edit `index.html` to use your pool API configuration
+Simply host the contents of the `website` directory on file server capable of serving simple static files.
+
+Edit the variables in `website/index.html` to use your pool's specific configuration. Variable explanations:
 
 ```html
-    <script>
+<script>
 
-        var api = 'http://poolhost:8117';
+    /* Must point to the API setup on your config.json file. */
+    var api = "http://poolhost:8117";
 
-    </script>
+    /* Minimum units in a single coin, for Bytecoin its 100000000. */
+    var coinUnits = 1000000000000;
+
+    /* Pool server host to instruct your miners to point to.  */
+    var poolHost = "cryppit.com";
+
+    /* IRC Server and room used for embedded KiwiIRC chat. */
+    var irc = "irc.freenode.net/#monero";
+
+    /* Contact email address. */
+    var email = "support@cryppit.com";
+
+    /* Market stat display params from https://www.cryptonator.com/widget */
+    var cryptonatorWidget = ["XMR-BTC", "XMR-USD", "XMR-EUR", "XMR-GBP"];
+
+    /* Download link to cryptonote-easy-miner for Windows users. */
+    var easyminerDownload = "https://github.com/zone117x/cryptonote-easy-miner/releases/";
+
+    /* Download link to simplewallet for your configured coin. */
+    var simplewalletDownload = "http://bit.ly/monero-starter-pack";
+
+    /* Used for front-end block links. For other coins it can be changed, for example with
+       Bytecoin you can use "https://minergate.com/blockchain/bcn/block/". */
+    var blockchainExplorer = "http://monerochain.info/block/";
+
+</script>
 ```
 
-Then simply serve the file via nginx, Apache, Google Drive, or anything that can host static content.
+#### 6) Customize your website
+
+The following files are included so that you can customize your pool website without having to make significant changes
+to `index.html` thus reducing the difficulty of merging updates to `index.html` with your own changes:
+* `additional.css` for creating your own pool style
+* `addtional.js` for changing the functionality of your pool website
+* `info.html` for display news/updates/information on your site
+
+Then simply serve the files via nginx, Apache, Google Drive, or anything that can host static content.
 
 
 #### Upgrading
@@ -370,14 +387,15 @@ curl -X POST http://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"test","m
 
 Donations
 ---------
+* BTC: `1667jMt7NTZDaC8WXAxtMYBR8DPWCVoU4d`
 * MRO: `48Y4SoUJM5L3YXBEfNQ8bFNsvTNsqcH5Rgq8RF7BwpgvTBj2xr7CmWVanaw7L4U9MnZ4AG7U6Pn1pBhfQhFyFZ1rL1efL8z`
-* BCN: `asdf`
 
 Credits
 ===
 
 * [LucasJones](//github.com/LucasJones) - Co-dev on this project; did tons of debugging for binary structures and fixing them. Pool couldn't have been made without him.
 * [surfer43](//github.com/iamasupernova) - Did lots of testing during development to help figure out bugs and get them fixed
+* [wallet42(http://moneropool.com) - Funded development of payment denominating and min threshold feature
 * [Wolf0](https://bitcointalk.org/index.php?action=profile;u=80740) - Helped try to deobfuscate some of the daemon code for getting a bug fixed
 * [Tacotime](https://bitcointalk.org/index.php?action=profile;u=19270) - helping with figuring out certain problems and lead the bounty for this project's creation
 

@@ -1,51 +1,40 @@
 {
-
     "coin": "monero",
     "symbol": "XMR",
 
-    "logLevel": "debug",
-    "logColors": true,
-
-    "coinUnits": 1000000000000,
-
-    "poolHost": "cryppit.com",
-
-    "irc": "irc.freenode.net/#monero",
-
-    "email": "support@cryppit.com",
-
-    "cryptonatorWidget": ["XMR-BTC", "XMR-USD", "XMR-EUR", "XMR-GBP"],
-
-    "easyminerDownload": "https://github.com/zone117x/cryptonote-easy-miner/releases/",
-
-    "simplewalletDownload": "http://bit.ly/monero-starter-pack",
-
-    "blockchainExplorer": "http://monerochain.info/block/",
+    "logging": {
+        "files": {
+            "level": "info",
+            "directory": "logs",
+            "flushInterval": 5
+        },
+        "console": {
+            "level": "info",
+            "colors": true
+        }
+    },
 
     "poolServer": {
         "enabled": true,
         "clusterForks": "auto",
-        "poolAddress": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn",
+        "poolAddress": "48Y4SoUJM5L3YXBEfNQ8bFNsvTNsqcH5Rgq8RF7BwpgvTBj2xr7CmWVanaw7L4U9MnZ4AG7U6Pn1pBhfQhFyFZ1rL1efL8z",
         "blockRefreshInterval": 1000,
         "minerTimeout": 900,
         "ports": [
             {
+                "port": 3333,
+                "difficulty": 100,
+                "desc": "Low end hardware"
+            },
+            {
                 "port": 5555,
-                "protocol": "tcp",
-                "difficulty": 200,
-                "desc": "Mid range CPUs"
+                "difficulty": 2000,
+                "desc": "Mid range hardware"
             },
             {
                 "port": 7777,
-                "protocol": "tcp",
-                "difficulty": 2000,
-                "desc": "High end CPUs"
-            },
-            {
-                "port": 1111,
-                "protocol": "http",
-                "difficulty": 500,
-                "desc": "Old protocol"
+                "difficulty": 10000,
+                "desc": "High end hardware"
             }
         ],
         "varDiff": {
@@ -63,11 +52,6 @@
             "threshold": 10,
             "penalty": 30
         },
-        "longPolling": {
-            "enabled": false,
-            "timeout": 8500
-        },
-
         "banning": {
             "enabled": true,
             "time": 600,

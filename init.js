@@ -4,15 +4,15 @@ var os = require('os');
 
 var redis = require('redis');
 
-//./simplewallet --wallet-file=wallet.bin --pass=test --rpc-bind-port=8342 --daemon-port=32837
 
-var configFile = 'config.json';
-
-process.argv.forEach(function (val, index, array) {
-    if (val.indexOf('-config=') === 0){
-        configFile = val.split('=')[1];
+var configFile = (function(){
+    for (var i = 0; i < process.argv.length; i++){
+        if (process.argv[i].indexOf('-config=') === 0)
+         return process.argv[i].split('=')[1];
     }
-});
+    return 'config.json';
+})();
+
 
 try {
     global.config = JSON.parse(fs.readFileSync(configFile));
@@ -22,7 +22,13 @@ catch(e){
     return;
 }
 
-global.config.version = "v0.9";
+config.version = "v0.95";
+
+require('./lib/logger.js');
+
+
+global.redisClient = redis.createClient(config.redis.port, config.redis.host);
+
 
 if (cluster.isWorker){
     switch(process.env.workerType){
@@ -45,14 +51,8 @@ if (cluster.isWorker){
     return;
 }
 
-var logger = require('./lib/logUtil.js')({
-    logLevel: config.logLevel,
-    logColors: config.logColors
-});
-
-var logSystem = 'Master';
-var logSubsystem = null;
-
+var logSystem = 'master';
+require('./lib/exceptionWriter.js')(logSystem);
 
 
 (function init(){
@@ -67,10 +67,10 @@ var logSubsystem = null;
 
 
 function checkRedisVersion(callback){
-    var redisClient = redis.createClient(config.redis.port, config.redis.host);
+
     redisClient.info(function(error, response){
         if (error){
-            logger.error(logSystem, logSubsystem, null, 'Redis version check failed');
+            log('error', logSystem, 'Redis version check failed');
             return;
         }
         var parts = response.split('\r\n');
@@ -87,11 +87,11 @@ function checkRedisVersion(callback){
             }
         }
         if (!version){
-            logger.error(logSystem, logSubsystem, null, 'Could not detect redis version - but be super old or broken');
+            log('error', logSystem, 'Could not detect redis version - but be super old or broken');
             return;
         }
         else if (version < 2.6){
-            logger.error(logSystem, logSubsystem, null, "You're using redis version " + versionString + " the minimum required version is 2.6. Follow the damn usage instructions...");
+            log('error', logSystem, "You're using redis version %s the minimum required version is 2.6. Follow the damn usage instructions...", [versionString]);
             return;
         }
         callback();
@@ -102,8 +102,8 @@ function spawnPoolWorkers(){
 
     if (!config.poolServer || !config.poolServer.enabled || !config.poolServer.ports || config.poolServer.ports.length === 0) return;
 
-    if (config.poolServer.ports.filter(function(portData){return portData.protocol === 'tcp' || portData.protocol === 'http'}).length === 0){
-        logger.error(logSystem, logSubsystem, null, 'Pool server enabled but not tcp or http ports specified');
+    if (config.poolServer.ports.length === 0){
+        log('error', logSystem, 'Pool server enabled but no ports specified');
         return;
     }
 
@@ -129,8 +129,7 @@ function spawnPoolWorkers(){
         worker.type = 'pool';
         poolWorkers[forkId] = worker;
         worker.on('exit', function(code, signal){
-            //severity, system, subsystem, component, text
-            logger.error(logSystem, logSubsystem, 'Pool Spawner', 'Fork ' + forkId + ' died, spawning replacement worker...');
+            log('error', logSystem, 'Pool fork %s died, spawning replacement worker...', [forkId]);
             setTimeout(function(){
                 createPoolWorker(forkId);
             }, 2000);
@@ -147,13 +146,13 @@ function spawnPoolWorkers(){
         });
     };
 
-    var i = 0;
+    var i = 1;
     var spawnInterval = setInterval(function(){
-        createPoolWorker(i);
+        createPoolWorker(i.toString());
         i++;
-        if (i === numForks){
+        if (i - 1 === numForks){
             clearInterval(spawnInterval);
-            logger.debug(logSystem, logSubsystem, 'Pool Spawner', 'Spawned pool on ' + numForks + ' thread(s)');
+            log('info', logSystem, 'Pool spawned on %d thread(s)', [numForks]);
         }
     }, 10);
 }
@@ -166,7 +165,7 @@ function spawnBlockUnlocker(){
         workerType: 'blockUnlocker'
     });
     worker.on('exit', function(code, signal){
-       logger.error(logSystem, logSubsystem, 'Block Unlocker', 'Block unlocker died, spawning replacement...');
+        log('error', logSystem, 'Block unlocker died, spawning replacement...');
         setTimeout(function(){
             spawnBlockUnlocker();
         }, 2000);
@@ -182,7 +181,7 @@ function spawnPaymentProcessor(){
         workerType: 'paymentProcessor'
     });
     worker.on('exit', function(code, signal){
-        logger.error(logSystem, logSubsystem, 'Payment Processor', 'Payment processor died, spawning replacement...');
+        log('error', logSystem, 'Payment processor died, spawning replacement...');
         setTimeout(function(){
             spawnPaymentProcessor();
         }, 2000);
@@ -196,7 +195,7 @@ function spawnApi(){
         workerType: 'api'
     });
     worker.on('exit', function(code, signal){
-        logger.error(logSystem, logSubsystem, 'API', 'API died, spawning replacement...');
+        log('error', logSystem, 'API died, spawning replacement...');
         setTimeout(function(){
             spawnApi();
         }, 2000);
