@@ -60,6 +60,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * [CryptoNote Forum](https://forum.cryptonote.org/)
 * [Bytecoin Github](https://github.com/amjuarez/bytecoin)
 * [Monero Github](https://github.com/monero-project/bitmonero)
+* [Monero Announcement Thread](https://bitcointalk.org/index.php?topic=583449.0)
 * IRC (freenode)
   * Support / general discussion join #monero: https://webchat.freenode.net/?channels=#monero
   * Development discussion join #monero-dev: https://webchat.freenode.net/?channels=#monero-dev
@@ -116,6 +117,13 @@ npm update
 
 #### 2) Configuration
 
+
+*Warning for Cyrptonote coins other than Monero:* this software may or may not work with any given cryptonote coin.
+Be wary of altcoins that change the number of minimum coin units because you will have to reconfigure several config
+values to account for those changes. Unless you're offering a bounty reward - do not open an issue asking for help
+getting a coin other than Monero working with this software.
+
+
 Copy the `config_example.json` file to `config.json` then overview each options and change any to match your preferred setup.
 
 
@@ -133,13 +141,13 @@ Explanation for each field:
         "files": {
 
             /* Specifies the level of log output verbosity. This level and anything
-               more severe will be logged. */
-            "level": "info", or "warn", "error"
+               more severe will be logged. Options are: info, warn, or error. */
+            "level": "info",
 
             /* Directory where to write log files. */
             "directory": "logs",
 
-            /* How often (in seconds) to append data to the log files. */
+            /* How often (in seconds) to append/flush data to the log files. */
             "flushInterval": 5
         },
 
@@ -237,7 +245,7 @@ Explanation for each field:
         "poolFee": 2 //2% pool fee
     },
 
-    /* AJAX/EventSource API used for front-end website. */
+    /* AJAX API used for front-end website. */
     "api": {
         "enabled": true,
         "hashrateWindow": 600, //how many second worth of shares used to estimate hash rate
@@ -300,7 +308,7 @@ Edit the variables in `website/index.html` to use your pool's specific configura
 ```html
 <script>
 
-    /* Must point to the API setup on your config.json file. */
+    /* Must point to the API setup in your config.json file. */
     var api = "http://poolhost:8117";
 
     /* Minimum units in a single coin, for Bytecoin its 100000000. */
@@ -374,7 +382,8 @@ Documentation for JSON-RPC commands can be found here:
 Curl can be used to use the JSON-RPC commands from command-line. Here is an example of calling `getblockheaderbyheight` for block 100:
 
 ```bash
-curl 127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"test","method":"getblockheaderbyheight","params":{"height":100}}'
+curl 127.0.0.1:18081/json_rpc -d '{"method":"getblockheaderbyheight","params":{"height":100}}'
+
 ```
 
 
@@ -395,7 +404,7 @@ Credits
 
 * [LucasJones](//github.com/LucasJones) - Co-dev on this project; did tons of debugging for binary structures and fixing them. Pool couldn't have been made without him.
 * [surfer43](//github.com/iamasupernova) - Did lots of testing during development to help figure out bugs and get them fixed
-* [wallet42(http://moneropool.com) - Funded development of payment denominating and min threshold feature
+* [wallet42](http://moneropool.com) - Funded development of payment denominating and min threshold feature
 * [Wolf0](https://bitcointalk.org/index.php?action=profile;u=80740) - Helped try to deobfuscate some of the daemon code for getting a bug fixed
 * [Tacotime](https://bitcointalk.org/index.php?action=profile;u=19270) - helping with figuring out certain problems and lead the bounty for this project's creation
 
