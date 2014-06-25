@@ -129,7 +129,6 @@ Copy the `config_example.json` file to `config.json` then overview each options 
 
 Explanation for each field:
 ```javascript
-
 /* Used for storage in redis so multiple coins can share the same redis instance. */
 "coin": "monero",
 
@@ -164,9 +163,9 @@ Explanation for each field:
     "enabled": true,
 
     /* Set to "auto" by default which will spawn one process/fork/worker for each CPU
-       core in your system. Each of these workers will run a separate instance of your pool(s),
-       and the kernel will load balance miners using these forks. Optionally, the 'forks' field
-       can be a number for how many forks will be spawned. */
+       core in your system. Each of these workers will run a separate instance of your
+       pool(s), and the kernel will load balance miners using these forks. Optionally,
+       the 'forks' field can be a number for how many forks will be spawned. */
     "clusterForks": "auto",
 
     /* Address where block rewards go, and miner payments come from. */
@@ -201,20 +200,21 @@ Explanation for each field:
        overhead. */
     "varDiff": {
         "minDiff": 2, //Minimum difficulty
-        "maxDiff": 10000,
+        "maxDiff": 100000,
         "targetTime": 100, //Try to get 1 share per this many seconds
         "retargetTime": 30, //Check to see if we should retarget every this many seconds
         "variancePercent": 30, //Allow time to very this % from target without retargeting
-        "maxJump": 1000 //Limit how much diff can increase/decrease in a single retargetting
+        "maxJump": 1000 //Limit diff increase/decrease in a single retargetting
     },
 
-    /* Feature to trust share difficulties from miners which can significantly reduce CPU load. */
+    /* Feature to trust share difficulties from miners which can
+       significantly reduce CPU load. */
     "shareTrust": {
         "enabled": true,
         "min": 10, //Minimum percent probability for share hashing
-        "stepDown": 3, //Increase trust probability percent this much with each valid share
+        "stepDown": 3, //Increase trust probability % this much with each valid share
         "threshold": 10, //Amount of valid shares required before trusting begins
-        "penalty": 30 //Upon breaking trust require this many valid share before re-trusting
+        "penalty": 30 //Upon breaking trust require this many valid share before trusting
     },
 
     /* If under low-diff share attack we can ban their IP to reduce system/network load. */
@@ -231,17 +231,21 @@ Explanation for each field:
     "enabled": true,
     "interval": 600, //how often to run in seconds
     "maxAddresses": 50, //split up payments if sending to more than this many addresses
-    "transferFee": 5000000000, //(min units) fee to pay for each transaction
-    "minPayment": 100000000000, //(min units) miner balance required before sending payment
-    "denomination": 100000000000 //(min units) truncate to this precision and store remainder
+    "transferFee": 5000000000, //fee to pay for each transaction
+    "minPayment": 100000000000, //miner balance required before sending payment
+    "denomination": 100000000000 //truncate to this precision and store remainder
 },
 
-/* Module that monitors the submitted block maturities and manages rounds. Confirmed blocks
-   mark the end of a round where workers' balances are increased in proportion to their shares. */
+/* Module that monitors the submitted block maturities and manages rounds. Confirmed
+   blocks mark the end of a round where workers' balances are increased in proportion
+   to their shares. */
 "blockUnlocker": {
     "enabled": true,
     "interval": 30, //how often to check block statuses in seconds
-    "depth": 60, //block depth required to send payments (CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW)
+
+    /* Block depth required for a block to unlocked/mature. Found in daemon source as
+       the variable CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW */
+    "depth": 60,
     "poolFee": 2 //2% pool fee
 },
 
@@ -270,7 +274,6 @@ Explanation for each field:
     "host": "127.0.0.1",
     "port": 6379
 }
-
 ```
 
 #### 3) [Optional] Configure cryptonote-easy-miner for your pool
@@ -383,7 +386,6 @@ Curl can be used to use the JSON-RPC commands from command-line. Here is an exam
 
 ```bash
 curl 127.0.0.1:18081/json_rpc -d '{"method":"getblockheaderbyheight","params":{"height":100}}'
-
 ```
 
 
