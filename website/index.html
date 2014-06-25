@@ -581,6 +581,12 @@
             $('#yourStatsInput').val(address);
             $('#lookUp').click();
         }
+
+        $('#yourStatsInput').keyup(function(e){
+            if(e.keyCode === 13)
+                $('#lookUp').click();
+        });
+
     });
 
 
