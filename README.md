@@ -246,7 +246,8 @@ Explanation for each field:
     /* Block depth required for a block to unlocked/mature. Found in daemon source as
        the variable CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW */
     "depth": 60,
-    "poolFee": 2 //2% pool fee
+    "poolFee": 2, //2% pool fee
+    "devDonation": 0.1 //0.1% donation to send to pool dev - only works with Monero
 },
 
 /* AJAX API used for front-end website. */

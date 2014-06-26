@@ -73,7 +73,8 @@
         "enabled": true,
         "interval": 30,
         "depth": 60,
-        "poolFee": 2
+        "poolFee": 2,
+        "devDonation": 0.1
     },
 
     "api": {
