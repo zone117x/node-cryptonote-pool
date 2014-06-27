@@ -68,6 +68,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 #### Pools Using This Software
 
+* http://xminingpool.com
 * http://moneropool.com
 * http://monero.farm
 * http://extremehash.com
