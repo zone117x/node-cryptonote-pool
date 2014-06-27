@@ -307,40 +307,40 @@ node init.js -config=config_backup.json
 
 Simply host the contents of the `website` directory on file server capable of serving simple static files.
 
-Edit the variables in `website/index.html` to use your pool's specific configuration. Variable explanations:
 
-```html
-<script>
+In the `website` directory copy `config_example.js` to `config.js` then edit the variables in
+the file to use your pool's specific configuration. Variable explanations:
 
-    /* Must point to the API setup in your config.json file. */
-    var api = "http://poolhost:8117";
+```javascript
 
-    /* Minimum units in a single coin, for Bytecoin its 100000000. */
-    var coinUnits = 1000000000000;
+/* Must point to the API setup in your config.json file. */
+var api = "http://poolhost:8117";
 
-    /* Pool server host to instruct your miners to point to.  */
-    var poolHost = "cryppit.com";
+/* Minimum units in a single coin, for Bytecoin its 100000000. */
+var coinUnits = 1000000000000;
 
-    /* IRC Server and room used for embedded KiwiIRC chat. */
-    var irc = "irc.freenode.net/#monero";
+/* Pool server host to instruct your miners to point to.  */
+var poolHost = "cryppit.com";
 
-    /* Contact email address. */
-    var email = "support@cryppit.com";
+/* IRC Server and room used for embedded KiwiIRC chat. */
+var irc = "irc.freenode.net/#monero";
 
-    /* Market stat display params from https://www.cryptonator.com/widget */
-    var cryptonatorWidget = ["XMR-BTC", "XMR-USD", "XMR-EUR", "XMR-GBP"];
+/* Contact email address. */
+var email = "support@cryppit.com";
 
-    /* Download link to cryptonote-easy-miner for Windows users. */
-    var easyminerDownload = "https://github.com/zone117x/cryptonote-easy-miner/releases/";
+/* Market stat display params from https://www.cryptonator.com/widget */
+var cryptonatorWidget = ["XMR-BTC", "XMR-USD", "XMR-EUR", "XMR-GBP"];
 
-    /* Download link to simplewallet for your configured coin. */
-    var simplewalletDownload = "http://bit.ly/monero-starter-pack";
+/* Download link to cryptonote-easy-miner for Windows users. */
+var easyminerDownload = "https://github.com/zone117x/cryptonote-easy-miner/releases/";
 
-    /* Used for front-end block links. For other coins it can be changed, for example with
-       Bytecoin you can use "https://minergate.com/blockchain/bcn/block/". */
-    var blockchainExplorer = "http://monerochain.info/block/";
+/* Download link to simplewallet for your configured coin. */
+var simplewalletDownload = "http://bit.ly/monero-starter-pack";
 
-</script>
+/* Used for front-end block links. For other coins it can be changed, for example with
+   Bytecoin you can use "https://minergate.com/blockchain/bcn/block/". */
+var blockchainExplorer = "http://monerochain.info/block/";
+
 ```
 
 #### 6) Customize your website
