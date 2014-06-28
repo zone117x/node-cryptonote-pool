@@ -43,7 +43,7 @@
             "targetTime": 100,
             "retargetTime": 30,
             "variancePercent": 30,
-            "maxJump": 1000
+            "maxJump": 100
         },
         "shareTrust": {
             "enabled": true,

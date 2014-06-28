@@ -206,7 +206,7 @@ Explanation for each field:
         "targetTime": 100, //Try to get 1 share per this many seconds
         "retargetTime": 30, //Check to see if we should retarget every this many seconds
         "variancePercent": 30, //Allow time to very this % from target without retargeting
-        "maxJump": 1000 //Limit diff increase/decrease in a single retargetting
+        "maxJump": 100 //Limit diff percent increase/decrease in a single retargetting
     },
 
     /* Feature to trust share difficulties from miners which can
