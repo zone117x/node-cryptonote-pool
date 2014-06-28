@@ -8,7 +8,7 @@ var redis = require('redis');
 var configFile = (function(){
     for (var i = 0; i < process.argv.length; i++){
         if (process.argv[i].indexOf('-config=') === 0)
-         return process.argv[i].split('=')[1];
+            return process.argv[i].split('=')[1];
     }
     return 'config.json';
 })();
@@ -22,7 +22,7 @@ catch(e){
     return;
 }
 
-config.version = "v0.98.5";
+config.version = "v0.98.6";
 
 require('./lib/logger.js');
 
@@ -55,13 +55,54 @@ var logSystem = 'master';
 require('./lib/exceptionWriter.js')(logSystem);
 
 
+var singleModule = (function(){
+
+    var validModules = ['pool', 'api', 'unlocker', 'payments'];
+
+    for (var i = 0; i < process.argv.length; i++){
+        if (process.argv[i].indexOf('-module=') === 0){
+            var moduleName = process.argv[i].split('=')[1];
+            if (validModules.indexOf(moduleName) > -1)
+                return moduleName;
+
+            log('error', logSystem, 'Invalid module "%s", valid modules: %s', [moduleName, validModules.join(', ')]);
+            process.exit();
+        }
+    }
+})();
+
+
 (function init(){
+
     checkRedisVersion(function(){
-        spawnPoolWorkers();
-        spawnBlockUnlocker();
-        spawnPaymentProcessor();
-        spawnApi();
+
+        if (singleModule){
+            log('info', logSystem, 'Running in single module mode: %s', [singleModule]);
+
+            switch(singleModule){
+                case 'pool':
+                    spawnPoolWorkers();
+                    break;
+                case 'unlocker':
+                    spawnBlockUnlocker();
+                    break;
+                case 'payments':
+                    spawnPaymentProcessor();
+                    break;
+                case 'api':
+                    spawnApi();
+                    break;
+            }
+        }
+        else{
+            spawnPoolWorkers();
+            spawnBlockUnlocker();
+            spawnPaymentProcessor();
+            spawnApi();
+        }
+
         spawnCli();
+
     });
 })();
 
@@ -87,7 +128,7 @@ function checkRedisVersion(callback){
             }
         }
         if (!version){
-            log('error', logSystem, 'Could not detect redis version - but be super old or broken');
+            log('error', logSystem, 'Could not detect redis version - must be super old or broken');
             return;
         }
         else if (version < 2.6){

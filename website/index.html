@@ -259,7 +259,10 @@
 
                         $('#addressError').hide();
                         $('#yourAddressDisplay').text(address);
-                        $('#yourLastShare').timeago('update', new Date(parseInt(data.stats.lastShare) * 1000).toISOString());
+                        if (data.stats.lastShare)
+                            $('#yourLastShare').timeago('update', new Date(parseInt(data.stats.lastShare) * 1000).toISOString());
+                        else
+                            $('#yourLastShare').text('Never');
                         $('#yourHashrateHolder').text((data.stats.hashrate || '0 H') + '/sec');
                         $('#yourHashes').text(data.stats.hashes || '0');
                         $('#yourPaid').text(getReadableCoins(data.stats.paid) + ' ' + data.stats.symbol);
