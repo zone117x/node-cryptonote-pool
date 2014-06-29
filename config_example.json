@@ -81,7 +81,8 @@
         "enabled": true,
         "hashrateWindow": 600,
         "updateInterval": 5,
-        "port": 8117
+        "port": 8117,
+        "password": "your_password"
     },
 
     "daemon": {
