@@ -80,7 +80,7 @@
     "api": {
         "enabled": true,
         "hashrateWindow": 600,
-        "updateInterval": 3,
+        "updateInterval": 5,
         "port": 8117
     },
 
