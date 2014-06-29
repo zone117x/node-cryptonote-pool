@@ -64,7 +64,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 * http://moneropool.org
 * http://moneropool.com
-* http://extremepool.org
+* http://www.extremepool.org
 * http://mon.hashharder.com
 
 
