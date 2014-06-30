@@ -68,12 +68,12 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 #### Pools Using This Software
 
+* http://pool.cryptoescrow.eu
+* http://extremepool.org
 * http://xminingpool.com
 * http://xmr.poolto.be
 * http://moneropool.com
-* http://monero.farm
 * http://extremehash.com
-* http://extremepool.org
 * http://hashinvest.net
 * http://moneropool.com.br
 * http://monerominers.net
@@ -81,7 +81,6 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * http://cryptonotepool.org.uk
 * http://minexmr.com
 * http://kippo.eu
-* http://pool.cryptoescrow.eu
 * http://coinmine.pl/xmr
 * http://moneropool.org
 
@@ -317,6 +316,9 @@ only start a specific module by using the `-module=name` command argument, for e
 ```bash
 node init.js -module=api
 ```
+
+[Example screenshot](http://i.imgur.com/SEgrI3b.png) of running the pool in single module mode with tmux.
+
 
 #### 5) Host the front-end
 
