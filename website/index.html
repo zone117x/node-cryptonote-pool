@@ -17,6 +17,8 @@
 
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
+    <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+
     <script src="config.js"></script>
     <script src="additional.js"></script>
     <link href="additional.css" rel="stylesheet">
@@ -110,15 +112,23 @@
         .blocksStatHolder > span{
             display: inline-block;
             border-radius: 5px;
-            padding: 5px 10px;
+            padding: 1px 9px;
             border: 1px solid #e5e5e5;
-            margin: 5px;
-
+            margin: 2px;
         }
 
-        #blocks_rows > tr > td:nth-child(4){
-            font-family: monospace;
-            font-size: 0.75em;
+
+        #blocks_rows > tr > td{
+            vertical-align: middle;
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.9em;
+        }
+
+        .luckGood{
+            color: darkgreen;
+        }
+        .luckBad{
+            color: darkred;
         }
 
         #page_getting_started > .stats:first-of-type{
@@ -425,6 +435,11 @@
         var lastBlocksJson = '';
 
         function renderBlocks(blocksResults, depth, chainHeight, explorer){
+
+            var blocksJson = JSON.stringify(blocksResults);
+            if (lastBlocksJson === blocksJson) return;
+            lastBlocksJson = blocksJson;
+
             var blocks = [];
             for (var status in blocksResults){
                 var blockArray = blocksResults[status];
@@ -439,9 +454,7 @@
                 return b[1] - a[1];
             });
 
-            var blocksJson = JSON.stringify(blocks);
-            if (lastBlocksJson === blocksJson) return;
-            lastBlocksJson = blocksJson;
+
 
             var blockStatusClasses = {
                 'pending': '',
@@ -454,20 +467,36 @@
                 return new Date(parseInt(time) * 1000).toLocaleString();
             };
 
+            var formatLuck = function(percent){
+                if (!percent) return '';
+                return '<span class="' + (percent < 100 ? 'luckBad' : 'luckGood') + '">' + percent + '%</span>';
+            };
+
             var rows = '';
+
+            var totalLuck = 0;
+            var totalLuckBlocks = 0;
 
             for (var i = 0; i < blocks.length; i++){
                 var block = blocks[i];
+                var blockLuck;
+                if (block[5]){
+                    blockLuck = Math.round(parseInt(block[2]) / parseInt(block[5]) * 100);
+                    totalLuck += blockLuck;
+                    totalLuckBlocks++;
+                }
                 rows += ('<tr title="' + block[0] + '" class="' + blockStatusClasses[block[0]] + '">' +
                         '<td>' + block[1] + '</td>' +
                         '<td>' + (block[0] === 'pending' ? getMaturity(depth, chainHeight, blocks[1]) : '') + '</td>' +
                         '<td>' + block[2] + '</td>' +
                         '<td><a target="_blank" href="' + explorer + block[3] + '">' + block[3] + '</a></td>' +
                         '<td>' + formatDate(block[4]) + '</td>' +
+                        '<td>' + formatLuck(blockLuck) + '</td>' +
                     '</tr>');
             }
 
             $('#blocks_rows').empty().append(rows);
+            $('#averageBlockLuck').html(formatLuck(Math.round(totalLuck / totalLuckBlocks)));
             $('#blocksCountPending').text(Object.keys(blocksResults['pending']).length);
             $('#blocksCountUnlocked').text(Object.keys(blocksResults['unlocked']).length);
             $('#blocksCountOrphaned').text(Object.keys(blocksResults['orphaned']).length);
@@ -666,6 +695,7 @@
             <span class="bg-success"><span id="blocksCountUnlocked"></span> Unlocked</span>
             <span class="bg-danger"><span id="blocksCountOrphaned"></span> Orphaned</span>
             <span class="bg-info">Maturity requires <span id="blocksMaturityCount"></span> blocks</span>
+            <span><span id="averageBlockLuck"></span> Luck Average</span>
         </div>
         <hr>
         <div class="table-responsive">
@@ -677,6 +707,7 @@
                     <th><i class="fa fa-unlock-alt"></i> Difficulty</th>
                     <th><i class="fa fa-paw"></i> Block Hash</th>
                     <th><i class="fa fa-clock-o"></i> Time Found</th>
+                    <th><i class="fa fa-star-half-o"></i> Luck</th>
                 </tr>
                 </thead>
                 <tbody id="blocks_rows">
