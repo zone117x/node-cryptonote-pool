@@ -479,7 +479,7 @@
 
             for (var i = 0; i < blocks.length; i++){
                 var block = blocks[i];
-                var blockLuck;
+                var blockLuck = null;
                 if (block[5]){
                     blockLuck = Math.round(parseInt(block[2]) / parseInt(block[5]) * 100);
                     totalLuck += blockLuck;
