@@ -22,12 +22,12 @@ catch(e){
     return;
 }
 
-config.version = "v0.99.0.6";
+config.version = "v0.99.0.7";
 
 require('./lib/logger.js');
 
 
-global.redisClient = redis.createClient(config.redis.port, config.redis.host);
+global.redisClient = redis.createClient(config.redis.port, config.redis.host, {auth_pass: config.redis.auth});
 
 
 if (cluster.isWorker){

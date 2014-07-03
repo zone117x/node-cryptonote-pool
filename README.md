@@ -234,7 +234,8 @@ Explanation for each field:
     "maxAddresses": 50, //split up payments if sending to more than this many addresses
     "transferFee": 5000000000, //fee to pay for each transaction
     "minPayment": 100000000000, //miner balance required before sending payment
-    "denomination": 100000000000 //truncate to this precision and store remainder
+    "denomination": 100000000000, //truncate to this precision and store remainder
+	"mixin": 3 //mixin which is used to send the payments
 },
 
 /* Module that monitors the submitted block maturities and manages rounds. Confirmed
@@ -274,7 +275,8 @@ Explanation for each field:
 /* Redis connection into. */
 "redis": {
     "host": "127.0.0.1",
-    "port": 6379
+    "port": 6379,
+	"auth": null //Password for redis. Recommended for inter-server redis usage. Don't forget to set one in the redis.conf
 }
 ```
 
