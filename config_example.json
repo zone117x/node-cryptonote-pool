@@ -18,6 +18,7 @@
         "enabled": true,
         "clusterForks": "auto",
         "poolAddress": "48Y4SoUJM5L3YXBEfNQ8bFNsvTNsqcH5Rgq8RF7BwpgvTBj2xr7CmWVanaw7L4U9MnZ4AG7U6Pn1pBhfQhFyFZ1rL1efL8z",
+        "addressBase58Prefix": 18,
         "blockRefreshInterval": 1000,
         "minerTimeout": 900,
         "ports": [
