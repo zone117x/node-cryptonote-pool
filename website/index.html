@@ -76,6 +76,7 @@
         #calcHashDropdown{
             border-radius: 0;
             border-left: 0;
+            border-right: 0;
         }
         #calcHashHolder{
             width: 590px;
@@ -83,6 +84,13 @@
         }
         #calcHashRate{
             z-index: inherit;
+        }
+        #calcHashResultsHolder{
+            min-width: 160px;
+            max-width: 160px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         #yourStatsInput{
             z-index: inherit;
@@ -414,6 +422,8 @@
             $('#blocksMaturityCount').text(stats.config.depth);
 
             $('#poolVersion').text(stats.config.version);
+
+            calcEstimateProfit();
 
             renderBlocks(stats.pool.blocks);
 
@@ -757,7 +767,8 @@
                             <li><a href="#" data-mul="2">MH/s</a></li>
                         </ul>
                     </div>
-                    <span class="input-group-addon"> = <span id="calcHashAmount"></span> <span id="calcHashSymbol"></span> / day</span>
+                    <span class="input-group-addon">=</span>
+                    <span class="input-group-addon" id="calcHashResultsHolder"><span id="calcHashAmount"></span> <span id="calcHashSymbol"></span> / day</span>
                 </div>
             </div>
         </div>
