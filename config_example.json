@@ -83,6 +83,7 @@
         "hashrateWindow": 600,
         "updateInterval": 5,
         "port": 8117,
+        "blocks": 30,
         "password": "your_password"
     },
 

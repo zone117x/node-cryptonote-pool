@@ -68,18 +68,15 @@
             margin-left: 5px;
         }
         #lastHash{
-            font-family: monospace;
+            font-family: 'Inconsolata', monospace;
             font-size: 0.8em;
         }
         #yourStatsInput{
-            width: 820px;
-            max-width: 100%;
-            display: inline-block;
-            vertical-align: bottom;
-            font-family: monospace;
+            z-index: inherit;
+            font-family: 'Inconsolata', monospace;
         }
         #yourAddressDisplay > span {
-            font-family: monospace;
+            font-family: 'Inconsolata', monospace;
         }
         .yourStats{
             display: none;
@@ -90,8 +87,8 @@
             overflow: hidden;
             text-overflow: ellipsis;
             vertical-align: middle;
-            font-family: monospace;
-            font-size: 0.8em;
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.9em;
         }
         #addressError{
             color: red;
@@ -121,7 +118,7 @@
         #blocks_rows > tr > td{
             vertical-align: middle;
             font-family: 'Inconsolata', monospace;
-            font-size: 0.9em;
+            font-size: 0.95em;
         }
 
         .luckGood{
@@ -183,17 +180,19 @@
     $(function(){
 
         $('#siteInfo').load('info.html');
-        /*$.get('info.html', function(html){
-            $('#siteInfo').html(html);
-        }, 'html');*/
+
+
+
+        $('#miningPoolHost').text(poolHost);
+        $('#kiwi_irc').attr('src', 'https://kiwiirc.com/client/' + irc);
+        $('#emailLink').attr('href', 'mailto:' + email).text(email);
+        $('#easyminer_link').attr('href', easyminerDownload);
+        $('#simplewallet_download').attr('href', simplewalletDownload);
+
 
         $.get(api + '/stats', function(data){
             renderStats(data);
-            updateMarkets();
         });
-
-
-
 
         function fetchLiveStats() {
             $.ajax({
@@ -216,9 +215,8 @@
             pageRouter();
         };
 
-
-
         pageRouter();
+
 
         $('#networkLastBlockFound,#poolLastBlockFound,#yourLastShare,#marketLastUpdated').timeago();
 
@@ -308,17 +306,16 @@
         var stats_update = $('#stats_updated')[0];
 
 
-        var cryptonatorMarkets;
 
         function updateMarkets(){
             var completedFetches = 0;
             var marketsData = [];
-            for (var i = 0; i < cryptonatorMarkets.length; i++){
+            for (var i = 0; i < cryptonatorWidget.length; i++){
                 (function(i){
-                    $.get('https://www.cryptonator.com/api/ticker/' + cryptonatorMarkets[i], function(data){
+                    $.get('https://www.cryptonator.com/api/ticker/' + cryptonatorWidget[i], function(data){
                         marketsData[i] = data;
                         completedFetches++;
-                        if (completedFetches !== cryptonatorMarkets.length) return;
+                        if (completedFetches !== cryptonatorWidget.length) return;
 
                         var $marketHeader = $('#marketHeader');
                         $('.marketTicker').remove();
@@ -335,12 +332,19 @@
                 })(i);
             }
         }
-
+        updateMarkets();
         setInterval(updateMarkets, 300000); //poll market data every 5 minutes
+
+
+        var lastStats;
 
         function renderStats(stats){
 
+            lastStats = stats;
+
             $('#coinName').text(stats.config.coin);
+
+            $('#blocksTotal').text(stats.pool.totalBlocks);
 
             $('#networkHashrate').text(getReadableHashRateString(stats.network.difficulty / 60) + '/sec');
 
@@ -351,9 +355,6 @@
             $('#lastHash').attr('href', blockchainExplorer + stats.network.hash).text(stats.network.hash.substr(0, 13) + '...');
 
             $('#poolHashrate').text(getReadableHashRateString(stats.pool.hashrate) + '/sec');
-
-
-            cryptonatorMarkets = cryptonatorWidget;
 
 
             if (stats.pool.lastBlockFound){
@@ -374,8 +375,6 @@
 
             $('#blockSolvedTime').text(getReadableTime(stats.network.difficulty / stats.pool.hashrate));
 
-            $('#miningPoolHost').text(poolHost);
-
             var portsJson = JSON.stringify(stats.config.ports);
             if (lastPortsJson !== portsJson) {
                 lastPortsJson = portsJson;
@@ -391,31 +390,17 @@
                 $miningPorts.empty().append($miningPortChildren);
             }
 
-
-            $('#easyminer_link').attr('href', easyminerDownload);
-            $('#simplewallet_download').attr('href', simplewalletDownload);
             $('#cpuminer_code').text('minerd  -a cryptonight -o stratum+tcp://'
                     + poolHost + ':'
                     + (stats.config.ports[0] || {}).port
                     + ' -u address -p x');
 
-            var kiwiIrc = 'https://kiwiirc.com/client/' + irc;
-            if ($('#kiwi_irc').attr('src') !== kiwiIrc){
-                $('#kiwi_irc').attr('src', kiwiIrc);
-            }
-
-            $('#emailLink').attr('href', 'mailto:' + email).text(email);
 
             $('#blocksMaturityCount').text(stats.config.depth);
 
-            renderBlocks(stats.pool.blocks, stats.config.depth, stats.network.height, blockchainExplorer);
-
-            $('#blocks_rows').find('tr[class=""]').each(function(){
-                var height = parseInt(this.children[0].innerHTML);
-                this.children[1].innerHTML = getMaturity(stats.config.depth, stats.network.height, height);
-            });
-
             $('#poolVersion').text(stats.config.version);
+
+            renderBlocks(stats.pool.blocks);
 
             stats_update.style.transition = 'opacity 100ms ease-out';
             stats_update.style.opacity = 1;
@@ -426,35 +411,63 @@
 
         }
 
-        function getMaturity(depth, chainHeight, blockHeight){
-            var toGo = depth - (chainHeight - blockHeight);
+        function getMaturity(blockHeight){
+            var toGo = lastStats.config.depth - (lastStats.network.height - blockHeight);
             if (toGo < 1) return '';
             return '' + toGo + ' to go';
         }
 
-        var lastBlocksJson = '';
 
-        function renderBlocks(blocksResults, depth, chainHeight, explorer){
+        var $blockRows = $('#blocks_rows');
 
-            var blocksJson = JSON.stringify(blocksResults);
-            if (lastBlocksJson === blocksJson) return;
-            lastBlocksJson = blocksJson;
 
-            var blocks = [];
-            for (var status in blocksResults){
-                var blockArray = blocksResults[status];
-                for (var i = 0; i < blockArray.length; i++){
-                    var blockData = blockArray[i].split(':');
-                    blockData[0] = parseInt(blockData[0]);
-                    blockData.unshift(status);
-                    blocks.push(blockData);
-                }
+        function deserializeBlock(height, serializedBlock){
+            var parts = serializedBlock.split(':');
+            var block = {
+                height: parseInt(height),
+                hash: parts[0],
+                time: parts[1],
+                difficulty: parseInt(parts[2]),
+                shares: parseInt(parts[3]),
+                orphaned: parts[4],
+                reward: parts[5]
+            };
+            block.maturity = getMaturity(block.height);
+
+            switch (block.orphaned){
+                case '0':
+                    block.status = 'unlocked';
+                    break;
+                case '1':
+                    block.status = 'orphaned';
+                    break;
+                default:
+                    block.status = 'pending';
+                    break;
             }
-            blocks.sort(function(a, b){
-                return b[1] - a[1];
-            });
 
+            return block;
+        }
 
+        function getBlockRowHtml(block, jsonString){
+
+            var formatDate = function(time){
+                if (!time) return '';
+                return new Date(parseInt(time) * 1000).toLocaleString();
+            };
+
+            var formatLuck = function(difficulty, shares){
+
+                if (difficulty > shares){
+                    var percent = 100 - Math.round(shares / difficulty * 100);
+                    return '<span class="luckGood">&nbsp;' + percent + '%</span>';
+                }
+                else{
+                    var percent = (100 - Math.round(difficulty / shares * 100)) * -1;
+                    return '<span class="luckBad">' + percent + '%</span>';
+                }
+
+            };
 
             var blockStatusClasses = {
                 'pending': '',
@@ -462,45 +475,52 @@
                 'orphaned': 'danger'
             };
 
-            var formatDate = function(time){
-                if (!time) return '';
-                return new Date(parseInt(time) * 1000).toLocaleString();
-            };
+            var row = '<tr data-height="' + block.height + '" id="blockRow' + block.height + '" title="' + block.status
+                    + '" class="' + blockStatusClasses[block.status] + '">' +
+                    '<td>' + block.height + '</td>' +
+                    '<td>' + block.maturity + '</td>' +
+                    '<td>' + block.difficulty + '</td>' +
+                    '<td><a target="_blank" href="' + blockchainExplorer + block.hash + '">' + block.hash + '</a></td>' +
+                    '<td>' + formatDate(block.time) + '</td>' +
+                    '<td>' + formatLuck(block.difficulty, block.shares) + '</td>' +
+                    '</tr>';
 
-            var formatLuck = function(percent){
-                if (!percent) return '';
-                return '<span class="' + (percent < 100 ? 'luckBad' : 'luckGood') + '">' + percent + '%</span>';
-            };
+            return row;
+        }
 
-            var rows = '';
+        function renderBlocks(blocksResults){
 
-            var totalLuck = 0;
-            var totalLuckBlocks = 0;
+            for (var i = 0; i < blocksResults.length; i += 2){
 
-            for (var i = 0; i < blocks.length; i++){
-                var block = blocks[i];
-                var blockLuck = null;
-                if (block[5]){
-                    blockLuck = Math.round(parseInt(block[2]) / parseInt(block[5]) * 100);
-                    totalLuck += blockLuck;
-                    totalLuckBlocks++;
+                var block = deserializeBlock(blocksResults[i + 1], blocksResults[i]);
+
+                var blockJson = JSON.stringify(block);
+
+                var existingRow = document.getElementById('blockRow' + block.height);
+
+                if (existingRow && existingRow.getAttribute('data-json') !== blockJson){
+                    $(existingRow).replaceWith(getBlockRowHtml(block, blockJson));
                 }
-                rows += ('<tr title="' + block[0] + '" class="' + blockStatusClasses[block[0]] + '">' +
-                        '<td>' + block[1] + '</td>' +
-                        '<td>' + (block[0] === 'pending' ? getMaturity(depth, chainHeight, blocks[1]) : '') + '</td>' +
-                        '<td>' + block[2] + '</td>' +
-                        '<td><a target="_blank" href="' + explorer + block[3] + '">' + block[3] + '</a></td>' +
-                        '<td>' + formatDate(block[4]) + '</td>' +
-                        '<td>' + formatLuck(blockLuck) + '</td>' +
-                    '</tr>');
+                else if (!existingRow){
+
+                    var blockHtml = $(getBlockRowHtml(block, blockJson));
+                    blockHtml[0].setAttribute('data-json', blockJson);
+
+                    var inserted = false;
+                    var rows = $blockRows.children().get();
+                    for (var f = 0; f < rows.length; f++) {
+                        var bHeight = parseInt(rows[f].getAttribute('data-height'));
+                        if (bHeight < block.height){
+                            inserted = true;
+                            $(rows[f]).before(blockHtml);
+                            break;
+                        }
+                    }
+                    if (!inserted)
+                        $blockRows.append(blockHtml);
+                }
+
             }
-
-            $('#blocks_rows').empty().append(rows);
-            $('#averageBlockLuck').html(formatLuck(Math.round(totalLuck / totalLuckBlocks)));
-            $('#blocksCountPending').text(Object.keys(blocksResults['pending']).length);
-            $('#blocksCountUnlocked').text(Object.keys(blocksResults['unlocked']).length);
-            $('#blocksCountOrphaned').text(Object.keys(blocksResults['orphaned']).length);
-
         }
 
         var docCookies = {
@@ -533,11 +553,6 @@
             },
             hasItem: function (sKey) {
                 return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
-            },
-            keys: /* optional method: you can safely remove it! */ function () {
-                var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
-                for (var nIdx = 0; nIdx < aKeys.length; nIdx++) { aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]); }
-                return aKeys;
             }
         };
 
@@ -607,9 +622,25 @@
                 $('#lookUp').click();
         });
 
+        var getBlocksAjax;
+
+        $('#loadMoreBlocks').click(function(){
+            if (getBlocksAjax)
+                getBlocksAjax.abort();
+            getBlocksAjax = $.ajax({
+                url: api + '/get_blocks',
+                data: {
+                    height: $blockRows.children().last().data('height')
+                },
+                dataType: 'json',
+                cache: 'false',
+                success: function(data){
+                    renderBlocks(data);
+                }
+            })
+        });
+
     });
-
-
 
 
 </script>
@@ -674,9 +705,13 @@
 
         <div class="stats">
             <h3>Your Stats</h3>
-            <label for="yourStatsInput"><i class="fa fa-key"></i> Address</label><br>
-            <input class="form-control" id="yourStatsInput" type="text">
-            <button class="btn btn-default" id="lookUp"><i class="fa fa-search"></i> Lookup</button>
+
+            <div class="input-group">
+                <label class="input-group-addon" for="yourStatsInput"><i class="fa fa-key"></i> Address</label>
+                <input class="form-control" id="yourStatsInput" type="text">
+                <span class="input-group-btn"><button class="btn btn-default"  type="button" id="lookUp"><i class="fa fa-search"></i> Lookup</button></span>
+            </div>
+
             <div id="addressError"></div>
             <div class="yourStats"><i class="fa fa-key"></i> Address: <span id="yourAddressDisplay"></span></div>
             <div class="yourStats"><i class="fa fa-bank"></i> Pending Balance: <span id="yourPendingBalance"></span></div>
@@ -690,12 +725,8 @@
 
     <div class="page" id="page_pool_blocks">
         <div class="blocksStatHolder">
-            <h4>Block Candidates</h4>
-            <span><span id="blocksCountPending"></span> Maturing</span>
-            <span class="bg-success"><span id="blocksCountUnlocked"></span> Unlocked</span>
-            <span class="bg-danger"><span id="blocksCountOrphaned"></span> Orphaned</span>
+            <span class="bg-primary"><span id="blocksTotal"></span> Total Blocks Mined</span>
             <span class="bg-info">Maturity requires <span id="blocksMaturityCount"></span> blocks</span>
-            <span><span id="averageBlockLuck"></span> Luck Average</span>
         </div>
         <hr>
         <div class="table-responsive">
@@ -714,6 +745,11 @@
 
                 </tbody>
             </table>
+
+            <p class="text-center">
+                <button type="button" class="btn btn-default" id="loadMoreBlocks">Load More</button>
+            </p>
+
         </div>
     </div>
 
