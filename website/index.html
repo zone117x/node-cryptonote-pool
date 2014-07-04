@@ -38,8 +38,8 @@
             display: none;
         }
         .stats {
-            margin-bottom: 40px;
-            margin-top: 40px;
+            margin-bottom: 10px;
+            margin-top: 5px;
         }
         .stats:last-child{
             width: auto;
@@ -73,6 +73,9 @@
             font-size: 0.8em;
         }
 
+        #miningProfitCalc{
+            margin: 35px 0;
+        }
         #calcHashDropdown{
             border-radius: 0;
             border-left: 0;
@@ -86,8 +89,8 @@
             z-index: inherit;
         }
         #calcHashResultsHolder{
-            min-width: 160px;
-            max-width: 160px;
+            min-width: 145px;
+            max-width: 145px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -639,7 +642,7 @@
                 var inp2 = parseFloat($('#calcHashRate').val()) * rateUnit;
                 var resl = 16 / ((lastStats.network.difficulty / inp2) / 86400);
                 if (!isNaN(resl)) {
-                    $("#calcHashAmount").text(Math.round(resl * 1000) / 1000);
+                    $("#calcHashAmount").text(Math.round(resl * 100) / 100);
                     return;
                 }
             }
@@ -751,11 +754,13 @@
             </div>
         </div>
 
-        <div>
+        <hr>
+
+        <div id="miningProfitCalc">
             <h3>Estimate Mining Profits</h3>
             <div id="calcHashHolder">
                 <div class="input-group">
-                    <span class="input-group-addon">Your Hash Rate</span>
+                    <span class="input-group-addon">Hash Rate</span>
                     <input type="number" class="form-control" id="calcHashRate">
                     <div class="input-group-btn">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="calcHashDropdown">
@@ -768,10 +773,12 @@
                         </ul>
                     </div>
                     <span class="input-group-addon">=</span>
-                    <span class="input-group-addon" id="calcHashResultsHolder"><span id="calcHashAmount"></span> <span id="calcHashSymbol"></span> / day</span>
+                    <span class="input-group-addon" id="calcHashResultsHolder"><span id="calcHashAmount"></span> <span id="calcHashSymbol"></span>/day</span>
                 </div>
             </div>
         </div>
+
+        <hr>
 
         <div class="stats">
             <h3>Your Stats</h3>
