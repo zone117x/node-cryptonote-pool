@@ -181,9 +181,17 @@
 
         $('#siteInfo').load('info.html');
 
+
+
+        $('#miningPoolHost').text(poolHost);
+        $('#kiwi_irc').attr('src', 'https://kiwiirc.com/client/' + irc);
+        $('#emailLink').attr('href', 'mailto:' + email).text(email);
+        $('#easyminer_link').attr('href', easyminerDownload);
+        $('#simplewallet_download').attr('href', simplewalletDownload);
+
+
         $.get(api + '/stats', function(data){
             renderStats(data);
-            updateMarkets();
         });
 
         function fetchLiveStats() {
@@ -207,9 +215,8 @@
             pageRouter();
         };
 
-
-
         pageRouter();
+
 
         $('#networkLastBlockFound,#poolLastBlockFound,#yourLastShare,#marketLastUpdated').timeago();
 
@@ -299,17 +306,16 @@
         var stats_update = $('#stats_updated')[0];
 
 
-        var cryptonatorMarkets;
 
         function updateMarkets(){
             var completedFetches = 0;
             var marketsData = [];
-            for (var i = 0; i < cryptonatorMarkets.length; i++){
+            for (var i = 0; i < cryptonatorWidget.length; i++){
                 (function(i){
-                    $.get('https://www.cryptonator.com/api/ticker/' + cryptonatorMarkets[i], function(data){
+                    $.get('https://www.cryptonator.com/api/ticker/' + cryptonatorWidget[i], function(data){
                         marketsData[i] = data;
                         completedFetches++;
-                        if (completedFetches !== cryptonatorMarkets.length) return;
+                        if (completedFetches !== cryptonatorWidget.length) return;
 
                         var $marketHeader = $('#marketHeader');
                         $('.marketTicker').remove();
@@ -326,8 +332,9 @@
                 })(i);
             }
         }
-
+        updateMarkets();
         setInterval(updateMarkets, 300000); //poll market data every 5 minutes
+
 
         var lastStats;
 
@@ -350,9 +357,6 @@
             $('#poolHashrate').text(getReadableHashRateString(stats.pool.hashrate) + '/sec');
 
 
-            cryptonatorMarkets = cryptonatorWidget;
-
-
             if (stats.pool.lastBlockFound){
                 var d = new Date(parseInt(stats.pool.lastBlockFound)).toISOString();
                 $('#poolLastBlockFound').timeago('update', d);
@@ -371,8 +375,6 @@
 
             $('#blockSolvedTime').text(getReadableTime(stats.network.difficulty / stats.pool.hashrate));
 
-            $('#miningPoolHost').text(poolHost);
-
             var portsJson = JSON.stringify(stats.config.ports);
             if (lastPortsJson !== portsJson) {
                 lastPortsJson = portsJson;
@@ -388,35 +390,17 @@
                 $miningPorts.empty().append($miningPortChildren);
             }
 
-
-            $('#easyminer_link').attr('href', easyminerDownload);
-            $('#simplewallet_download').attr('href', simplewalletDownload);
             $('#cpuminer_code').text('minerd  -a cryptonight -o stratum+tcp://'
                     + poolHost + ':'
                     + (stats.config.ports[0] || {}).port
                     + ' -u address -p x');
 
-            var kiwiIrc = 'https://kiwiirc.com/client/' + irc;
-            if ($('#kiwi_irc').attr('src') !== kiwiIrc){
-                $('#kiwi_irc').attr('src', kiwiIrc);
-            }
-
-            $('#emailLink').attr('href', 'mailto:' + email).text(email);
 
             $('#blocksMaturityCount').text(stats.config.depth);
 
-            var blocksJson = JSON.stringify(stats.pool.blocks);
-            if (lastBlocksJson !== blocksJson) {
-                lastBlocksJson = blocksJson;
-                renderBlocks(stats.pool.blocks);
-            }
-
-            $('#blocks_rows').find('tr[class=""]').each(function(){
-                var height = parseInt(this.children[0].innerHTML);
-                this.children[1].innerHTML = getMaturity(stats.config.depth, stats.network.height, height);
-            });
-
             $('#poolVersion').text(stats.config.version);
+
+            renderBlocks(stats.pool.blocks);
 
             stats_update.style.transition = 'opacity 100ms ease-out';
             stats_update.style.opacity = 1;
@@ -427,27 +411,45 @@
 
         }
 
-        function getMaturity(depth, chainHeight, blockHeight){
-            var toGo = depth - (chainHeight - blockHeight);
+        function getMaturity(blockHeight){
+            var toGo = lastStats.config.depth - (lastStats.network.height - blockHeight);
             if (toGo < 1) return '';
             return '' + toGo + ' to go';
         }
 
-        var lastBlocksJson = '';
 
         var $blockRows = $('#blocks_rows');
 
-        function renderBlocks(blocksResults){
 
-            var depth = lastStats.config.depth;
-            var chainHeight = lastStats.network.height;
-            var explorer = blockchainExplorer;
-
-            var blockStatusClasses = {
-                'pending': '',
-                'unlocked': 'success',
-                'orphaned': 'danger'
+        function deserializeBlock(height, serializedBlock){
+            var parts = serializedBlock.split(':');
+            var block = {
+                height: parseInt(height),
+                hash: parts[0],
+                time: parts[1],
+                difficulty: parseInt(parts[2]),
+                shares: parseInt(parts[3]),
+                orphaned: parts[4],
+                reward: parts[5]
             };
+            block.maturity = getMaturity(block.height);
+
+            switch (block.orphaned){
+                case '0':
+                    block.status = 'unlocked';
+                    break;
+                case '1':
+                    block.status = 'orphaned';
+                    break;
+                default:
+                    block.status = 'pending';
+                    break;
+            }
+
+            return block;
+        }
+
+        function getBlockRowHtml(block, jsonString){
 
             var formatDate = function(time){
                 if (!time) return '';
@@ -467,66 +469,58 @@
 
             };
 
-            var pendingRows = '';
+            var blockStatusClasses = {
+                'pending': '',
+                'unlocked': 'success',
+                'orphaned': 'danger'
+            };
 
-            for (var i = 0; i < blocksResults.length; i += 2){
-                var parts = blocksResults[i].split(':');
-                var block = {
-                    height: parseInt(blocksResults[i + 1]),
-                    hash: parts[0],
-                    time: parts[1],
-                    difficulty: parseInt(parts[2]),
-                    shares: parseInt(parts[3]),
-                    orphaned: parts[4],
-                    reward: parts[5]
-                };
-
-                switch (block.orphaned){
-                    case '0':
-                        block.status = 'unlocked';
-                        break;
-                    case '1':
-                        block.status = 'orphaned';
-                        break;
-                    default:
-                        block.status = 'pending';
-                        break;
-                }
-
-                var row = '<tr data-height="' + block.height + '" id="blockMatured' + block.height + '" title="' + block.status
-                        + '" class="' + blockStatusClasses[block.status] + '">' +
+            var row = '<tr data-height="' + block.height + '" id="blockRow' + block.height + '" title="' + block.status
+                    + '" class="' + blockStatusClasses[block.status] + '">' +
                     '<td>' + block.height + '</td>' +
-                    '<td>' + (block.status === 'pending' ? getMaturity(depth, chainHeight, block.height) : '') + '</td>' +
+                    '<td>' + block.maturity + '</td>' +
                     '<td>' + block.difficulty + '</td>' +
-                    '<td><a target="_blank" href="' + explorer + block.hash + '">' + block.hash + '</a></td>' +
+                    '<td><a target="_blank" href="' + blockchainExplorer + block.hash + '">' + block.hash + '</a></td>' +
                     '<td>' + formatDate(block.time) + '</td>' +
                     '<td>' + formatLuck(block.difficulty, block.shares) + '</td>' +
                     '</tr>';
 
-                if (block.status === 'pending'){
-                    pendingRows += row;
+            return row;
+        }
+
+        function renderBlocks(blocksResults){
+
+            for (var i = 0; i < blocksResults.length; i += 2){
+
+                var block = deserializeBlock(blocksResults[i + 1], blocksResults[i]);
+
+                var blockJson = JSON.stringify(block);
+
+                var existingRow = document.getElementById('blockRow' + block.height);
+
+                if (existingRow && existingRow.getAttribute('data-json') !== blockJson){
+                    $(existingRow).replaceWith(getBlockRowHtml(block, blockJson));
                 }
-                else if (!$blockRows.find('#blockMatured' + block.height).length){
+                else if (!existingRow){
+
+                    var blockHtml = $(getBlockRowHtml(block, blockJson));
+                    blockHtml[0].setAttribute('data-json', blockJson);
+
                     var inserted = false;
-                    $blockRows.children().each(function(){
-                        var bHeight = parseInt(this.getAttribute('data-height'));
+                    var rows = $blockRows.children().get();
+                    for (var f = 0; f < rows.length; f++) {
+                        var bHeight = parseInt(rows[f].getAttribute('data-height'));
                         if (bHeight < block.height){
-                            $(this).after(row);
                             inserted = true;
-                            return false;
+                            $(rows[f]).before(blockHtml);
+                            break;
                         }
-                    });
-                    if (!inserted){
-                        $blockRows.append(row);
                     }
+                    if (!inserted)
+                        $blockRows.append(blockHtml);
                 }
-            }
 
-            if (pendingRows) {
-                $blockRows.children('[title="pending"]').remove();
-                $blockRows.prepend(pendingRows);
             }
-
         }
 
         var docCookies = {
@@ -559,11 +553,6 @@
             },
             hasItem: function (sKey) {
                 return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
-            },
-            keys: /* optional method: you can safely remove it! */ function () {
-                var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
-                for (var nIdx = 0; nIdx < aKeys.length; nIdx++) { aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]); }
-                return aKeys;
             }
         };
 
