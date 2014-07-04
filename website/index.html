@@ -39,6 +39,7 @@
         }
         .stats {
             margin-bottom: 40px;
+            margin-top: 40px;
         }
         .stats:last-child{
             width: auto;
@@ -70,6 +71,18 @@
         #lastHash{
             font-family: 'Inconsolata', monospace;
             font-size: 0.8em;
+        }
+
+        #calcHashDropdown{
+            border-radius: 0;
+            border-left: 0;
+        }
+        #calcHashHolder{
+            width: 590px;
+            max-width: 100%;
+        }
+        #calcHashRate{
+            z-index: inherit;
         }
         #yourStatsInput{
             z-index: inherit;
@@ -375,6 +388,8 @@
 
             $('#blockSolvedTime').text(getReadableTime(stats.network.difficulty / stats.pool.hashrate));
 
+            $('#calcHashSymbol').text(stats.config.symbol);
+
             var portsJson = JSON.stringify(stats.config.ports);
             if (lastPortsJson !== portsJson) {
                 lastPortsJson = portsJson;
@@ -600,6 +615,29 @@
         }
 
 
+        $('#calcHashRate').keyup(calcEstimateProfit).change(calcEstimateProfit);
+
+        $('#calcHashUnits > li > a').click(function(e){
+            e.preventDefault();
+            $('#calcHashUnit').text($(this).text()).data('mul', $(this).data('mul'));
+            calcEstimateProfit();
+        });
+
+        function calcEstimateProfit(){
+            try {
+                var rateUnit = Math.pow(1024,parseInt($('#calcHashUnit').data('mul')));
+                var inp2 = parseFloat($('#calcHashRate').val()) * rateUnit;
+                var resl = 16 / ((lastStats.network.difficulty / inp2) / 86400);
+                if (!isNaN(resl)) {
+                    $("#calcHashAmount").text(Math.round(resl * 1000) / 1000);
+                    return;
+                }
+            }
+            catch(e){
+            }
+            $("#calcHashAmount").text('');
+        }
+
         function pageRouter(){
             $('.page').hide();
             $('.hot_link').parent().removeClass('active');
@@ -700,6 +738,27 @@
                 <h3 id="marketHeader">Market</h3>
                 <div class="marketFooter">Updated: <span id="marketLastUpdated"></span></div>
                 <div class="marketFooter">Powered by <a href="https://www.cryptonator.com/">Cryptonator</a></div>
+            </div>
+        </div>
+
+        <div>
+            <h3>Estimate Mining Profits</h3>
+            <div id="calcHashHolder">
+                <div class="input-group">
+                    <span class="input-group-addon">Your Hash Rate</span>
+                    <input type="number" class="form-control" id="calcHashRate">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="calcHashDropdown">
+                            <span id="calcHashUnit" data-mul="1">KH/s</span> <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" role="menu" id="calcHashUnits">
+                            <li><a href="#" data-mul="0">H/s</a></li>
+                            <li><a href="#" data-mul="1">KH/s</a></li>
+                            <li><a href="#" data-mul="2">MH/s</a></li>
+                        </ul>
+                    </div>
+                    <span class="input-group-addon"> = <span id="calcHashAmount"></span> <span id="calcHashSymbol"></span> / day</span>
+                </div>
             </div>
         </div>
 
