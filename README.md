@@ -256,7 +256,9 @@ Explanation for each field:
     "enabled": true,
     "hashrateWindow": 600, //how many second worth of shares used to estimate hash rate
     "updateInterval": 3, //gather stats and broadcast every this many seconds
-    "port": 8117
+    "port": 8117,
+    "blocks": 30, //amount of blocks to send at a time
+    "password": "test" //password required for admin stats
 },
 
 /* Coin daemon connection details. */
