@@ -67,7 +67,7 @@
         "transferFee": 5000000000,
         "minPayment": 100000000000,
         "denomination": 100000000000,
-		"mixin": 3
+        "mixin": 3
     },
 
     "blockUnlocker": {
@@ -100,6 +100,6 @@
     "redis": {
         "host": "127.0.0.1",
         "port": 6379,
-		"auth": null
+        "auth": null
     }
 }
