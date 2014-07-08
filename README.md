@@ -324,11 +324,11 @@ node init.js -module=api
 
 #### 5) Host the front-end
 
-Simply host the contents of the `website` directory on file server capable of serving simple static files.
+Simply host the contents of the `website_example` directory on file server capable of serving simple static files.
 
 
-In the `website` directory copy `config_example.js` to `config.js` then edit the variables in
-the file to use your pool's specific configuration. Variable explanations:
+Edit the variables in the `website_example/config.js` file to use your pool's specific configuration.
+Variable explanations:
 
 ```javascript
 
@@ -365,10 +365,10 @@ var blockchainExplorer = "http://monerochain.info/block/";
 #### 6) Customize your website
 
 The following files are included so that you can customize your pool website without having to make significant changes
-to `index.html` thus reducing the difficulty of merging updates to `index.html` with your own changes:
+to `index.html` or other front-end files thus reducing the difficulty of merging updates with your own changes:
 * `custom.css` for creating your own pool style
 * `custom.js` for changing the functionality of your pool website
-* `info.html` for display news/updates/information on your site
+
 
 Then simply serve the files via nginx, Apache, Google Drive, or anything that can host static content.
 

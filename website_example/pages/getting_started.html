@@ -86,9 +86,11 @@
                 $miningPorts.empty().append($miningPortChildren);
             }
 
-            $('#cpuminer_code').update('minerd  -a cryptonight -o stratum+tcp://' + poolHost + ':'
-                    + (lastStats.config.ports[0] || {}).port + ' -u address -p x');
-
+            updateText('cpuminer_code', 'minerd  -a cryptonight -o stratum+tcp://'
+                    + poolHost + ':'
+                    + lastStats.config.ports[0].port
+                    + ' -u address -p x'
+            );
 
         }
     };

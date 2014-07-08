@@ -58,9 +58,8 @@
             if (xhrGetBlocks) xhrGetBlocks.abort();
         },
         update: function(){
-            $('#blocksTotal').update(lastStats.pool.totalBlocks.toString());
-            $('#blocksMaturityCount').update(lastStats.config.depth.toString());
-
+            updateText('blocksTotal', lastStats.pool.totalBlocks.toString());
+            updateText('blocksMaturityCount', lastStats.config.depth.toString());
             renderBlocks(lastStats.pool.blocks);
         }
     };

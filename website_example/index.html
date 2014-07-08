@@ -126,82 +126,89 @@
         return this;
     };
 
+    function updateText(elementId, text){
+        var el = document.getElementById(elementId);
+        if (el.textContent !== text){
+            el.textContent = text;
+        }
+        return el;
+    }
+
 
     var currentPage;
     var lastStats;
 
 
+    function pulseLiveUpdate(){
+        var stats_update = document.getElementById('stats_updated');
+        stats_update.style.transition = 'opacity 100ms ease-out';
+        stats_update.style.opacity = 1;
+        setTimeout(function(){
+            stats_update.style.transition = 'opacity 7000ms linear';
+            stats_update.style.opacity = 0;
+        }, 500);
+    }
+
+    window.onhashchange = function(){
+        routePage();
+    };
+
+
+    function fetchLiveStats() {
+        $.ajax({
+            url: api + '/live_stats',
+            dataType: 'json',
+            cache: 'false'
+        }).done(function(data){
+            pulseLiveUpdate();
+            lastStats = data;
+            updateIndex();
+            currentPage.update();
+        }).always(function () {
+            fetchLiveStats();
+        });
+    }
+
+
+    var xhrPageLoading;
+    function routePage(loadedCallback) {
+
+        if (currentPage) currentPage.destroy();
+        $('#page').html('');
+        $('#loading').show();
+
+        if (xhrPageLoading)
+            xhrPageLoading.abort();
+
+        $('.hot_link').parent().removeClass('active');
+        var $link = $('a.hot_link[href="' + (window.location.hash || '#') + '"]');
+
+        $link.parent().addClass('active');
+        var page = $link.data('page');
+
+        xhrPageLoading = $.ajax({
+            url: 'pages/' + page,
+            cache: false,
+            success: function (data) {
+                $('#loading').hide();
+                $('#page').show().html(data);
+                currentPage.update();
+                if (loadedCallback) loadedCallback();
+            }
+        });
+    }
+
+    function updateIndex(){
+        updateText('coinName', lastStats.config.coin);
+        updateText('poolVersion', lastStats.config.version);
+    }
+
     $(function(){
-
-
         $.get(api + '/stats', function(data){
             lastStats = data;
             updateIndex();
-            fetchLiveStats();
-            routePage();
+            routePage(fetchLiveStats);
         });
-
-        window.onhashchange = function(){
-            routePage();
-        };
-
-        var stats_update = document.getElementById('stats_updated');
-        function fetchLiveStats() {
-            $.ajax({
-                url: api + '/live_stats',
-                dataType: 'json',
-                cache: 'false'
-            }).done(function(data){
-
-                stats_update.style.transition = 'opacity 100ms ease-out';
-                stats_update.style.opacity = 1;
-                setTimeout(function(){
-                    stats_update.style.transition = 'opacity 7000ms linear';
-                    stats_update.style.opacity = 0;
-                }, 500);
-
-                lastStats = data;
-                updateIndex();
-                currentPage.update();
-            }).always(function () {
-                fetchLiveStats();
-            });
-        }
-
-
-        var xhrPageLoading;
-        function routePage(loadedCallback) {
-
-            if (currentPage) currentPage.destroy();
-            $('#page').html('');
-            $('#loading').show();
-
-            if (xhrPageLoading)
-                xhrPageLoading.abort();
-
-            $('.hot_link').parent().removeClass('active');
-            var $link = $('a.hot_link[href="' + (window.location.hash || '#') + '"]');
-
-            $link.parent().addClass('active');
-            var page = $link.data('page');
-
-            xhrPageLoading = $.ajax({
-                url: 'pages/' + page,
-                cache: false,
-                success: function (data) {
-                    $('#loading').hide();
-                    $('#page').show().html(data);
-                    currentPage.update();
-                    if (loadedCallback) loadedCallback();
-                }
-            });
-        }
-
-        function updateIndex(){
-            $('#coinName').update(lastStats.config.coin);
-            $('#poolVersion').update(lastStats.config.version);
-        }
-
     });
 
 
