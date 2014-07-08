@@ -366,8 +366,8 @@ var blockchainExplorer = "http://monerochain.info/block/";
 
 The following files are included so that you can customize your pool website without having to make significant changes
 to `index.html` thus reducing the difficulty of merging updates to `index.html` with your own changes:
-* `additional.css` for creating your own pool style
-* `addtional.js` for changing the functionality of your pool website
+* `custom.css` for creating your own pool style
+* `custom.js` for changing the functionality of your pool website
 * `info.html` for display news/updates/information on your site
 
 Then simply serve the files via nginx, Apache, Google Drive, or anything that can host static content.

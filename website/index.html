@@ -20,8 +20,8 @@
     <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
 
     <script src="config.js"></script>
-    <script src="additional.js"></script>
-    <link href="additional.css" rel="stylesheet">
+    <script src="custom.js"></script>
+    <link href="custom.css" rel="stylesheet">
 
     <style>
         #coinName{
@@ -30,12 +30,13 @@
         body {
             padding-top: 90px;
             padding-bottom: 70px;
+            overflow-y: scroll;
         }
         .container{
             font-size: 1.2em;
         }
-        .page{
-            display: none;
+        #loading{
+            font-size: 2em;
         }
         .stats {
             margin-bottom: 10px;
@@ -57,66 +58,6 @@
         .stats > div > span:first-of-type{
             font-weight: bold;
         }
-        .marketFooter{
-            font-size: 10px;
-            opacity: 0.6;
-        }
-        #networkLastReward{
-            text-transform: uppercase;
-        }
-        #donationPercent{
-            font-size: 0.8em;
-            margin-left: 5px;
-        }
-        #lastHash{
-            font-family: 'Inconsolata', monospace;
-            font-size: 0.8em;
-        }
-
-        #miningProfitCalc{
-            margin: 35px 0;
-        }
-        #calcHashDropdown{
-            border-radius: 0;
-            border-left: 0;
-            border-right: 0;
-        }
-        #calcHashHolder{
-            width: 590px;
-            max-width: 100%;
-        }
-        #calcHashRate{
-            z-index: inherit;
-        }
-        #calcHashResultsHolder{
-            min-width: 145px;
-            max-width: 145px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        #yourStatsInput{
-            z-index: inherit;
-            font-family: 'Inconsolata', monospace;
-        }
-        #yourAddressDisplay > span {
-            font-family: 'Inconsolata', monospace;
-        }
-        .yourStats{
-            display: none;
-        }
-        #yourAddressDisplay{
-            display: inline-block;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            vertical-align: middle;
-            font-family: 'Inconsolata', monospace;
-            font-size: 0.9em;
-        }
-        #addressError{
-            color: red;
-        }
         #stats_updated{
             opacity: 0;
             float: right;
@@ -124,63 +65,6 @@
             color: #e8e8e8;
             line-height: 47px;
             font-size: 0.9em;
-        }
-
-        .blocksStatHolder > h4{
-            display: inline-block;
-            margin-right: 10px;
-        }
-        .blocksStatHolder > span{
-            display: inline-block;
-            border-radius: 5px;
-            padding: 1px 9px;
-            border: 1px solid #e5e5e5;
-            margin: 2px;
-        }
-
-
-        #blocks_rows > tr > td{
-            vertical-align: middle;
-            font-family: 'Inconsolata', monospace;
-            font-size: 0.95em;
-        }
-
-        .luckGood{
-            color: darkgreen;
-        }
-        .luckBad{
-            color: darkred;
-        }
-
-        #page_getting_started > .stats:first-of-type{
-            margin-bottom: 15px;
-        }
-
-        #page_getting_started .stats {
-            margin-bottom: 10px;
-        }
-
-        .getting_started_windows{
-            line-height: 40px;
-        }
-
-        #miningPorts > .stats{
-            width: auto !important;
-            margin-right: 70px;
-            margin-left: 15px;
-            display: inline-block;
-        }
-        #miningPorts > .stats:last-child{
-            margin-right: 0;
-        }
-
-        #getting_started_list > li{
-            margin-bottom: 20px;
-        }
-
-        #cpuminer_code{
-            display: inline-block;
-            white-space: normal;
         }
 
         footer{
@@ -201,495 +85,122 @@
 <body>
 <script>
 
+
+    var docCookies = {
+        getItem: function (sKey) {
+            return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+        },
+        setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
+            if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
+            var sExpires = "";
+            if (vEnd) {
+                switch (vEnd.constructor) {
+                    case Number:
+                        sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+                        break;
+                    case String:
+                        sExpires = "; expires=" + vEnd;
+                        break;
+                    case Date:
+                        sExpires = "; expires=" + vEnd.toUTCString();
+                        break;
+                }
+            }
+            document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+            return true;
+        },
+        removeItem: function (sKey, sPath, sDomain) {
+            if (!sKey || !this.hasItem(sKey)) { return false; }
+            document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + ( sDomain ? "; domain=" + sDomain : "") + ( sPath ? "; path=" + sPath : "");
+            return true;
+        },
+        hasItem: function (sKey) {
+            return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+        }
+    };
+
+    $.fn.update = function(txt){
+        var el = this[0];
+        if (el.textContent !== txt)
+            el.textContent = txt;
+        return this;
+    };
+
+
+    var currentPage;
+    var lastStats;
+
+
     $(function(){
-
-        $('#siteInfo').load('info.html');
-
-
-
-        $('#miningPoolHost').text(poolHost);
-        $('#kiwi_irc').attr('src', 'https://kiwiirc.com/client/' + irc);
-        $('#emailLink').attr('href', 'mailto:' + email).text(email);
-        $('#easyminer_link').attr('href', easyminerDownload);
-        $('#simplewallet_download').attr('href', simplewalletDownload);
 
 
         $.get(api + '/stats', function(data){
-            renderStats(data);
+            lastStats = data;
+            updateIndex();
+            fetchLiveStats();
+            routePage();
         });
 
+        window.onhashchange = function(){
+            routePage();
+        };
+
+        var stats_update = document.getElementById('stats_updated');
         function fetchLiveStats() {
             $.ajax({
                 url: api + '/live_stats',
                 dataType: 'json',
                 cache: 'false'
             }).done(function(data){
-                renderStats(data);
-            }).fail(function(){
-                console.log('live stats long polling connection failed');
+
+                stats_update.style.transition = 'opacity 100ms ease-out';
+                stats_update.style.opacity = 1;
+                setTimeout(function(){
+                    stats_update.style.transition = 'opacity 7000ms linear';
+                    stats_update.style.opacity = 0;
+                }, 500);
+
+                lastStats = data;
+                updateIndex();
+                currentPage.update();
             }).always(function () {
                 fetchLiveStats();
             });
         }
 
-        fetchLiveStats();
 
+        var xhrPageLoading;
+        function routePage(loadedCallback) {
 
-        window.onhashchange = function(){
-            pageRouter();
-        };
+            if (currentPage) currentPage.destroy();
+            $('#page').html('');
+            $('#loading').show();
 
-        pageRouter();
+            if (xhrPageLoading)
+                xhrPageLoading.abort();
 
-
-        $('#networkLastBlockFound,#poolLastBlockFound,#yourLastShare,#marketLastUpdated').timeago();
-
-        var $miningPorts = $('#miningPorts');
-        var miningPortTemplate = $miningPorts.html();
-        $miningPorts.empty();
-
-        var lookupBtnHtml = $('#lookUp').html();
-
-        var addressEventSource;
-        var addressTimeout;
-
-        $('#lookUp').click(function(){
-
-            var address = $('#yourStatsInput').val().trim();
-            if (!address){
-                $('#yourStatsInput').focus();
-                return;
-            }
-
-            $('#addressError').hide();
-            $('.yourStats').hide();
-            $(this).html('<i class="fa fa-refresh fa-spin"></i> Searching...');
-            if (addressEventSource) addressEventSource.abort();
-            if (addressTimeout) clearTimeout(addressTimeout);
-
-            function fetchAddressStats(longpoll){
-                addressEventSource = $.ajax({
-                    url: api + '/stats_address',
-                    data: {
-                        address: address,
-                        longpoll: longpoll
-                    },
-                    dataType: 'json',
-                    cache: 'false',
-                    success: function(data){
-
-                        $('#lookUp').html(lookupBtnHtml);
-
-                        if (!data.stats){
-                            $('.yourStats').hide();
-                            $('#addressError').text(data.error).show();
-
-                            if (addressTimeout) clearTimeout(addressTimeout);
-                            addressTimeout = setTimeout(function(){
-                                fetchAddressStats(false);
-                            }, 2000);
-
-                            return;
-                        }
-
-
-                        $('#addressError').hide();
-                        $('#yourAddressDisplay').text(address);
-                        if (data.stats.lastShare)
-                            $('#yourLastShare').timeago('update', new Date(parseInt(data.stats.lastShare) * 1000).toISOString());
-                        else
-                            $('#yourLastShare').text('Never');
-                        $('#yourHashrateHolder').text((data.stats.hashrate || '0 H') + '/sec');
-                        $('#yourHashes').text(data.stats.hashes || '0');
-                        $('#yourPaid').text(getReadableCoins(data.stats.paid) + ' ' + data.stats.symbol);
-                        $('#yourPendingBalance').text(getReadableCoins(data.stats.balance) + ' ' + data.stats.symbol);
-
-                        $('.yourStats').show();
-                        docCookies.setItem('mining_address', address, Infinity);
-
-                        fetchAddressStats(true);
-
-                    },
-                    error: function(e){
-                        if (e.statusText === 'abort') return;
-                        $('#lookUp').html(lookupBtnHtml);
-                        $('#addressError').text('Connection error').show();
-
-                        if (addressTimeout) clearTimeout(addressTimeout);
-                        addressTimeout = setTimeout(function(){
-                            fetchAddressStats(false);
-                        }, 2000);
-                    }
-                });
-            }
-            fetchAddressStats(false);
-        });
-
-
-        var lastPortsJson = '';
-        var stats_update = $('#stats_updated')[0];
-
-
-
-        function updateMarkets(){
-            var completedFetches = 0;
-            var marketsData = [];
-            for (var i = 0; i < cryptonatorWidget.length; i++){
-                (function(i){
-                    $.get('https://www.cryptonator.com/api/ticker/' + cryptonatorWidget[i], function(data){
-                        marketsData[i] = data;
-                        completedFetches++;
-                        if (completedFetches !== cryptonatorWidget.length) return;
-
-                        var $marketHeader = $('#marketHeader');
-                        $('.marketTicker').remove();
-                        for (var f = marketsData.length - 1; f >= 0 ; f--){
-                            var price = parseFloat(marketsData[f].ticker.price);
-
-                            if (price > 1) price = Math.round(price * 100) / 100;
-                            else price = marketsData[f].ticker.price;
-
-                            $marketHeader.after('<div class="marketTicker">' + marketsData[f].ticker.base + ': <span>' + price + ' ' + marketsData[f].ticker.target + '</span></div>');
-                        }
-                        $('#marketLastUpdated').timeago('update', new Date(marketsData[0].timestamp * 1000).toISOString());
-                    }, 'json');
-                })(i);
-            }
-        }
-        updateMarkets();
-        setInterval(updateMarkets, 300000); //poll market data every 5 minutes
-
-
-        var lastStats;
-
-        function renderStats(stats){
-
-            lastStats = stats;
-
-            $('#coinName').text(stats.config.coin);
-
-            $('#blocksTotal').text(stats.pool.totalBlocks);
-
-            $('#networkHashrate').text(getReadableHashRateString(stats.network.difficulty / 60) + '/sec');
-
-            $('#networkLastBlockFound').timeago('update', new Date(stats.network.timestamp * 1000).toISOString());
-            $('#networkDifficulty').text(stats.network.difficulty);
-            $('#blockchainHeight').text(stats.network.height);
-            $('#networkLastReward').text((stats.network.reward / coinUnits).toFixed(4) + ' ' + stats.config.symbol);
-            $('#lastHash').attr('href', blockchainExplorer + stats.network.hash).text(stats.network.hash.substr(0, 13) + '...');
-
-            $('#poolHashrate').text(getReadableHashRateString(stats.pool.hashrate) + '/sec');
-
-
-            if (stats.pool.lastBlockFound){
-                var d = new Date(parseInt(stats.pool.lastBlockFound)).toISOString();
-                $('#poolLastBlockFound').timeago('update', d);
-            }
-            else{
-                $('#poolLastBlockFound').removeAttr('title').data('ts', '').text('Never');
-            }
-            $('#poolRoundHashes').text(stats.pool.roundHashes);
-            $('#poolMiners').text(stats.pool.miners);
-            $('#poolFee').text(stats.config.fee + '%');
-
-            if (stats.config.donation && stats.config.donation > 0)
-                $('#donationPercent').text(' + ' + stats.config.donation + '% development funding');
-            else
-                $('#donationPercent').text('');
-
-            $('#blockSolvedTime').text(getReadableTime(stats.network.difficulty / stats.pool.hashrate));
-
-            $('#calcHashSymbol').text(stats.config.symbol);
-
-            var portsJson = JSON.stringify(stats.config.ports);
-            if (lastPortsJson !== portsJson) {
-                lastPortsJson = portsJson;
-                var $miningPortChildren = [];
-                for (var i = 0; i < stats.config.ports.length; i++) {
-                    var portData = stats.config.ports[i];
-                    var $portChild = $(miningPortTemplate);
-                    $portChild.find('.miningPort').text(portData.port);
-                    $portChild.find('.miningPortDiff').text(portData.difficulty);
-                    $portChild.find('.miningPortDesc').text(portData.desc);
-                    $miningPortChildren.push($portChild);
-                }
-                $miningPorts.empty().append($miningPortChildren);
-            }
-
-            $('#cpuminer_code').text('minerd  -a cryptonight -o stratum+tcp://'
-                    + poolHost + ':'
-                    + (stats.config.ports[0] || {}).port
-                    + ' -u address -p x');
-
-
-            $('#blocksMaturityCount').text(stats.config.depth);
-
-            $('#poolVersion').text(stats.config.version);
-
-            calcEstimateProfit();
-
-            renderBlocks(stats.pool.blocks);
-
-            stats_update.style.transition = 'opacity 100ms ease-out';
-            stats_update.style.opacity = 1;
-            setTimeout(function(){
-                stats_update.style.transition = 'opacity 7000ms linear';
-                stats_update.style.opacity = 0;
-            }, 500);
-
-        }
-
-        function getMaturity(blockHeight){
-            var toGo = lastStats.config.depth - (lastStats.network.height - blockHeight);
-            if (toGo < 1) return '';
-            return '' + toGo + ' to go';
-        }
-
-
-        var $blockRows = $('#blocks_rows');
-
-
-        function deserializeBlock(height, serializedBlock){
-            var parts = serializedBlock.split(':');
-            var block = {
-                height: parseInt(height),
-                hash: parts[0],
-                time: parts[1],
-                difficulty: parseInt(parts[2]),
-                shares: parseInt(parts[3]),
-                orphaned: parts[4],
-                reward: parts[5]
-            };
-            block.maturity = getMaturity(block.height);
-
-            switch (block.orphaned){
-                case '0':
-                    block.status = 'unlocked';
-                    break;
-                case '1':
-                    block.status = 'orphaned';
-                    break;
-                default:
-                    block.status = 'pending';
-                    break;
-            }
-
-            return block;
-        }
-
-        function getBlockRowHtml(block, jsonString){
-
-            var formatDate = function(time){
-                if (!time) return '';
-                return new Date(parseInt(time) * 1000).toLocaleString();
-            };
-
-            var formatLuck = function(difficulty, shares){
-
-                if (difficulty > shares){
-                    var percent = 100 - Math.round(shares / difficulty * 100);
-                    return '<span class="luckGood">&nbsp;' + percent + '%</span>';
-                }
-                else{
-                    var percent = (100 - Math.round(difficulty / shares * 100)) * -1;
-                    return '<span class="luckBad">' + percent + '%</span>';
-                }
-
-            };
-
-            var blockStatusClasses = {
-                'pending': '',
-                'unlocked': 'success',
-                'orphaned': 'danger'
-            };
-
-            var row = '<tr data-height="' + block.height + '" id="blockRow' + block.height + '" title="' + block.status
-                    + '" class="' + blockStatusClasses[block.status] + '">' +
-                    '<td>' + block.height + '</td>' +
-                    '<td>' + block.maturity + '</td>' +
-                    '<td>' + block.difficulty + '</td>' +
-                    '<td><a target="_blank" href="' + blockchainExplorer + block.hash + '">' + block.hash + '</a></td>' +
-                    '<td>' + formatDate(block.time) + '</td>' +
-                    '<td>' + formatLuck(block.difficulty, block.shares) + '</td>' +
-                    '</tr>';
-
-            return row;
-        }
-
-        function renderBlocks(blocksResults){
-
-            for (var i = 0; i < blocksResults.length; i += 2){
-
-                var block = deserializeBlock(blocksResults[i + 1], blocksResults[i]);
-
-                var blockJson = JSON.stringify(block);
-
-                var existingRow = document.getElementById('blockRow' + block.height);
-
-                if (existingRow && existingRow.getAttribute('data-json') !== blockJson){
-                    $(existingRow).replaceWith(getBlockRowHtml(block, blockJson));
-                }
-                else if (!existingRow){
-
-                    var blockHtml = $(getBlockRowHtml(block, blockJson));
-                    blockHtml[0].setAttribute('data-json', blockJson);
-
-                    var inserted = false;
-                    var rows = $blockRows.children().get();
-                    for (var f = 0; f < rows.length; f++) {
-                        var bHeight = parseInt(rows[f].getAttribute('data-height'));
-                        if (bHeight < block.height){
-                            inserted = true;
-                            $(rows[f]).before(blockHtml);
-                            break;
-                        }
-                    }
-                    if (!inserted)
-                        $blockRows.append(blockHtml);
-                }
-
-            }
-        }
-
-        var docCookies = {
-            getItem: function (sKey) {
-                return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
-            },
-            setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
-                if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
-                var sExpires = "";
-                if (vEnd) {
-                    switch (vEnd.constructor) {
-                        case Number:
-                            sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
-                            break;
-                        case String:
-                            sExpires = "; expires=" + vEnd;
-                            break;
-                        case Date:
-                            sExpires = "; expires=" + vEnd.toUTCString();
-                            break;
-                    }
-                }
-                document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
-                return true;
-            },
-            removeItem: function (sKey, sPath, sDomain) {
-                if (!sKey || !this.hasItem(sKey)) { return false; }
-                document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + ( sDomain ? "; domain=" + sDomain : "") + ( sPath ? "; path=" + sPath : "");
-                return true;
-            },
-            hasItem: function (sKey) {
-                return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
-            }
-        };
-
-        var coinDecimals = coinUnits.toString().length - 1;
-
-        function getReadableCoins(coins){
-            return (parseInt(coins || 0) / coinUnits).toFixed(coinDecimals);
-        }
-
-        function getReadableTime(seconds){
-
-            var units = [
-                    [60, 'second'],
-                    [60, 'minute'],
-                    [24, 'hour'],
-                    [12, 'day'],
-                    [7, 'week'],
-                    [30, 'month'],
-                    [12, 'year']
-            ];
-
-            function formatAmounts(amount, unit){
-                var rounded = Math.round(amount);
-                return '' + rounded + ' ' + unit + (rounded > 1 ? 's' : '');
-            }
-
-            var amount = seconds;
-            for (var i = 0; i < units.length; i++){
-                if (amount < units[i][0])
-                    return formatAmounts(amount, units[i][1]);
-                amount = amount / units[i][0];
-            }
-            return formatAmounts(amount,  units[units.length - 1][1]);
-
-        }
-
-        function getReadableHashRateString(hashrate){
-            var i = 0;
-            var byteUnits = [' H', ' KH', ' MH', ' GH', ' TH', ' PH' ];
-            while (hashrate > 1024){
-                hashrate = hashrate / 1024;
-                i++;
-            }
-            return hashrate.toFixed(2) + byteUnits[i];
-        }
-
-
-        $('#calcHashRate').keyup(calcEstimateProfit).change(calcEstimateProfit);
-
-        $('#calcHashUnits > li > a').click(function(e){
-            e.preventDefault();
-            $('#calcHashUnit').text($(this).text()).data('mul', $(this).data('mul'));
-            calcEstimateProfit();
-        });
-
-        function calcEstimateProfit(){
-            try {
-                var rateUnit = Math.pow(1024,parseInt($('#calcHashUnit').data('mul')));
-                var inp2 = parseFloat($('#calcHashRate').val()) * rateUnit;
-                var resl = 16 / ((lastStats.network.difficulty / inp2) / 86400);
-                if (!isNaN(resl)) {
-                    $("#calcHashAmount").text(Math.round(resl * 100) / 100);
-                    return;
-                }
-            }
-            catch(e){
-            }
-            $("#calcHashAmount").text('');
-        }
-
-        function pageRouter(){
-            $('.page').hide();
             $('.hot_link').parent().removeClass('active');
             var $link = $('a.hot_link[href="' + (window.location.hash || '#') + '"]');
 
             $link.parent().addClass('active');
             var page = $link.data('page');
-            $('#' + page).show();
-        }
 
-        var address = docCookies.getItem('mining_address');
-
-        if (address){
-            $('#yourStatsInput').val(address);
-            $('#lookUp').click();
-        }
-
-        $('#yourStatsInput').keyup(function(e){
-            if(e.keyCode === 13)
-                $('#lookUp').click();
-        });
-
-        var getBlocksAjax;
-
-        $('#loadMoreBlocks').click(function(){
-            if (getBlocksAjax)
-                getBlocksAjax.abort();
-            getBlocksAjax = $.ajax({
-                url: api + '/get_blocks',
-                data: {
-                    height: $blockRows.children().last().data('height')
-                },
-                dataType: 'json',
-                cache: 'false',
-                success: function(data){
-                    renderBlocks(data);
+            xhrPageLoading = $.ajax({
+                url: 'pages/' + page,
+                cache: false,
+                success: function (data) {
+                    $('#loading').hide();
+                    $('#page').show().html(data);
+                    currentPage.update();
+                    if (loadedCallback) loadedCallback();
                 }
-            })
-        });
+            });
+        }
+
+        function updateIndex(){
+            $('#coinName').update(lastStats.config.coin);
+            $('#poolVersion').update(lastStats.config.version);
+        }
 
     });
 
@@ -709,10 +220,23 @@
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a class="hot_link" data-page="page_home" href="#"><i class="fa fa-home"></i> Home</a></li>
-                <li><a class="hot_link" data-page="page_pool_blocks" href="#pool_blocks"><i class="fa fa-cubes"></i> Pool Blocks</a></li>
-                <li><a class="hot_link" data-page="page_getting_started" href="#getting_started"><i class="fa fa-rocket"></i> Getting Started</a></li>
-                <li><a class="hot_link" data-page="page_community" href="#community"><i class="fa fa-comments"></i> Community</a></li>
+
+                <li class="active"><a class="hot_link" data-page="home.html" href="#">
+                    <i class="fa fa-home"></i> Home
+                </a></li>
+
+                <li><a class="hot_link" data-page="pool_blocks.html" href="#pool_blocks">
+                    <i class="fa fa-cubes"></i> Pool Blocks
+                </a></li>
+
+                <li><a class="hot_link" data-page="getting_started.html" href="#getting_started">
+                    <i class="fa fa-rocket"></i> Getting Started
+                </a></li>
+
+                <li><a class="hot_link" data-page="support.html" href="#support">
+                    <i class="fa fa-comments"></i> Support
+                </a></li>
+
             </ul>
             <div id="stats_updated">Stats Updated &nbsp;<i class="fa fa-bolt"></i></div>
         </div>
@@ -722,163 +246,9 @@
 
 <div class="container">
 
-    <div class="page" id="page_home">
+    <div id="page"></div>
 
-        <div id="siteInfo"></div>
-
-        <div class="row">
-            <div class="col-md-4 stats">
-                <h3>Network</h3>
-                <div><i class="fa fa-tachometer"></i> Hash Rate: <span id="networkHashrate"></span></div>
-                <div><i class="fa fa-clock-o"></i> Block Found: <span id="networkLastBlockFound"></span></div>
-                <div><i class="fa fa-unlock-alt"></i> Difficulty: <span id="networkDifficulty"></span></div>
-                <div><i class="fa fa-bars"></i> Blockchain Height: <span id="blockchainHeight"></span></div>
-                <div><i class="fa fa-money"></i> Last Reward: <span id="networkLastReward"></span></div>
-                <div><i class="fa fa-paw"></i> Last Hash: <a id="lastHash" target="_blank"></a></div>
-            </div>
-
-            <div class="col-md-4 stats">
-                <h3>Pool</h3>
-                <div><i class="fa fa-tachometer"></i> Hash Rate: <span id="poolHashrate"></span></div>
-                <div><i class="fa fa-clock-o"></i> Block Found: <span id="poolLastBlockFound"></span></div>
-                <div><i class="fa fa-cloud-upload"></i> Round Hashes: <span id="poolRoundHashes"></span></div>
-                <div><i class="fa fa-users"></i> Connected Miners: <span id="poolMiners"></span></div>
-                <div><i class="fa fa-money"></i> Fee: <span id="poolFee"></span><span id="donationPercent"></span></div>
-                <div><i class="fa fa-history"></i> Block Found Every: <span id="blockSolvedTime"></span> (est.)</div>
-            </div>
-
-            <div class="col-md-4 stats">
-                <h3 id="marketHeader">Market</h3>
-                <div class="marketFooter">Updated: <span id="marketLastUpdated"></span></div>
-                <div class="marketFooter">Powered by <a href="https://www.cryptonator.com/">Cryptonator</a></div>
-            </div>
-        </div>
-
-        <hr>
-
-        <div id="miningProfitCalc">
-            <h3>Estimate Mining Profits</h3>
-            <div id="calcHashHolder">
-                <div class="input-group">
-                    <span class="input-group-addon">Hash Rate</span>
-                    <input type="number" class="form-control" id="calcHashRate">
-                    <div class="input-group-btn">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="calcHashDropdown">
-                            <span id="calcHashUnit" data-mul="1">KH/s</span> <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-right" role="menu" id="calcHashUnits">
-                            <li><a href="#" data-mul="0">H/s</a></li>
-                            <li><a href="#" data-mul="1">KH/s</a></li>
-                            <li><a href="#" data-mul="2">MH/s</a></li>
-                        </ul>
-                    </div>
-                    <span class="input-group-addon">=</span>
-                    <span class="input-group-addon" id="calcHashResultsHolder"><span id="calcHashAmount"></span> <span id="calcHashSymbol"></span>/day</span>
-                </div>
-            </div>
-        </div>
-
-        <hr>
-
-        <div class="stats">
-            <h3>Your Stats</h3>
-
-            <div class="input-group">
-                <label class="input-group-addon" for="yourStatsInput"><i class="fa fa-key"></i> Address</label>
-                <input class="form-control" id="yourStatsInput" type="text">
-                <span class="input-group-btn"><button class="btn btn-default"  type="button" id="lookUp"><i class="fa fa-search"></i> Lookup</button></span>
-            </div>
-
-            <div id="addressError"></div>
-            <div class="yourStats"><i class="fa fa-key"></i> Address: <span id="yourAddressDisplay"></span></div>
-            <div class="yourStats"><i class="fa fa-bank"></i> Pending Balance: <span id="yourPendingBalance"></span></div>
-            <div class="yourStats"><i class="fa fa-money"></i> Total Paid: <span id="yourPaid"></span></div>
-            <div class="yourStats"><i class="fa fa-clock-o"></i> Last Share Submitted: <span id="yourLastShare"></span></div>
-            <div class="yourStats"><i class="fa fa-tachometer"></i> Hash Rate: <span id="yourHashrateHolder"></span></div>
-            <div class="yourStats"><i class="fa fa-cloud-upload"></i> Total Hashes Submitted: <span id="yourHashes"></span></div>
-        </div>
-
-    </div>
-
-    <div class="page" id="page_pool_blocks">
-        <div class="blocksStatHolder">
-            <span class="bg-primary"><span id="blocksTotal"></span> Total Blocks Mined</span>
-            <span class="bg-info">Maturity requires <span id="blocksMaturityCount"></span> blocks</span>
-        </div>
-        <hr>
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th><i class="fa fa-bars"></i> Height</th>
-                    <th title="How many more blocks network must mine before this block is matured"><i class="fa fa-link"></i> Maturity</th>
-                    <th><i class="fa fa-unlock-alt"></i> Difficulty</th>
-                    <th><i class="fa fa-paw"></i> Block Hash</th>
-                    <th><i class="fa fa-clock-o"></i> Time Found</th>
-                    <th><i class="fa fa-star-half-o"></i> Luck</th>
-                </tr>
-                </thead>
-                <tbody id="blocks_rows">
-
-                </tbody>
-            </table>
-
-            <p class="text-center">
-                <button type="button" class="btn btn-default" id="loadMoreBlocks">Load More</button>
-            </p>
-
-        </div>
-    </div>
-
-    <div class="page" id="page_getting_started">
-        <h1>Getting Started</h1>
-
-        <hr>
-
-        <div class="stats">
-            <h4>Mining Host</h4>
-            <div><i class="fa fa-cloud"></i> Pool Address: <span id="miningPoolHost"></span></div>
-        </div>
-
-        <h4>Mining Ports</h4>
-        <div id="miningPorts" class="row">
-            <div class="stats">
-                <div><i class="fa fa-tachometer"></i> Port: <span class="miningPort"></span></div>
-                <div><i class="fa fa-unlock-alt"></i> Starting Difficulty: <span class="miningPortDiff"></span></div>
-                <div><i class="fa fa-question"></i> Description: <span class="miningPortDesc"></span></div>
-            </div>
-        </div>
-
-        <hr>
-
-        <h4>For <i class="fa fa-windows"></i> Windows users</h4>
-        <br>
-        <p class="getting_started_windows">
-            You can <a class="btn btn-default btn-sm" target="_blank" id="easyminer_link"><i class="fa fa-download"></i> Download</a> and run <a target="_blank" href="https://github.com/zone117x/cryptonote-easy-miner">cryptonote-easy-miner</a> <i class="fa fa-github"></i> which will automatically generate your wallet address
-            and manage multiple instances of simpleminer to take advantage of all your CPU Cores.
-        </p>
-
-        <hr>
-
-        <h4>Or download the the binaries for your system</h4>
-        <br>
-        <ol id="getting_started_list">
-            <li><a id="simplewallet_download" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-download"></i> Download</a> simplewallet for your system</li>
-            <li>Run simplewallet to generate your public address</li>
-            <li><a target="_blank" class="btn btn-default btn-sm" href="https://github.com/LucasJones/cpuminer-multi/releases/"><i class="fa fa-download"></i> Download</a> CPUMiner-multi</li>
-            <li>Choose a port and point your miner to our pool with your address, for example:
-                <br><br>
-                <code id="cpuminer_code"></code>
-            </li>
-        </ol>
-    </div>
-
-    <div class="page" id="page_community">
-        <h3>Chat Room</h3>
-        <iframe id="kiwi_irc" style="border:0; width:100%; height:500px;"></iframe>
-        <h3>Contact</h3>
-        <p>Email pool support at <a id="emailLink" href=""></a></p>
-    </div>
+    <p id="loading" class="text-center"><i class="fa fa-circle-o-notch fa-spin"></i></p>
 
 </div>
 
