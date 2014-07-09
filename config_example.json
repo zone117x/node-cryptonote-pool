@@ -64,6 +64,7 @@
         "enabled": true,
         "interval": 600,
         "maxAddresses": 50,
+        "mixin": 3,
         "transferFee": 5000000000,
         "minPayment": 100000000000,
         "denomination": 100000000000
