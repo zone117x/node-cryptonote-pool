@@ -35,6 +35,12 @@
                 "port": 7777,
                 "difficulty": 10000,
                 "desc": "High end hardware"
+            },
+            {
+                "port": 8888,
+                "difficulty": 10000,
+                "desc": "Hidden port",
+                "hidden": true
             }
         ],
         "varDiff": {
