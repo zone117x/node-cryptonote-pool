@@ -356,9 +356,6 @@ var cryptonatorWidget = ["XMR-BTC", "XMR-USD", "XMR-EUR", "XMR-GBP"];
 /* Download link to cryptonote-easy-miner for Windows users. */
 var easyminerDownload = "https://github.com/zone117x/cryptonote-easy-miner/releases/";
 
-/* Download link to simplewallet for your configured coin. */
-var simplewalletDownload = "http://bit.ly/monero-starter-pack";
-
 /* Used for front-end block links. For other coins it can be changed, for example with
    Bytecoin you can use "https://minergate.com/blockchain/bcn/block/". */
 var blockchainExplorer = "http://monerochain.info/block/";
