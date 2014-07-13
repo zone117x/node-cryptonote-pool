@@ -15,3 +15,5 @@ var easyminerDownload = "https://github.com/zone117x/cryptonote-easy-miner/relea
 var simplewalletDownload = 'http://monero.cc/getting-started';
 
 var blockchainExplorer = "http://monerochain.info/block/";
+
+var transactionExplorer = "http://monerochain.info/tx/";

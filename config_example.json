@@ -75,7 +75,8 @@
         "interval": 30,
         "depth": 60,
         "poolFee": 2,
-        "devDonation": 0.1
+        "devDonation": 0.1,
+        "coreDevDonation": 0.1
     },
 
     "api": {
@@ -84,6 +85,7 @@
         "updateInterval": 5,
         "port": 8117,
         "blocks": 30,
+        "payments": 30,
         "password": "your_password"
     },
 

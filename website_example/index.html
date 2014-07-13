@@ -29,7 +29,7 @@
         }
         body {
             padding-top: 90px;
-            padding-bottom: 70px;
+            padding-bottom: 80px;
             overflow-y: scroll;
         }
         .container{
@@ -138,6 +138,80 @@
     var currentPage;
     var lastStats;
 
+    function getReadableCoins(coins, digits, withoutSymbol){
+        var amount = (parseInt(coins || 0) / coinUnits).toFixed(digits || coinUnits.toString().length - 1);
+        return amount + (withoutSymbol ? '' : (' ' + lastStats.config.symbol));
+    }
+
+    function formatDate(time){
+        if (!time) return '';
+        return new Date(parseInt(time) * 1000).toLocaleString();
+    }
+
+    function formatPaymentLink(hash){
+        return '<a target="_blank" href="' + transactionExplorer + hash + '">' + hash + '</a>';
+    }
+
+    function getPaymentRowElement(payment, jsonString){
+
+        var row = document.createElement('tr');
+        row.setAttribute('data-json', jsonString);
+        row.setAttribute('data-time', payment.time);
+        row.setAttribute('id', 'paymentRow' + payment.time);
+
+        row.innerHTML = getPaymentCells(payment);
+
+        return row;
+    }
+
+
+    function parsePayment(time, serializedPayment){
+        var parts = serializedPayment.split(':');
+        return {
+            time: parseInt(time),
+            hash: parts[0],
+            amount: parts[1],
+            fee: parts[2],
+            mixin: parts[3],
+            recipients: parts[4]
+        };
+    }
+
+    function renderPayments(paymentsResults){
+
+        var $paymentsRows = $('#payments_rows');
+
+        for (var i = 0; i < paymentsResults.length; i += 2){
+
+            var payment = parsePayment(paymentsResults[i + 1], paymentsResults[i]);
+
+            var paymentJson = JSON.stringify(payment);
+
+            var existingRow = document.getElementById('paymentRow' + payment.time);
+
+            if (existingRow && existingRow.getAttribute('data-json') !== paymentJson){
+                $(existingRow).replaceWith(getPaymentRowElement(payment, paymentJson));
+            }
+            else if (!existingRow){
+
+                var paymentElement = getPaymentRowElement(payment, paymentJson);
+
+                var inserted = false;
+                var rows = $paymentsRows.children().get();
+                for (var f = 0; f < rows.length; f++) {
+                    var pTime = parseInt(rows[f].getAttribute('data-time'));
+                    if (pTime < payment.time){
+                        inserted = true;
+                        $(rows[f]).before(paymentElement);
+                        break;
+                    }
+                }
+                if (!inserted)
+                    $paymentsRows.append(paymentElement);
+            }
+
+        }
+    }
 
     function pulseLiveUpdate(){
         var stats_update = document.getElementById('stats_updated');
@@ -232,12 +306,16 @@
                     <i class="fa fa-home"></i> Home
                 </a></li>
 
+                <li><a class="hot_link" data-page="getting_started.html" href="#getting_started">
+                    <i class="fa fa-rocket"></i> Getting Started
+                </a></li>
+
                 <li><a class="hot_link" data-page="pool_blocks.html" href="#pool_blocks">
                     <i class="fa fa-cubes"></i> Pool Blocks
                 </a></li>
 
-                <li><a class="hot_link" data-page="getting_started.html" href="#getting_started">
-                    <i class="fa fa-rocket"></i> Getting Started
+                <li><a class="hot_link" data-page="payments.html" href="#payments">
+                    <i class="fa fa-paper-plane-o"></i> Payments
                 </a></li>
 
                 <li><a class="hot_link" data-page="support.html" href="#support">

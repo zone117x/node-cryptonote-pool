@@ -6,13 +6,12 @@
     #networkLastReward{
         text-transform: uppercase;
     }
-    #donationPercent{
-        font-size: 0.7em;
-        margin-left: 10px;
-    }
     #lastHash{
         font-family: 'Inconsolata', monospace;
         font-size: 0.8em;
+    }
+    #poolDonations{
+        font-size: 0.75em;
     }
     #miningProfitCalc{
         margin: 35px 0;
@@ -65,6 +64,18 @@
     #addressError{
         color: red;
     }
+
+
+    #payments_rows > tr > td{
+        vertical-align: middle;
+        font-family: 'Inconsolata', monospace;
+        font-size: 0.95em;
+        text-align: center;
+    }
+    #payments_rows > tr > td:nth-child(2){
+        text-align: left;
+    }
+
 </style>
 
 
@@ -87,9 +98,9 @@
         <h3>Our Pool</h3>
         <div><i class="fa fa-tachometer"></i> Hash Rate: <span id="poolHashrate"></span></div>
         <div><i class="fa fa-clock-o"></i> Block Found: <span id="poolLastBlockFound"></span></div>
-        <div><i class="fa fa-cloud-upload"></i> Round Hashes: <span id="poolRoundHashes"></span></div>
         <div><i class="fa fa-users"></i> Connected Miners: <span id="poolMiners"></span></div>
-        <div><i class="fa fa-money"></i> Fee: <span id="poolFee"></span><span id="donationPercent"></span></div>
+        <div><i class="fa fa-gift"></i> Donations: <span id="poolDonations"></span></div>
+        <div><i class="fa fa-money"></i> Total Pool Fee: <span id="poolFee"></span></div>
         <div><i class="fa fa-history"></i> Block Found Every: <span id="blockSolvedTime"></span> (est.)</div>
     </div>
 
@@ -126,7 +137,7 @@
 <hr>
 
 <div class="stats">
-    <h3>Your Stats</h3>
+    <h3>Your Stats & Payment History</h3>
 
     <div class="input-group">
         <input class="form-control" id="yourStatsInput" type="text" placeholder="Enter Your Address">
@@ -143,6 +154,29 @@
     <div class="yourStats"><i class="fa fa-clock-o"></i> Last Share Submitted: <span id="yourLastShare"></span></div>
     <div class="yourStats"><i class="fa fa-tachometer"></i> Hash Rate: <span id="yourHashrateHolder"></span></div>
     <div class="yourStats"><i class="fa fa-cloud-upload"></i> Total Hashes Submitted: <span id="yourHashes"></span></div>
+
+    <br class="yourStats">
+
+    <h4 class="yourStats">Payments</h4>
+    <div class="yourStats table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th><i class="fa fa-clock-o"></i> Time Sent</th>
+                <th><i class="fa fa-paw"></i> Transaction Hash</th>
+                <th><i class="fa fa-money"></i> Amount</th>
+                <th><i class="fa fa-sitemap"></i> Mixin</th>
+            </tr>
+            </thead>
+            <tbody id="payments_rows">
+
+            </tbody>
+        </table>
+    </div>
+    <p class="text-center">
+        <button type="button" class="btn btn-default" id="loadMorePayments">Load More</button>
+    </p>
+
 </div>
 
 <script>
@@ -157,6 +191,7 @@
             for (var marketPoll in xhrMarketGets){
                 xhrMarketGets[marketPoll].abort();
             }
+            if (xhrGetPayments) xhrGetPayments.abort();
         },
         update: function(){
 
@@ -179,12 +214,25 @@
             else
                 $('#poolLastBlockFound').removeAttr('title').data('ts', '').update('Never');
 
-            updateText('poolRoundHashes', lastStats.pool.roundHashes.toString());
+            //updateText('poolRoundHashes', lastStats.pool.roundHashes.toString());
             updateText('poolMiners', lastStats.pool.miners.toString());
-            updateText('poolFee', (lastStats.config.doDonations ? lastStats.config.donation : 0) + lastStats.config.fee + '%');
 
-            updateText('donationPercent', !lastStats.config.doDonations ? '' :
-                    ('(' + lastStats.config.donation + '% to dev funding)'));
+
+            var totalFee = lastStats.config.fee;
+            if (lastStats.config.doDonations){
+                totalFee += lastStats.config.donation;
+                totalFee += lastStats.config.coreDonation;
+                var feeText = [];
+                if (lastStats.config.donation > 0) feeText.push(lastStats.config.donation + '% to pool dev');
+                if (lastStats.config.coreDonation > 0) feeText.push(lastStats.config.coreDonation + '% to core devs');
+                updateText('poolDonations', feeText.join(', '));
+            }
+            else{
+                updateText('poolDonations', '');
+            }
+
+            updateText('poolFee', totalFee + '%');
+
 
             updateText('blockSolvedTime', getReadableTime(lastStats.network.difficulty / lastStats.pool.hashrate));
             updateText('calcHashSymbol', lastStats.config.symbol);
@@ -214,11 +262,6 @@
             amount = amount / units[i][0];
         }
         return formatAmounts(amount,  units[units.length - 1][1]);
-    }
-
-    function getReadableCoins(coins, digits){
-        var amount = (parseInt(coins || 0) / coinUnits).toFixed(digits || coinUnits.toString().length - 1);
-        return amount + ' ' + lastStats.config.symbol;
     }
 
     function getReadableHashRateString(hashrate){
@@ -299,6 +342,13 @@
 
     /* Stats by mining address lookup */
 
+    function getPaymentCells(payment){
+        return '<td>' + formatDate(payment.time) + '</td>' +
+                '<td>' + formatPaymentLink(payment.hash) + '</td>' +
+                '<td>' + getReadableCoins(payment.amount, 4, true) + '</td>' +
+                '<td>' + payment.mixin + '</td>';
+    }
+
     var xhrAddressPoll;
     var addressTimeout;
 
@@ -312,7 +362,7 @@
 
         $('#addressError').hide();
         $('.yourStats').hide();
-
+        $('#payments_rows').empty();
 
         $('#lookUp > span:first-child').hide();
         $('#lookUp > span:last-child').show();
@@ -361,6 +411,8 @@
                     updateText('yourPaid', getReadableCoins(data.stats.paid));
                     updateText('yourPendingBalance', getReadableCoins(data.stats.balance));
 
+                    renderPayments(data.payments);
+
                     $('.yourStats').show();
 
                     docCookies.setItem('mining_address', address, Infinity);
@@ -395,5 +447,21 @@
             $('#lookUp').click();
     });
 
+    var xhrGetPayments;
+    $('#loadMorePayments').click(function(){
+        if (xhrGetPayments) xhrGetPayments.abort();
+        xhrGetPayments = $.ajax({
+            url: api + '/get_payments',
+            data: {
+                time: $('#payments_rows').children().last().data('time'),
+                address: address
+            },
+            dataType: 'json',
+            cache: 'false',
+            success: function(data){
+                renderPayments(data);
+            }
+        });
+    });
 
 </script>

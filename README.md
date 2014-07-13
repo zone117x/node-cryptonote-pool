@@ -248,8 +248,9 @@ Explanation for each field:
     /* Block depth required for a block to unlocked/mature. Found in daemon source as
        the variable CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW */
     "depth": 60,
-    "poolFee": 2, //2% pool fee
-    "devDonation": 0.1 //0.1% donation to send to pool dev - only works with Monero
+    "poolFee": 1.8, //1.8% pool fee (2% total fee total including donations)
+    "devDonation": 0.1, //0.1% donation to send to pool dev - only works with Monero
+    "coreDevDonation": 0.1 //0.1% donation to send to core devs - only works with Monero
 },
 
 /* AJAX API used for front-end website. */
@@ -259,6 +260,7 @@ Explanation for each field:
     "updateInterval": 3, //gather stats and broadcast every this many seconds
     "port": 8117,
     "blocks": 30, //amount of blocks to send at a time
+    "payments": 30, //amount of payments to send at a time
     "password": "test" //password required for admin stats
 },
 
@@ -360,6 +362,9 @@ var simplewalletDownload = "http://bit.ly/monero-starter-pack";
 /* Used for front-end block links. For other coins it can be changed, for example with
    Bytecoin you can use "https://minergate.com/blockchain/bcn/block/". */
 var blockchainExplorer = "http://monerochain.info/block/";
+
+/* Used by front-end transaction links. Change for other coins. */
+var transactionExplorer = "http://monerochain.info/tx/";
 
 ```
 
