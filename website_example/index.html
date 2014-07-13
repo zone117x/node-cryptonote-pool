@@ -126,6 +126,15 @@
         return this;
     };
 
+    function updateTextClasses(className, text){
+        var els = document.getElementsByClassName(className);
+        for (var i = 0; i < els.length; i++){
+            var el = els[i];
+            if (el.textContent !== text)
+                el.textContent = text;
+        }
+    }
+
     function updateText(elementId, text){
         var el = document.getElementById(elementId);
         if (el.textContent !== text){
