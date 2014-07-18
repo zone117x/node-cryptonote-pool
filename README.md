@@ -143,7 +143,7 @@ bbr atm)*/
 "symbol": "MRO",
 
 /* BBR ONLY - */
-/* "symbol": "BBR", /*
+/* "symbol": "BBR", */
 "logging": {
 
     "files": {
