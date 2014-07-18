@@ -35,6 +35,12 @@
                 "port": 7777,
                 "difficulty": 10000,
                 "desc": "High end hardware"
+            },
+            {
+                "port": 8888,
+                "difficulty": 10000,
+                "desc": "Hidden port",
+                "hidden": true
             }
         ],
         "varDiff": {
@@ -64,6 +70,7 @@
         "enabled": true,
         "interval": 600,
         "maxAddresses": 50,
+        "mixin": 3,
         "transferFee": 5000000000,
         "minPayment": 100000000000,
         "denomination": 100000000000
@@ -74,7 +81,8 @@
         "interval": 30,
         "depth": 60,
         "poolFee": 2,
-        "devDonation": 0.1
+        "devDonation": 0.1,
+        "coreDevDonation": 0.1
     },
 
     "api": {
@@ -82,6 +90,8 @@
         "hashrateWindow": 600,
         "updateInterval": 5,
         "port": 8117,
+        "blocks": 30,
+        "payments": 30,
         "password": "your_password"
     },
 
