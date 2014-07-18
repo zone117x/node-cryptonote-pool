@@ -232,6 +232,7 @@ Explanation for each field:
     "enabled": true,
     "interval": 600, //how often to run in seconds
     "maxAddresses": 50, //split up payments if sending to more than this many addresses
+    "mixin": 3, //number of transactions yours is indistinguishable from
     "transferFee": 5000000000, //fee to pay for each transaction
     "minPayment": 100000000000, //miner balance required before sending payment
     "denomination": 100000000000 //truncate to this precision and store remainder
@@ -247,8 +248,9 @@ Explanation for each field:
     /* Block depth required for a block to unlocked/mature. Found in daemon source as
        the variable CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW */
     "depth": 60,
-    "poolFee": 2, //2% pool fee
-    "devDonation": 0.1 //0.1% donation to send to pool dev - only works with Monero
+    "poolFee": 1.8, //1.8% pool fee (2% total fee total including donations)
+    "devDonation": 0.1, //0.1% donation to send to pool dev - only works with Monero
+    "coreDevDonation": 0.1 //0.1% donation to send to core devs - only works with Monero
 },
 
 /* AJAX API used for front-end website. */
@@ -256,7 +258,10 @@ Explanation for each field:
     "enabled": true,
     "hashrateWindow": 600, //how many second worth of shares used to estimate hash rate
     "updateInterval": 3, //gather stats and broadcast every this many seconds
-    "port": 8117
+    "port": 8117,
+    "blocks": 30, //amount of blocks to send at a time
+    "payments": 30, //amount of payments to send at a time
+    "password": "test" //password required for admin stats
 },
 
 /* Coin daemon connection details. */
@@ -322,11 +327,11 @@ node init.js -module=api
 
 #### 5) Host the front-end
 
-Simply host the contents of the `website` directory on file server capable of serving simple static files.
+Simply host the contents of the `website_example` directory on file server capable of serving simple static files.
 
 
-In the `website` directory copy `config_example.js` to `config.js` then edit the variables in
-the file to use your pool's specific configuration. Variable explanations:
+Edit the variables in the `website_example/config.js` file to use your pool's specific configuration.
+Variable explanations:
 
 ```javascript
 
@@ -351,22 +356,22 @@ var cryptonatorWidget = ["XMR-BTC", "XMR-USD", "XMR-EUR", "XMR-GBP"];
 /* Download link to cryptonote-easy-miner for Windows users. */
 var easyminerDownload = "https://github.com/zone117x/cryptonote-easy-miner/releases/";
 
-/* Download link to simplewallet for your configured coin. */
-var simplewalletDownload = "http://bit.ly/monero-starter-pack";
-
 /* Used for front-end block links. For other coins it can be changed, for example with
    Bytecoin you can use "https://minergate.com/blockchain/bcn/block/". */
 var blockchainExplorer = "http://monerochain.info/block/";
+
+/* Used by front-end transaction links. Change for other coins. */
+var transactionExplorer = "http://monerochain.info/tx/";
 
 ```
 
 #### 6) Customize your website
 
 The following files are included so that you can customize your pool website without having to make significant changes
-to `index.html` thus reducing the difficulty of merging updates to `index.html` with your own changes:
-* `additional.css` for creating your own pool style
-* `addtional.js` for changing the functionality of your pool website
-* `info.html` for display news/updates/information on your site
+to `index.html` or other front-end files thus reducing the difficulty of merging updates with your own changes:
+* `custom.css` for creating your own pool style
+* `custom.js` for changing the functionality of your pool website
+
 
 Then simply serve the files via nginx, Apache, Google Drive, or anything that can host static content.
 
