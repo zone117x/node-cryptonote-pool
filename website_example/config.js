@@ -8,10 +8,20 @@ var irc = "irc.freenode.net/#monero";
 
 var email = "support@cryppit.com";
 
-var cryptonatorWidget = ["XMR-BTC", "XMR-USD", "XMR-EUR", "XMR-GBP"];
+/* var cryptonatorWidget = ["XMR-BTC", "XMR-USD", "XMR-EUR", "XMR-GBP"]; */
 
-var easyminerDownload = "https://github.com/zone117x/cryptonote-easy-miner/releases/";
+/* boolbery */
+var cryptonatorWidget = ["BBR-BTC", "BBR-USD", "BBR-EUR", "BBR-GBP"];
 
-var blockchainExplorer = "http://monerochain.info/block/";
+var easyminerDownload = "https://mega.co.nz/#!oURlDLKB!g-REMRhaABVmCqrj2dqJcuaGblsNp-k2qtkdCDiK5So";
 
-var transactionExplorer = "http://monerochain.info/tx/";
+var simplewalletDownload = 'http://monero.cc/getting-started';
+
+/* var transactionExplorer = "http://monerochain.info/tx/";*/
+
+/* var blockchainExplorer = "http://monerochain.info/block/"; */
+
+/* boolbery */
+var blockchainExplorer = "https://minergate.com/blockchain/bbr/block/"; 
+
+var transactionExplorer = "https://minergate.com/blockchain/bbr/transaction";

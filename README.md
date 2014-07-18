@@ -61,10 +61,11 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * [Bytecoin Github](https://github.com/amjuarez/bytecoin)
 * [Monero Github](https://github.com/monero-project/bitmonero)
 * [Monero Announcement Thread](https://bitcointalk.org/index.php?topic=583449.0)
+* [Boolberry Forum](http://boolberry.com/forum/)
+* [Boolberry Github](https://github.com/cryptozoidberg/boolberry)
 * IRC (freenode)
-  * Support / general discussion join #monero: https://webchat.freenode.net/?channels=#monero
+  * Support / general discussion join #monero: https://webchat.freenode.net/?channels=#monero, https://webchat.freenode.net/?channels=#boolberry
   * Development discussion join #monero-dev: https://webchat.freenode.net/?channels=#monero-dev
-
 
 #### Pools Using This Software
 
@@ -119,7 +120,7 @@ npm update
 #### 2) Configuration
 
 
-*Warning for Cyrptonote coins other than Monero:* this software may or may not work with any given cryptonote coin.
+*Warning for Cryptonote coins other than Monero:* this software may or may not work with any given cryptonote coin.
 Be wary of altcoins that change the number of minimum coin units because you will have to reconfigure several config
 values to account for those changes. Unless you're offering a bounty reward - do not open an issue asking for help
 getting a coin other than Monero working with this software.
@@ -133,9 +134,16 @@ Explanation for each field:
 /* Used for storage in redis so multiple coins can share the same redis instance. */
 "coin": "monero",
 
+/* BBR ONLY - this name is hardcoded in testing for whether to perform 
+boolberry-specific functionality in pool code. (To be implemented. Only works for 
+bbr atm)*/
+/* "coin": "boolberry", */
+
 /* Used for front-end display */
 "symbol": "MRO",
 
+/* BBR ONLY - */
+/* "symbol": "BBR", /*
 "logging": {
 
     "files": {
@@ -175,6 +183,14 @@ Explanation for each field:
     /* Poll RPC daemons for new blocks every this many milliseconds. */
     "blockRefreshInterval": 1000,
 
+	/* BBR ONLY - Location to save out scratchpad that can be used for -k option to minerd. Needs
+       to be a location that the daemon has write access to and where it is served by
+       http. */
+        "scratchpadFilePath": "/var/www/htdocs/node-cryptonote-pool-bbr/scratchpad.bin",
+
+	/* BBR ONLY - How often the scratchpad is saved in seconds. */
+        "scratchpadFileUpdateInterval": 14400000,
+
     /* How many seconds until we consider a miner disconnected. */
     "minerTimeout": 900,
 
@@ -200,11 +216,15 @@ Explanation for each field:
        individual miners based on their hashrate in order to lower networking and CPU
        overhead. */
     "varDiff": {
+	/* BBR ONLY - 
+		"minDiff: 50000 /*
         "minDiff": 2, //Minimum difficulty
+	/* BBR ONLY - This should probably be much higher for BBR */
         "maxDiff": 100000,
         "targetTime": 100, //Try to get 1 share per this many seconds
         "retargetTime": 30, //Check to see if we should retarget every this many seconds
         "variancePercent": 30, //Allow time to very this % from target without retargeting
+	/* BBR ONLY - This should probably be much higher for BBR */
         "maxJump": 100 //Limit diff percent increase/decrease in a single retargetting
     },
 
@@ -423,6 +443,12 @@ Donations
 ---------
 * BTC: `1667jMt7NTZDaC8WXAxtMYBR8DPWCVoU4d`
 * MRO: `48Y4SoUJM5L3YXBEfNQ8bFNsvTNsqcH5Rgq8RF7BwpgvTBj2xr7CmWVanaw7L4U9MnZ4AG7U6Pn1pBhfQhFyFZ1rL1efL8z`
+
+For Boolberry devs
+
+* BBR: `1KfzJfoA2pbB6J2ee2JG7wYSqwKtdoqs97pVMdB471FXArr1ce52Wm1BCWdAv9JAxZTa7wcUkq2s695Nmn59HgZ6VVnSjfp`
+* XMR/MRO: `41id8jHp2UiVuSKJcq9D78CQp9Ku2ecqvWL76kUCMDxzA5Q4rAbTHJSijWC33aPjMD92Dbs8XBG3yU3neWGFfmB57WNkZxb`
+* BTC: `1LBvA9X7KToPPKJFL8E5qdePhUoYCJiEfW`
 
 Credits
 ===

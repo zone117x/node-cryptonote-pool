@@ -1,0 +1,111 @@
+{
+    "coin": "boolberry",
+    "symbol": "BBR",
+
+    "logging": {
+        "files": {
+            "level": "info",
+            "directory": "logs",
+            "flushInterval": 5
+        },
+        "console": {
+            "level": "info",
+            "colors": true
+        }
+    },
+
+    "poolServer": {
+        "enabled": true,
+        "clusterForks": "auto",
+        "poolAddress": "1KfzJfoA2pbB6J2ee2JG7wYSqwKtdoqs97pVMdB471FXArr1ce52Wm1BCWdAv9JAxZTa7wcUkq2s695Nmn59HgZ6VVnSjfp",
+        "blockRefreshInterval": 1000,
+        "scratchpadFilePath": "/home/clintar/NetBeansProjects/myserverscratchpad.bin",
+        "scratchpadFileUpdateInterval": 14400000,
+        "minerTimeout": 9000,
+        "ports": [
+            {
+                "port": 5555,
+                "protocol": "tcp",
+                "difficulty": 1000000,
+                "desc": "Mid range CPUs"
+            },
+            {
+                "port": 7777,
+                "protocol": "tcp",
+                "difficulty": 1800000,
+                "desc": "High end CPUs"
+            },
+            {
+                "port": 8888,
+                "difficulty": 10000,
+                "desc": "Hidden port",
+                "hidden": true
+            }
+        ],
+        "varDiff": {
+            "minDiff": 50000,
+            "maxDiff": 1000000,
+            "targetTime": 10,
+            "retargetTime": 10,
+            "variancePercent": 10,
+            "maxJump": 50000
+        },
+        "shareTrust": {
+            "enabled": false,
+            "min": 10,
+            "stepDown": 3,
+            "threshold": 10,
+            "penalty": 30
+        },
+        "banning": {
+            "enabled": false,
+            "time": 600,
+            "invalidPercent": 25,
+            "checkThreshold": 300
+        }
+    },
+
+    "payments": {
+        "enabled": true,
+        "interval": 600,
+        "maxAddresses": 50,
+        "mixin": 0,
+        "transferFee": 5000000000,
+        "minPayment": 100000000000,
+        "denomination": 100000000000
+    },
+
+    "blockUnlocker": {
+        "enabled": true,
+        "interval": 30,
+        "depth": 60,
+        "poolFee": 2,
+        "devDonation": 0.1,
+        "coreDevDonation": 0.1
+    },
+
+    "api": {
+        "enabled": true,
+        "hashrateWindow": 600,
+        "updateInterval": 3,
+        "port": 8117,
+        "blocks": 30,
+        "payments": 30,
+        "password": "your_password"
+    },
+
+    "daemon": {
+        "host": "127.0.0.1",
+        "port": 50102
+    },
+
+    "wallet": {
+        "host": "127.0.0.1",
+        "port": 50103
+    },
+
+    "redis": {
+        "host": "127.0.0.1",
+        "port": 6379
+    }
+}
