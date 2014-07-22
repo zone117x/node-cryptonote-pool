@@ -68,21 +68,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 #### Pools Using This Software
 
-* http://pool.cryptoescrow.eu
-* http://extremepool.org
 * http://xminingpool.com
-* http://xmr.poolto.be
-* http://moneropool.com
-* http://extremehash.com
-* http://hashinvest.net
-* http://moneropool.com.br
-* http://monerominers.net
-* http://monero.crypto-pool.fr
-* http://cryptonotepool.org.uk
-* http://minexmr.com
-* http://kippo.eu
-* http://coinmine.pl/xmr
-* http://moneropool.org
 
 
 Usage
