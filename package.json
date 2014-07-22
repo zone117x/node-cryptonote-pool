@@ -1,11 +1,11 @@
 {
-    "name": "cryptonote-pool",
+    "name": "cryptonote-universal-pool",
     "version": "0.0.1",
     "license": "GPL-2.0",
     "author": "Matthew Little",
     "repository": {
         "type": "git",
-        "url": "https://github.com/zone117x/node-cryptonote-pool.git"
+        "url": "https://github.com/fancoder/cryptonote-universal-pool.git"
     },
     "dependencies": {
         "bignum": "*",
@@ -14,8 +14,8 @@
         "cli-color": "*",
         "dateformat": "*",
         "base58-native": "*",
-        "multi-hashing": "git://github.com/zone117x/node-multi-hashing.git",
-        "cryptonote-util": "git://github.com/LucasJones/node-cryptonote-util.git"
+        "multi-hashing": "git://github.com/fancoder/node-multi-hashing.git",
+        "cryptonote-util": "git://github.com/fancoder/node-cryptonote-util.git"
     },
     "engines": {
         "node": ">=0.10"

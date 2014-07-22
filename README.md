@@ -97,7 +97,7 @@ you are using - a good place to start with redis is [data persistence](http://re
 Clone the repository and run `npm update` for all the dependencies to be installed:
 
 ```bash
-git clone https://github.com/zone117x/node-cryptonote-pool.git pool
+git clone https://github.com/fancoder/cryptonote-universal-pool.git pool
 cd pool
 npm update
 ```
