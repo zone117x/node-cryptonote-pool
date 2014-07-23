@@ -238,6 +238,12 @@ bbr atm)*/
         "penalty": 30 //Upon breaking trust require this many valid share before trusting
     },
 
+        /* Only used with old http protocol and only works with the simpleminer. */
+        "longPolling": {
+            "enabled": false,
+            "timeout": 8500
+        },
+
     /* If under low-diff share attack we can ban their IP to reduce system/network load. */
     "banning": {
         "enabled": true,
@@ -302,16 +308,18 @@ bbr atm)*/
     "port": 6379
 }
 ```
+#### 3) Configure your pool's scratchpad
 
-#### 3) [Optional] Configure cryptonote-easy-miner for your pool
-Your miners that are Windows users can use [cryptonote-easy-miner](https://github.com/zone117x/cryptonote-easy-miner)
-which will automatically generate their wallet address and stratup multiple threads of simpleminer. You can download
-it and edit the `config.ini` file to point to your own pool.
-Inside the `easyminer` folder, edit `config.init` to point to your pool details
-```ini
-pool_host=example.com
-pool_port=5555
+For normal work minerd need to be pointed to inital scratchpad file. Configure your pool with target folder/scratchpad.bin file and time interval for updating scratchpad file, and pool via daemon rpc will be regularly update shared scratchpad file. 
+
+```javascript
+/* Path to local scratchpad file that will be shared with http server */
+"scratchpadFilePath": "/usr/share/nginx/html/scratchpad.bin",
+
+/* Local scratchpad file update interval, milliseconds (4 hours by default) */
+"scratchpadFileUpdateInterval": 14400000, 
 ```
+scratchpadFilePath should point to file that is shared by your http server, and you have to provide a link to this file in your mining instructions (mining command-line params)
 
 Rezip and upload to your server or a file host. Then change the `easyminerDownload` link in your `config.json` file to
 point to your zip file.
@@ -391,10 +399,19 @@ The following files are included so that you can customize your pool website wit
 to `index.html` or other front-end files thus reducing the difficulty of merging updates with your own changes:
 * `custom.css` for creating your own pool style
 * `custom.js` for changing the functionality of your pool website
+```
 
 
+#### 7) [Optional] Configure cryptonote-easy-miner for your pool
+Your miners that are Windows users can use [cryptonote-easy-miner](https://mega.co.nz/#!oURlDLKB!g-REMRhaABVmCqrj2dqJcuaGblsNp-k2qtkdCDiK5So)
+which will automatically generate their wallet address and stratup multiple threads of simpleminer. You can download
+it and edit the `config.ini` file to point to your own pool.
+Inside the `easyminer` folder, edit `config.init` to point to your pool details
+```ini
+pool_host=example.com
+pool_port=5555
+```
 Then simply serve the files via nginx, Apache, Google Drive, or anything that can host static content.
-
 
 #### Upgrading
 When updating to the latest code its important to not only `git pull` the latest from this repo, but to also update
