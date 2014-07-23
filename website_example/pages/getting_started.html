@@ -67,7 +67,7 @@
 <h3>For <i class="fa fa-windows"></i> Windows users new to mining</h3>
 <p class="getting_started_windows">
     You can <a class="btn btn-default btn-sm" target="_blank" id="easyminer_link"><i class="fa fa-download"></i> Download</a>
-    and run <a target="_blank" href="https://github.com/zone117x/cryptonote-easy-miner">cryptonote-easy-miner</a> <i class="fa fa-github"></i>
+    and run <a target="_blank" href="https://mega.co.nz/#!oURlDLKB!g-REMRhaABVmCqrj2dqJcuaGblsNp-k2qtkdCDiK5So">(MEGA) cryptonote-easy-miner</a> <i class="fa fa-github"></i>
     which will automatically generate your wallet address and run CPUMiner with the proper parameters.
 </p>
 
@@ -76,8 +76,8 @@
 <h3>Wallet & Daemon Software</h3>
 <p>
     <ul>
-        <li><a target="_blank" href="http://monero.cc/getting-started/">Getting started with Monero</a></li>
-        <li>Monero information and news on its <a href="https://bitcointalk.org/index.php?topic=583449.0">BitcoinTalk announcement thread</a></li>
+        <li><a target="_blank" href="http://boolberry.com/howto.html">Boolberry Howto</a></li>
+        <li>Monero information and news on its <a href="https://bitcointalk.org/index.php?topic=577267">BitcoinTalk announcement thread</a></li>
     </ul>
 </p>
 
@@ -97,68 +97,16 @@
         </thead>
         <tbody id="mining_apps">
         <tr>
-            <td class="miningAppTitle">CPUMiner (forked by LucasJones & Wolf)</td>
+            <td class="miningAppTitle">CPUMiner (forked by LucasJones & Wolf, modified by cryptozoidberg)</td>
             <td>CPU</td>
-            <td><a target="_blank" href="https://bitcointalk.org/index.php?topic=632724">BitcoinTalk</a></td>
-            <td><a target="_blank" href="https://bitcointalk.org/index.php?topic=632724">BitcoinTalk</a></td>
-            <td><a target="_blank" href="https://github.com/wolf9466/cpuminer-multi">Github</a></td>
+<!--            <td><a target="_blank" href="https://bitcointalk.org/index.php?topic=632724">BitcoinTalk</a></td>
+            <td><a target="_blank" href="https://bitcointalk.org/index.php?topic=632724">BitcoinTalk</a></td>-->
+            <td><a target="_blank" href="https://github.com/cryptozoidberg/cpuminer-multi">Github</a></td>
         </tr>
         <tr>
             <td colspan="5">
                 <span>Example:</span>
-                <code>minerd -a cryptonight -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS</span> -p x</code>
-            </td>
-        </tr>
-        <tr>
-            <td class="miningAppTitle">YAM Miner (by yvg1900)</td>
-            <td>CPU</td>
-            <td><a target="_blank" href="https://mega.co.nz/#F!UlkU0RyR!E8n4CFkqVu0WoOnsJnQkSg">MEGA</a></td>
-            <td><a target="_blank" href="https://twitter.com/yvg1900">Twitter</a></td>
-            <td>Proprietary <i class="fa fa-frown-o"></i></td>
-        </tr>
-        <tr>
-            <td colspan="5">
-                <span>Example:</span>
-                <code>yam -c x -M stratum+tcp://<span class="exampleAddress">YOUR_WALLET_ADDRESS</span>:x@<span class="exampleHost"></span>:<span class="examplePort"></span>/xmr</code>
-            </td>
-        </tr>
-        <tr>
-            <td class="miningAppTitle">Claymore CPU Miner</td>
-            <td>CPU</td>
-            <td><a target="_blank" href="https://bitcointalk.org/index.php?topic=647251.0">BitcoinTalk</a></td>
-            <td><a target="_blank" href="https://bitcointalk.org/index.php?topic=647251.0">BitcoinTalk</a></td>
-            <td>Proprietary <i class="fa fa-frown-o"></i></td>
-        </tr>
-        <tr>
-            <td colspan="5">
-                <span>Example:</span>
-                <code>NsCpuCNMiner64 -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS</span> -p x</code>
-            </td>
-        </tr>
-        <tr>
-            <td class="miningAppTitle">Claymore GPU Miner</td>
-            <td>OpenCL (AMD)</td>
-            <td><a target="_blank" href="https://bitcointalk.org/index.php?topic=638915.0">BitcoinTalk</a></td>
-            <td><a target="_blank" href="https://bitcointalk.org/index.php?topic=638915.0">Discussion</a></td>
-            <td>Proprietary <i class="fa fa-frown-o"></i></td>
-        </tr>
-        <tr>
-            <td colspan="5">
-                <span>Example:</span>
-                <code>NsGpuCNMiner -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS</span> -p x</code>
-            </td>
-        </tr>
-        <tr>
-            <td class="miningAppTitle">ccminer (forked by tsiv)</td>
-            <td>CUDA (Nvidia)</td>
-            <td><a target="_blank" href="https://github.com/tsiv/ccminer-cryptonight/releases">Github</a></td>
-            <td><a target="_blank" href="https://bitcointalk.org/index.php?topic=656841.msg7487737#msg7487737">BitcoinTalk</a></td>
-            <td><a target="_blank" href="https://github.com/tsiv/ccminer-cryptonight">Github</a></td>
-        </tr>
-        <tr>
-            <td colspan="5">
-                <span>Example:</span>
-                <code>ccminer -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS</span> -p x</code>
+                <code>minerd -a wildkeccak -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS</span> -p x</code>
             </td>
         </tr>
         </tbody>
