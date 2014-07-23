@@ -4,7 +4,7 @@ var coinUnits = 1000000000000;
 
 var poolHost = "cryppit.com";
 
-var irc = "irc.freenode.net/#monero";
+var irc = "irc.freenode.net/#boolberry";
 
 var email = "support@cryppit.com";
 
