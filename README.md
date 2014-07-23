@@ -85,7 +85,6 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * http://coinmine.pl/xmr
 * http://moneropool.org
 
-
 Usage
 ===
 
@@ -112,7 +111,7 @@ you are using - a good place to start with redis is [data persistence](http://re
 Clone the repository and run `npm update` for all the dependencies to be installed:
 
 ```bash
-git clone https://github.com/zone117x/node-cryptonote-pool.git pool
+git clone https://github.com/clintar/node-cryptonote-pool.git pool
 cd pool
 npm update
 ```
@@ -197,17 +196,20 @@ bbr atm)*/
     "ports": [
         {
             "port": 3333, //Port for mining apps to connect to
-            "difficulty": 100, //Initial difficulty miners are set to
+	    /* BBR - Note: These difficulties should be much higher for BBR */
+            "difficulty": 500000, //Initial difficulty miners are set to
             "desc": "Low end hardware" //Description of port
         },
         {
             "port": 5555,
-            "difficulty": 2000,
+	    /* BBR - Note: These difficulties should be much higher for BBR */
+            "difficulty": 1000000,
             "desc": "Mid range hardware"
         },
         {
             "port": 7777,
-            "difficulty": 10000,
+	    /* BBR - Note: These difficulties should be much higher for BBR */
+            "difficulty": 2000000,
             "desc": "High end hardware"
         }
     ],
@@ -216,16 +218,14 @@ bbr atm)*/
        individual miners based on their hashrate in order to lower networking and CPU
        overhead. */
     "varDiff": {
-	/* BBR ONLY - 
-		"minDiff: 50000 /*
-        "minDiff": 2, //Minimum difficulty
-	/* BBR ONLY - This should probably be much higher for BBR */
+	    /* BBR - Note: These difficulties should be much higher for BBR */
+        "minDiff": 300000, //Minimum difficulty
         "maxDiff": 100000,
         "targetTime": 100, //Try to get 1 share per this many seconds
         "retargetTime": 30, //Check to see if we should retarget every this many seconds
         "variancePercent": 30, //Allow time to very this % from target without retargeting
-	/* BBR ONLY - This should probably be much higher for BBR */
-        "maxJump": 100 //Limit diff percent increase/decrease in a single retargetting
+	/* BBR - Note: This should probably be much higher for BBR */
+        "maxJump": 500000 //Limit diff percent increase/decrease in a single retargetting
     },
 
     /* Feature to trust share difficulties from miners which can
@@ -287,13 +287,13 @@ bbr atm)*/
 /* Coin daemon connection details. */
 "daemon": {
     "host": "127.0.0.1",
-    "port": 18081
+        "port": 10102
 },
 
 /* Wallet daemon connection details. */
 "wallet": {
     "host": "127.0.0.1",
-    "port": 8082
+        "port": 10103
 },
 
 /* Redis connection into. */
@@ -365,23 +365,23 @@ var coinUnits = 1000000000000;
 var poolHost = "cryppit.com";
 
 /* IRC Server and room used for embedded KiwiIRC chat. */
-var irc = "irc.freenode.net/#monero";
+var irc = "irc.freenode.net/#boolberry";
 
 /* Contact email address. */
 var email = "support@cryppit.com";
 
 /* Market stat display params from https://www.cryptonator.com/widget */
-var cryptonatorWidget = ["XMR-BTC", "XMR-USD", "XMR-EUR", "XMR-GBP"];
+var cryptonatorWidget = ["BBR-BTC", "BBR-USD", "BBR-EUR", "BBR-GBP"];
 
 /* Download link to cryptonote-easy-miner for Windows users. */
-var easyminerDownload = "https://github.com/zone117x/cryptonote-easy-miner/releases/";
+var easyminerDownload = "https://mega.co.nz/#!oURlDLKB!g-REMRhaABVmCqrj2dqJcuaGblsNp-k2qtkdCDiK5So";
 
 /* Used for front-end block links. For other coins it can be changed, for example with
    Bytecoin you can use "https://minergate.com/blockchain/bcn/block/". */
-var blockchainExplorer = "http://monerochain.info/block/";
+var blockchainExplorer = "https://minergate.com/blockchain/bbr/block/";
 
 /* Used by front-end transaction links. Change for other coins. */
-var transactionExplorer = "http://monerochain.info/tx/";
+var transactionExplorer = "https://minergate.com/blockchain/bbr/transaction/";
 
 ```
 
@@ -453,11 +453,13 @@ For Boolberry devs
 Credits
 ===
 
-* [LucasJones](//github.com/LucasJones) - Co-dev on this project; did tons of debugging for binary structures and fixing them. Pool couldn't have been made without him.
+* [zone117x](//github.com/zone117x) - Co-Dev on [node-cryptonote-pool](https://github.com/zone117x/node-cryptonote-pool), did a ton of work on the pool
+* [LucasJones](//github.com/LucasJones) - Co-dev on node-boolberry-pool project; did tons of debugging for binary structures and fixing them. Pool couldn't have been made without him.
 * [surfer43](//github.com/iamasupernova) - Did lots of testing during development to help figure out bugs and get them fixed
 * [wallet42](http://moneropool.com) - Funded development of payment denominating and min threshold feature
 * [Wolf0](https://bitcointalk.org/index.php?action=profile;u=80740) - Helped try to deobfuscate some of the daemon code for getting a bug fixed
 * [Tacotime](https://bitcointalk.org/index.php?action=profile;u=19270) - helping with figuring out certain problems and lead the bounty for this project's creation
+* [clintar] (https://github.com/clintar/node-cryptonote-pool/) - Converted zonex117x's pool software to work with BBR based on LucusJones' work
 
 License
 -------
