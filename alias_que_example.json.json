@@ -1,0 +1,17 @@
+{
+   "aliases_que": [
+       {
+           "alias": "darth-vader",
+           "address": "1Dmynv2xdH1WJKDh4ynWuDYrFbPRw15WDC6UDnA82SLi4zBFEVQ3fu4VT2Lc7T7WkxgnGipZAoR4LMrdyK2XiPC6JWyD2bZ",
+           "tracking_key": "",
+           "comment": "Some sign here, www.someaddresshere.com"
+ 
+       },
+       {
+           "alias": "darth-maul",
+           "address": "1Dmynv2xdH1WJKDh4ynWuDYrFbPRw15WDC6UDnA82SLi4zBFEVQ3fu4VT2Lc7T7WkxgnGipZAoR4LMrdyK2XiPC6JWyD2bZ",
+           "tracking_key": "",
+           "comment": "Some sign here, www.someaddresshere.com"
+       }
+   ]
+}
