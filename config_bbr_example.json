@@ -40,6 +40,12 @@
                 "difficulty": 10000,
                 "desc": "Hidden port",
                 "hidden": true
+            },
+			{
+                "port": 1111,
+                "difficulty": 1800000,
+                "desc": "High end GPUs",
+                "hidden": false
             }
         ],
         "varDiff": {
