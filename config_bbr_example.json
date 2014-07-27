@@ -44,6 +44,7 @@
 			{
                 "port": 1111,
                 "difficulty": 1800000,
+				"protocol": "http",
                 "desc": "High end GPUs",
                 "hidden": false
             }
