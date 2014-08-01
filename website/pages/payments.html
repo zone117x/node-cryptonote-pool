@@ -50,6 +50,11 @@
 
 
 <script>
+
+    function getTransactionUrl(id) {
+        return transactionExplorer.replace('{symbol}', lastStats.config.symbol.toLowerCase()).replace('{id}', id);
+    }
+
     currentPage = {
         destroy: function(){
             if (xhrGetPayments) xhrGetPayments.abort();

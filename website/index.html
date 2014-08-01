@@ -159,7 +159,7 @@
     }
 
     function formatPaymentLink(hash){
-        return '<a target="_blank" href="' + transactionExplorer + hash + '">' + hash + '</a>';
+        return '<a target="_blank" href="' + getTransactionUrl(hash) + '">' + hash + '</a>';
     }
 
     function getPaymentRowElement(payment, jsonString){

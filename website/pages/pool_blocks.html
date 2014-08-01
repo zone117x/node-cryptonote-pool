@@ -130,7 +130,7 @@
         }
 
         function formatBlockLink(hash){
-            return '<a target="_blank" href="' + blockchainExplorer + hash + '">' + hash + '</a>';
+            return '<a target="_blank" href="' + getBlockchainUrl(hash) + '">' + hash + '</a>';
         }
 
         var blockStatusClasses = {
