@@ -73,6 +73,7 @@
         "mixin": 3,
         "transferFee": 5000000000,
         "minPayment": 100000000000,
+        "maxTransactionAmount": 0,
         "denomination": 100000000000
     },
 

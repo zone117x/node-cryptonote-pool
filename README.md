@@ -228,6 +228,7 @@ Explanation for each field:
     "mixin": 3, //number of transactions yours is indistinguishable from
     "transferFee": 5000000000, //fee to pay for each transaction
     "minPayment": 100000000000, //miner balance required before sending payment
+    "maxTransactionAmount": 0, //split transactions by this amount(to prevent "too big transaction" error)
     "denomination": 100000000000 //truncate to this precision and store remainder
 },
 
