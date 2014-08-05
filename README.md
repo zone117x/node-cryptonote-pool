@@ -201,6 +201,13 @@ Explanation for each field:
         "maxJump": 100 //Limit diff percent increase/decrease in a single retargetting
     },
 
+    /* Set difficulty on miner client side by passing <address> param with .<difficulty> postfix
+       minerd -u 4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn.5000 */
+    "fixedDiff": {
+        "enabled": true,
+        "separator": ".", // character separator between <address> and <difficulty>
+    },
+
     /* Feature to trust share difficulties from miners which can
        significantly reduce CPU load. */
     "shareTrust": {

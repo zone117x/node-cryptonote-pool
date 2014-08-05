@@ -44,12 +44,16 @@
             }
         ],
         "varDiff": {
-            "minDiff": 2,
-            "maxDiff": 100000,
+            "minDiff": 100,
+            "maxDiff": 200000,
             "targetTime": 100,
             "retargetTime": 30,
             "variancePercent": 30,
             "maxJump": 100
+        },
+        "fixedDiff": {
+            "enabled": true,
+            "addressSeparator": "."
         },
         "shareTrust": {
             "enabled": true,
