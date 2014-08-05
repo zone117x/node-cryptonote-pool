@@ -15,3 +15,5 @@ var easyminerDownload = "https://github.com/zone117x/cryptonote-easy-miner/relea
 var blockchainExplorer = "http://chainradar.com/{symbol}/block/{id}";
 
 var transactionExplorer = "http://chainradar.com/{symbol}/transaction/{id}";
+
+var themeCss = "themes/default-theme.css";

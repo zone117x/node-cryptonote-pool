@@ -287,6 +287,8 @@
     }
 
     $(function(){
+		$("head").append("<link rel='stylesheet' href=" + themeCss + ">");
+		
         $.get(api + '/stats', function(data){
             lastStats = data;
             updateIndex();
