@@ -282,6 +282,63 @@ Explanation for each field:
     "host": "127.0.0.1",
     "port": 6379
 }
+
+/* Monitoring RPC services. Statistics will be displayed in Admin panel */
+"monitoring": {
+    "daemon": {
+        "checkInterval": 60, //interval of sending rpcMethod request
+        "rpcMethod": "getblockcount" //RPC method name
+    },
+    "wallet": {
+        "checkInterval": 60,
+        "rpcMethod": "getbalance"
+    }
+
+/* Collect pool statistics to display in frontend charts  */
+"charts": {
+    "pool": {
+        "hashrate": {
+            "enabled": true, //enable data collection and chart displaying in frontend
+            "updateInterval": 60, //how often to get current value
+            "stepInterval": 1800, //chart step interval calculated as average of all updated values
+            "maximumPeriod": 86400 //chart maximum periods (chart points number = maximumPeriod / stepInterval = 48)
+        },
+        "workers": {
+            "enabled": true,
+            "updateInterval": 60,
+            "stepInterval": 1800, //chart step interval calculated as maximum of all updated values
+            "maximumPeriod": 86400
+        },
+        "difficulty": {
+            "enabled": true,
+            "updateInterval": 1800,
+            "stepInterval": 10800,
+            "maximumPeriod": 604800
+        },
+        "price": { //USD price of one currency coin received from cryptonator.com/api
+            "enabled": true,
+            "updateInterval": 1800,
+            "stepInterval": 10800,
+            "maximumPeriod": 604800
+        },
+        "profit": { //Reward * Rate / Difficulty
+            "enabled": true,
+            "updateInterval": 1800,
+            "stepInterval": 10800,
+            "maximumPeriod": 604800
+        }
+    },
+    "user": { //chart data displayed in user stats block
+        "hashrate": {
+            "enabled": true,
+            "updateInterval": 180,
+            "stepInterval": 1800,
+            "maximumPeriod": 86400
+        },
+        "payments": { //payment chart uses all user payments data stored in DB
+            "enabled": true
+        }
+    }
 ```
 
 #### 3) [Optional] Configure cryptonote-easy-miner for your pool

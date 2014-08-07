@@ -1,154 +1,258 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
+<meta charset="UTF-8">
+<title></title>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.4.0/jquery.timeago.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.4.0/jquery.timeago.min.js"></script>
 
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.3.0/handlebars.min.js"></script>
 
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
-    <style>
-        #statsHolder{
-            margin-bottom: 0;
-        }
-        .luckGood{
-            color: darkgreen;
-        }
-        .luckBad{
-            color: darkred;
-        }
-    </style>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-    <script src="config.js"></script>
+<link href="custom.css" rel="stylesheet">
+<script src="custom.js"></script>
 
-    <script>
+<style>
+	#statsHolder {
+		margin-bottom: 0;
+	}
 
+	.luckGood {
+		color: #03a678;
+	}
 
-        $(function(){
-            getStats();
-        });
+	.luckBad {
+		color: #e66b6b;
+	}
 
+	body {
+		padding-top: 65px;
+		padding-bottom: 80px;
+		overflow-y: scroll;
+	}
 
-        var docCookies = {
-            getItem: function (sKey) {
-                return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
-            },
-            setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
-                if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
-                var sExpires = "";
-                if (vEnd) {
-                    switch (vEnd.constructor) {
-                        case Number:
-                            sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
-                            break;
-                        case String:
-                            sExpires = "; expires=" + vEnd;
-                            break;
-                        case Date:
-                            sExpires = "; expires=" + vEnd.toUTCString();
-                            break;
-                    }
-                }
-                document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
-                return true;
-            },
-            removeItem: function (sKey, sPath, sDomain) {
-                if (!sKey || !this.hasItem(sKey)) { return false; }
-                document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + ( sDomain ? "; domain=" + sDomain : "") + ( sPath ? "; path=" + sPath : "");
-                return true;
-            },
-            hasItem: function (sKey) {
-                return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
-            }
-        };
+	.navbar {
+		font-size: 1.2em;
+	}
 
+	.layout {
+		position: relative;
+	}
 
-        function getReadableCoins(coins){
-            return (parseInt(coins || 0) / coinUnits).toFixed(coinUnits.toString().length - 1);
-        }
+	#loading {
+		font-size: 2em;
+		position: absolute;
+		width: 100%;
+		text-align: center;
+		top: 10%;
+	}
 
-        function getStats(promptPassword){
+	footer {
+		position: fixed;
+		bottom: 0;
+		width: 100%;
+		background-color: #f5f5f5;
+	}
 
-            var password = docCookies.getItem('password');
+	footer > div {
+		margin: 10px auto;
+		text-align: center;
+	}
+</style>
+
+<script src="config.js"></script>
+
+<script>
 
 
-            if (!password || promptPassword)
-                password = prompt('Enter admin password');
+	$(function() {
+		$.get(api + '/stats', function(data) {
+			routePage();
+		});
+	});
+
+	var docCookies = {
+		getItem: function(sKey) {
+			return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+		},
+		setItem: function(sKey, sValue, vEnd, sPath, sDomain, bSecure) {
+			if(!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) {
+				return false;
+			}
+			var sExpires = "";
+			if(vEnd) {
+				switch(vEnd.constructor) {
+					case Number:
+						sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+						break;
+					case String:
+						sExpires = "; expires=" + vEnd;
+						break;
+					case Date:
+						sExpires = "; expires=" + vEnd.toUTCString();
+						break;
+				}
+			}
+			document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+			return true;
+		},
+		removeItem: function(sKey, sPath, sDomain) {
+			if(!sKey || !this.hasItem(sKey)) {
+				return false;
+			}
+			document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + ( sDomain ? "; domain=" + sDomain : "") + ( sPath ? "; path=" + sPath : "");
+			return true;
+		},
+		hasItem: function(sKey) {
+			return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+		}
+	};
+
+	function getReadableCoins(coins) {
+		return (parseInt(coins || 0) / coinUnits).toFixed(coinUnits.toString().length - 1);
+	}
+
+	function getReadableHashRateString(hashrate) {
+		var i = 0;
+		var byteUnits = [' H', ' KH', ' MH', ' GH', ' TH', ' PH' ];
+		while(hashrate > 1024) {
+			hashrate = hashrate / 1024;
+			i++;
+		}
+		return hashrate.toFixed(2) + byteUnits[i];
+	}
+
+	window.onhashchange = function() {
+		routePage();
+	};
+
+	function fetchLiveStats() {
+		$.ajax({
+			url: api + '/live_stats',
+			dataType: 'json',
+			cache: 'false'
+		}).done(function(data) {
+			//pulseLiveUpdate();
+			//lastStats = data;
+			//updateIndex();
+			if(currentPage.update) {
+				currentPage.update();
+			}
+		}).always(function() {
+			fetchLiveStats();
+		});
+	}
+
+	// init Handlebars template
+	function renderTemplate(usersData, templateId, view) {
+		var source = $(templateId).html(),
+			template = Handlebars.compile(source),
+			context = usersData,
+			html = template(context);
+		$(view).html(html);
+	}
+
+	function sortTable() {
+		var table = $(this).parents('table').eq(0),
+			rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
+		this.asc = !this.asc;
+		if(!this.asc) {
+			rows = rows.reverse()
+		}
+		for(var i = 0; i < rows.length; i++) {
+			table.append(rows[i])
+		}
+	}
+
+	function comparer(index) {
+		return function(a, b) {
+			var valA = getCellValue(a, index), valB = getCellValue(b, index);
+			return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.localeCompare(valB)
+		}
+	}
+
+	function getCellValue(row, index) {
+		return $(row).children('td').eq(index).data("sort")
+	}
+
+	var currentPage;
+	var xhrPageLoading;
+	function routePage(loadedCallback) {
+
+		if(currentPage && currentPage.destroy) {
+			currentPage.destroy();
+		}
+		$('#page').html('');
+		$('#loading').show();
+
+		if(xhrPageLoading) {
+			xhrPageLoading.abort();
+		}
+
+		$('.hot_link').removeClass('active');
+		var $link = $('a.hot_link[href="' + (window.location.hash || '#') + '"]');
+
+		$link.addClass('active');
+		var page = $link.data('page');
+
+		xhrPageLoading = $.ajax({
+			url: 'pages/' + page,
+			cache: false,
+			success: function(data) {
+				$('#loading').hide();
+				$('#page').show().html(data);
+				currentPage && currentPage.update && currentPage.update();
+				if(loadedCallback) {
+					loadedCallback();
+				}
+			}
+		});
+	}
 
 
-            $('#loading').show();
-            $.ajax({
-                url: api + '/admin_stats',
-                data: {password: password},
-                success: function(data){
-                    docCookies.setItem('password', password, Infinity);
-                    $('#loading').hide();
-                    renderData(data);
-                },
-                error: function(e){
-                    docCookies.removeItem('password');
-                    getStats(true);
-                }
-            });
-        }
-
-        var formatLuck = function(difficulty, shares){
-
-            if (difficulty > shares){
-                var percent = 100 - Math.round(shares / difficulty * 100);
-                return '<span class="luckGood">' + percent + '%</span>';
-            }
-            else{
-                var percent = (100 - Math.round(difficulty / shares * 100)) * -1;
-                return '<span class="luckBad">' + percent + '%</span>';
-            }
-
-        };
-
-        function renderData(data){
-            $('#totalOwed').text(getReadableCoins(data.totalOwed));
-            $('#totalPaid').text(getReadableCoins(data.totalPaid));
-            $('#totalMined').text(getReadableCoins(data.totalRevenue));
-            $('#profit').text(getReadableCoins(data.totalRevenue - data.totalOwed - data.totalPaid));
-            $('#averageLuck').html(formatLuck(data.totalDiff, data.totalShares));
-            $('#orphanPercent').text((data.blocksOrphaned / data.blocksUnlocked * 100).toFixed(2));
-            $('#registeredAddresses').text(data.totalWorkers);
-        }
-
-    </script>
+</script>
 
 </head>
 <body>
 
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">Admin Center</a>
+		</div>
+		<div class="collapse navbar-collapse">
+			<!-- <div class="navbar-form navbar-right">
+					<a href="" class="btn btn-primary"><i class="fa fa-sign-out"></i> Sign out</a>
+			</div> -->
+		</div>
+	</div>
+</div>
+
 <div class="container">
+	<div class="row">
+		<div class="col-sm-3">
+			<div class="list-group">
+				<a data-page="admin/statistics.html" href="#" class="list-group-item hot_link active"> <i class="fa fa-bar-chart-o"></i> Statistics </a> <a data-page="admin/monitoring.html" href="#monitoring" class="hot_link list-group-item"> <i class="fa fa-eye"></i> Monitoring </a> <a data-page="admin/userslist.html" href="#users_list" class=" hot_link list-group-item"> <i class="fa fa-users"></i> Users List </a>
+			</div>
+		</div>
+		<div class="col-sm-9 layout">
+			<p id="loading" class="text-center"><i class="fa fa-circle-o-notch fa-spin"></i></p>
 
-    <h3>Admin Center <i id="loading" class="fa fa-circle-o-notch fa-spin"></i></h3>
-
-    <hr>
-
-    <h4>Stats</h4>
-    <dl class="dl-horizontal" id="statsHolder">
-        <dt>Total Owed</dt><dd id="totalOwed">...</dd>
-        <dt>Total Paid</dt><dd id="totalPaid">...</dd>
-        <dt>Total Mined</dt><dd id="totalMined">...</dd>
-        <dt>Profit (before tx fees)</dt><dd id="profit">...</dd>
-        <dt>Average Luck</dt><dd id="averageLuck">...</dd>
-        <dt>Orphan Percent</dt><dd id="orphanPercent">...</dd>
-        <dt>Registered Addresses</dt><dd id="registeredAddresses">...</dd>
-    </dl>
-    <br>
-
-    <hr>
-
-    <h4>Miner Lookup</h4>
-
-
+			<div id="page"></div>
+		</div>
+	</div>
 </div>
 
 </body>

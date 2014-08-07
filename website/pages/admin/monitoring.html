@@ -1,0 +1,130 @@
+<!-- ///  define Handlebars template  /// -->
+<script id="monitoringInfo" type="text/x-handlebars-template">
+	<div class="tab-pane active" id="rpcLog">
+		<div class="row">
+			<div class="col-sm-6">
+				<h3>Daemon</h3>
+				<ul class="list-unstyled">
+					<li><strong>Last check:</strong> {{monitoringDaemon.lastCheck}}</li>
+					<li><strong>Last status:</strong>
+						<span id="daemonStatus">{{monitoringDaemon.lastStatus}}</span>
+					</li>
+					<li><strong>Last response:</strong>
+						<pre>{{monitoringDaemon.lastResponse}}</pre>
+					</li>
+					<li><strong>Last fail:</strong>
+						<span>{{monitoringDaemon.lastFail}}</span>
+					</li>
+					<li><strong>Last fail response:</strong>
+						<pre>{{monitoringDaemon.lastFailResponse}}</pre>
+					</li>
+				</ul>
+			</div>
+			<div class="col-sm-6">
+				<h3>Wallet</h3>
+				<ul class="list-unstyled">
+					<li><strong>Last check:</strong> {{monitoringWallet.lastCheck}}</li>
+					<li><strong>Last status:</strong>
+						<span id="walletStatus">{{monitoringWallet.lastStatus}}</span>
+					</li>
+					<li><strong>Last response:</strong>
+						<pre>{{monitoringWallet.lastResponse}}</pre>
+					</li>
+					<li><strong>Last fail:</strong>
+						<span>{{monitoringWallet.lastFail}}</span>
+					</li>
+					<li><strong>Last fail response:</strong>
+						<pre>{{monitoringWallet.lastFailResponse}}</span></pre>
+				</ul>
+			</div>
+		</div>
+
+		<h3>Logs</h3>
+
+		<table class="table table-hover table-striped logList" id="logTable">
+			<thead>
+			<tr>
+				<th class="sort">Name <i class="fa fa-sort"></i></th>
+				<th class="sort">Modified <i class="fa fa-sort"></i></th>
+				<th class="sort">Size <i class="fa fa-sort"></i></th>
+			</tr>
+			</thead>
+			<tbody>
+			{{#each logs}}
+			<tr>
+				<td data-sort="{{@key}}"><a href="{{this.link}}" target="_blank">{{@key}}</a></td>
+				<td data-sort="{{this.changed}}">{{this.changed}}</td>
+				<td data-sort="{{this.size}}">{{this.size}} bytes</td>
+			</tr>
+			{{/each}}
+			</tbody>
+		</table>
+	</div>
+</script>
+
+
+<script>
+	function getCheckTime(timestamp) {
+		return timestamp ? $.timeago(new Date(timestamp * 1000).toISOString()) : null;
+	}
+
+	function monitoringInfoParse(data) {
+		var monitoringDaemon = {
+			lastCheck: getCheckTime(data['monitoring'].daemon.lastCheck) || 'never',
+			lastStatus: data['monitoring'].daemon.lastStatus || '',
+			lastFail: getCheckTime(data['monitoring'].daemon.lastFail) || 'never',
+			lastFailResponse: data['monitoring'].daemon.lastFailResponse || ' ',
+			lastResponse: data['monitoring'].daemon.lastResponse || ' '
+		};
+		var monitoringWallet = {
+			lastCheck: getCheckTime(data['monitoring'].wallet.lastCheck) || 'never',
+			lastStatus: data['monitoring'].wallet.lastStatus || '',
+			lastFail: getCheckTime(data['monitoring'].wallet.lastFail) || 'never',
+			lastFailResponse: data['monitoring'].wallet.lastFailResponse || ' ',
+			lastResponse: data['monitoring'].wallet.lastResponse || ' '
+		};
+		var properData = {};
+
+		for(var prop in data) {
+			if(data.hasOwnProperty('logs')) {
+				properData['logs'] = data['logs'];
+				for(var log in data['logs']) {
+					properData['logs'][log].changed = Date(data['logs'][log].changed * 1000);
+					data['logs'][log].link = api + '/admin_log?file=' + log + '&password=' + docCookies.getItem('password');
+				}
+			}
+		}
+		properData['monitoringDaemon'] = monitoringDaemon;
+		properData['monitoringWallet'] = monitoringWallet;
+
+		return properData;
+	}
+
+	function renderLogInfo() {
+		$.ajax({
+			url: api + '/admin_monitoring',
+			data: {password: docCookies.getItem('password')},
+			cache: false,
+			dataType: 'json',
+			success: function(data) {
+				renderTemplate(monitoringInfoParse(data), '#monitoringInfo', '#monitoringInfoView');
+
+				$('#daemonStatus').addClass(data['monitoring'].daemon.lastStatus == 'ok' ? 'text-success' : 'text-danger');
+				$('#walletStatus').addClass(data['monitoring'].wallet.lastStatus == 'ok' ? 'text-success' : 'text-danger');
+
+				$('#logTable th.sort').on('click', sortTable);
+			}
+		});
+	}
+
+	$(function() {
+		renderLogInfo();
+	});
+</script>
+
+<div class="adminMonitor">
+	<!-- Tab panes -->
+	<div class="tab-content">
+		<div id="monitoringInfoView"></div>
+	</div>
+</div>

@@ -387,7 +387,7 @@ a.list-group-item:last-child {
   cursor: pointer;
 }
 .usersList tr > th:first-child {
-  width: 50%;
+  width: 40%;
 }
 strong,
 b {
