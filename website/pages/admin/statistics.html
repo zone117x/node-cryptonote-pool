@@ -1,14 +1,17 @@
 <script>
-	var formatLuck = function(difficulty, shares) {
-		if(difficulty <= shares) {
-			var percent = (100 - Math.round(difficulty / shares * 100)) * -1;
-			return '<span class="luckBad">' + percent + '%</span>';
+
+	function formatLuck(difficulty, shares) {
+		var percent = Math.round(shares / difficulty * 100);
+		if(!percent) {
+			return '<span class="luckGood">?</span>';
 		}
-		else {
-			var percent = 100 - Math.round(shares / difficulty * 100);
+		else if(percent <= 100) {
 			return '<span class="luckGood">' + percent + '%</span>';
 		}
-	};
+		else {
+			return '<span class="luckBad">' + percent + '%</span>';
+		}
+	}
 
 	function getStats(promptPassword) {
 
@@ -48,16 +51,6 @@
 		getStats();
 	});
 </script>
-<!-- <h4>Stats</h4>
-<dl class="dl-horizontal" id="statsHolder">
-    <dt>Total Owed</dt><dd id="totalOwed">...</dd>
-    <dt>Total Paid</dt><dd id="totalPaid">...</dd>
-    <dt>Total Mined</dt><dd id="totalMined">...</dd>
-    <dt>Profit (before tx fees)</dt><dd id="profit">...</dd>
-    <dt>Average Luck</dt><dd id="averageLuck">...</dd>
-    <dt>Orphan Percent</dt><dd id="orphanPercent">...</dd>
-    <dt>Registered Addresses</dt><dd id="registeredAddresses">...</dd>
-</dl> -->
 <div class="row adminStats">
 	<div class="col-sm-3 color1">
 		<h4>Total Owed</h4>
@@ -76,7 +69,7 @@
 		<span class="statValue" id="profit">...</span>
 	</div>
 	<div class="col-sm-4 color5">
-		<h4>Average Luck</h4>
+		<h4>Average Luck (shares/diff)</h4>
 		<span class="statValue lead" id="averageLuck">...</span>
 	</div>
 	<div class="col-sm-4 color6">

@@ -39,7 +39,7 @@
             <th><i class="fa fa-unlock-alt"></i> Difficulty</th>
             <th><i class="fa fa-paw"></i> Block Hash</th>
             <th><i class="fa fa-clock-o"></i> Time Found</th>
-            <th><i class="fa fa-star-half-o"></i> Luck</th>
+            <th><i class="fa fa-star-half-o"></i> Shares/Diff</th>
         </tr>
         </thead>
         <tbody id="blocks_rows">
@@ -118,18 +118,20 @@
 
     function getBlockRowElement(block, jsonString){
 
-        function formatLuck(difficulty, shares){
-            if (difficulty > shares){
-                var percent = 100 - Math.round(shares / difficulty * 100);
-                return '<span class="luckGood">' + percent + '%</span>';
-            }
-            else{
-                var percent = (100 - Math.round(difficulty / shares * 100)) * -1;
-                return '<span class="luckBad">' + percent + '%</span>';
-            }
-        }
+	    function formatLuck(difficulty, shares) {
+			    var percent = Math.round(shares / difficulty * 100);
+			    if(!percent) {
+				      return '<span class="luckGood">?</span>';
+			    }
+			    else if(percent <= 100) {
+				      return '<span class="luckGood">' + percent + '%</span>';
+			    }
+			    else {
+				      return '<span class="luckBad">' + percent + '%</span>';
+			    }
+	    }
 
-        function formatBlockLink(hash){
+	    function formatBlockLink(hash){
             return '<a target="_blank" href="' + getBlockchainUrl(hash) + '">' + hash + '</a>';
         }
 
