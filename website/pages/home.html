@@ -173,43 +173,46 @@
         };
 
         var userGraphStat = {
-            type: 'line',
-            width: '100%',
-            height: '180',
-            lineColor: '#03a678',
-            fillColor: 'rgba(3, 166, 120, .3)',
-            spotColor: '#00bf00',
-            minSpotColor: '#00bf00',
-            maxSpotColor: '#00bf00',
-            highlightLineColor: '#236d26',
-            spotRadius: 3,            
-            minSpotColor: null,
-            maxSpotColor: null,
-            drawNormalOnTop: false,
-            chartRangeMin: 0,
-            tooltipFormat: '<b>{{y}}</b>, {{offset:names}}',
-            tooltipValueLookups: {
-                names: null
-            }
-        }, userGraphStat2 = {
-            type: 'line',
-            width: '100%',
-            height: '180',
-            lineColor: '#03a678',
-            fillColor: 'rgba(3, 166, 120, .3)',
-            spotColor: '#00bf00',
-            minSpotColor: '#00bf00',
-            maxSpotColor: '#00bf00',
-            highlightLineColor: '#236d26',
-            spotRadius: 3,            
-            minSpotColor: null,
-            maxSpotColor: null,
-            drawNormalOnTop: false,
-            chartRangeMin: 0,
-            tooltipFormat: '<b>{{y}}</b>, {{offset:names}}',
-            tooltipValueLookups: {
-                names: null
-            }
+	        hashrate: {
+		        type: 'line',
+		        width: '100%',
+		        height: '180',
+		        lineColor: '#03a678',
+		        fillColor: 'rgba(3, 166, 120, .3)',
+		        spotColor: '#00bf00',
+		        minSpotColor: '#00bf00',
+		        maxSpotColor: '#00bf00',
+		        highlightLineColor: '#236d26',
+		        spotRadius: 3,
+		        minSpotColor: null,
+		        maxSpotColor: null,
+		        drawNormalOnTop: false,
+		        chartRangeMin: 0,
+		        tooltipFormat: '<b>{{y}}</b>, {{offset:names}}',
+		        tooltipValueLookups: {
+			        names: null
+		        }
+	        },
+	        payments: {
+		        type: 'line',
+		        width: '100%',
+		        height: '180',
+		        lineColor: '#03a678',
+		        fillColor: 'rgba(3, 166, 120, .3)',
+		        spotColor: '#00bf00',
+		        minSpotColor: '#00bf00',
+		        maxSpotColor: '#00bf00',
+		        highlightLineColor: '#236d26',
+		        spotRadius: 3,
+		        minSpotColor: null,
+		        maxSpotColor: null,
+		        drawNormalOnTop: false,
+		        chartRangeMin: 0,
+		        tooltipFormat: '<b>{{y}}</b>, {{offset:names}}',
+		        tooltipValueLookups: {
+			        names: null
+		        }
+	        }
         };
 
         $(function() {
@@ -548,7 +551,7 @@
 
                     renderPayments(data.payments);
 
-                    $('.yourStats, .userChart').show(function(){
+                    $('.yourStats').show(function(){
                         xhrRenderUserCharts = $.ajax({
                             url: api + '/stats_address?address=' + address + '&longpoll=false',            
                             cache: false,
@@ -586,30 +589,16 @@
     var address = urlWalletAddress || docCookies.getItem('mining_address');
 
     var xhrRenderUserCharts;
-    
-    function createUserCharts(data) {        
-        if (data.hasOwnProperty("charts")) {
-            var graphData = {
-                hashrate: getGraphData(data["charts"].hashrate),
-                payments: getGraphData(data["charts"].payments)                    
-            };          
 
-            for (var graphType in graphData) {
-                if (graphData.hasOwnProperty("hashrate")) {                    
-                    $('[data-chart=user_hashrate] .chart').sparkline(graphData["hashrate"].values, userGraphStat); 
-                    userGraphStat.tooltipValueLookups.names = graphData["hashrate"].names;         
-                }
-                if (graphData.hasOwnProperty("payments")) {                    
-                    $('[data-chart=user_payments] .chart').sparkline(graphData["payments"].values, userGraphStat2); 
-                    userGraphStat2.tooltipValueLookups.names = graphData["payments"].names;        
-                }
-            }            
-        }        
+    function createUserCharts(data) {
+	    for(var chart in userGraphStat) {
+		    if(data['charts'][chart] && data['charts'][chart].length) {
+			    var graphData = getGraphData(data['charts'][chart]);
+			    userGraphStat[chart].tooltipValueLookups.names = graphData.names;
+			    $('[data-chart=user_' + chart + ']').show().find('.chart').sparkline(graphData.values, userGraphStat[chart]);
+		    }
+	    }
     }
-
-    
-
-
 
     if (address){
         $('#yourStatsInput').val(address);
