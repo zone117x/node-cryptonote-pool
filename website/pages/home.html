@@ -170,7 +170,7 @@
             tooltipValueLookups: {
                 names: null
             }
-        } 
+        };
 
         var userGraphStat = {
             type: 'line',
@@ -210,7 +210,7 @@
             tooltipValueLookups: {
                 names: null
             }
-        } 
+        };
 
         $(function() {
             $('[data-toggle="tooltip"]').tooltip();
@@ -669,12 +669,14 @@
     	    };
             
     	    for(var graphType in graphData) {
-    		    if(graphData.hasOwnProperty(graphType)) {
+    		    if(graphData[graphType].values.length > 1) {
     			    currencyGraphStat.tooltipValueLookups.names = graphData[graphType].names;
-    			    $('[data-chart=' + graphType + '] .chart').sparkline(graphData[graphType].values, currencyGraphStat);                    
+			        var $chart = $('[data-chart=' + graphType + '] .chart');
+			        $chart.closest('.chartWrap').show();
+			        $chart.sparkline(graphData[graphType].values, currencyGraphStat);
     		    }
     	    }
-        }        
+        }
     }
 
     function loadStatistics () {        
@@ -726,9 +728,7 @@
         xhrRenderCharts = $.ajax({
             url: api + '/stats',
             cache: false,            
-            success: function(data) {
-                createCharts(data);               
-            }
+            success: createCharts
         });               
     });
 

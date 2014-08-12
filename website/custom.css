@@ -221,6 +221,11 @@ footer {
 .chartsPoolStat {
   padding-top: 30px;
 }
+
+.chartWrap {
+	display: none;
+}
+
 .userChart .chart,
 .chartWrap .chart {
   margin-bottom: 10px;
