@@ -68,8 +68,8 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 #### Pools Using This Software
 
+* http://extremepool.org
 * http://xminingpool.com
-
 
 Usage
 ===
