@@ -27,7 +27,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * [License](#license)
 
 
-#### Features
+#### Basic features
 
 * TCP (stratum-like) protocol for server-push based jobs
   * Compared to old HTTP protocol, this has a higher hash rate, lower network/CPU server load, lower orphan
@@ -52,7 +52,22 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
   * Each miners' individual stats (hashrate, shares submitted, pending balance, total paid, etc)
   * Blocks found (pending, confirmed, and orphaned)
 * An easily extendable, responsive, light-weight front-end using API to display data
-* Worker login validation (make sure miners are using proper wallet addresses for mining)
+
+#### Extra features
+
+* Admin panel
+  * Aggregated pool statistics
+  * Coin daemon & wallet RPC services stability monitoring
+  * Log files data access
+  * Users list with detailed statistics
+* Historic charts of pool's hashrate and miners count, coin difficulty, rates and coin profitability
+* Historic charts of users's hashrate and payments
+* Miner login(wallet address) validation
+* Five configurable CSS themes
+* Universal blocks and transactions explorer based on [chainradar.com](http://chainradar.com)
+* FantomCoin & MonetaVerde support
+* Set fixed difficulty on miner client by passing "address" param with ".[difficulty]" postfix
+* Prevent "transaction is too big" error with "payments.maxTransactionAmount" option
 
 
 ### Community / Support
@@ -68,8 +83,8 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 #### Pools Using This Software
 
+* http://extremepool.org
 * http://xminingpool.com
-
 
 Usage
 ===
