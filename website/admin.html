@@ -70,9 +70,10 @@
 
 <script>
 
-
+	lastStats = {};
 	$(function() {
 		$.get(api + '/stats', function(data) {
+			lastStats = data;
 			routePage();
 		});
 	});
@@ -115,7 +116,7 @@
 	};
 
 	function getReadableCoins(coins) {
-		return (parseInt(coins || 0) / coinUnits).toFixed(coinUnits.toString().length - 1);
+		return (parseInt(coins || 0) / lastStats.config.coinUnits).toFixed(lastStats.config.coinUnits.toString().length - 1);
 	}
 
 	function getReadableHashRateString(hashrate) {

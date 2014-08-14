@@ -1,12 +1,10 @@
-var api = "http://xmr.xminingpool.com:2117";
+var api = "http://poolhost.com:1117";
 
-var coinUnits = 1000000000000;
+var poolHost = "poolhost.com";
 
-var poolHost = "xmr.xminingpool.com";
+var irc = "irc.freenode.net/#poolhost";
 
-var irc = "irc.freenode.net/#monero";
-
-var email = "support@cryppit.com";
+var email = "support@poolhost.com";
 
 var cryptonatorWidget = ["XMR-BTC", "XMR-USD", "XMR-EUR"];
 
