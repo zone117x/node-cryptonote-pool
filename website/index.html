@@ -152,7 +152,7 @@
     var lastStats;
 
     function getReadableCoins(coins, digits, withoutSymbol){
-        var amount = (parseInt(coins || 0) / coinUnits).toFixed(digits || coinUnits.toString().length - 1);
+        var amount = (parseInt(coins || 0) / lastStats.config.coinUnits).toFixed(digits || lastStats.config.coinUnits.toString().length - 1);
         return amount + (withoutSymbol ? '' : (' ' + lastStats.config.symbol));
     }
 

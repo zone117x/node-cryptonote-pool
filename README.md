@@ -1,7 +1,7 @@
 cryptonote-universal-pool
 ====================
 
-High performance Node.js (with native C addons) mining pool for CryptoNote based coins such as Bytecoin, Monero, QuazarCoin, HoneyPenny, etc..
+High performance Node.js (with native C addons) mining pool for CryptoNote based coins such as Bytecoin, DuckNote, Monero, QuazarCoin, HoneyPenny, etc..
 Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 
@@ -72,14 +72,9 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 ### Community / Support
 
+* [CryptoNote Technology](https://cryptonote.org)
 * [CryptoNote Forum](https://forum.cryptonote.org/)
-* [Bytecoin Github](https://github.com/amjuarez/bytecoin)
-* [Monero Github](https://github.com/monero-project/bitmonero)
-* [Monero Announcement Thread](https://bitcointalk.org/index.php?topic=583449.0)
-* IRC (freenode)
-  * Support / general discussion join #monero: https://webchat.freenode.net/?channels=#monero
-  * Development discussion join #monero-dev: https://webchat.freenode.net/?channels=#monero-dev
-
+* [CryptoNote Universal Pool Forum](https://bitcointalk.org/index.php?topic=705509)
 
 #### Pools Using This Software
 
@@ -127,22 +122,19 @@ npm update
 #### 2) Configuration
 
 
-*Warning for Cyrptonote coins other than Monero:* this software may or may not work with any given cryptonote coin.
-Be wary of altcoins that change the number of minimum coin units because you will have to reconfigure several config
-values to account for those changes. Unless you're offering a bounty reward - do not open an issue asking for help
-getting a coin other than Monero working with this software.
-
-
-Copy the `config_example.json` file to `config.json` then overview each options and change any to match your preferred setup.
-
-
 Explanation for each field:
 ```javascript
 /* Used for storage in redis so multiple coins can share the same redis instance. */
-"coin": "monero",
+"coin": "ducknote",
 
 /* Used for front-end display */
-"symbol": "MRO",
+"symbol": "XDN",
+
+/* Minimum units in a single coin, see COIN constant in DAEMON_CODE/src/cryptonote_config.h */
+"coinUnits": 100000000,
+
+/* Coin network time to mine one block, see DIFFICULTY_TARGET constant in DAEMON_CODE/src/cryptonote_config.h */
+"coinDifficultyTarget": 240,
 
 "logging": {
 
@@ -178,7 +170,7 @@ Explanation for each field:
     "clusterForks": "auto",
 
     /* Address where block rewards go, and miner payments come from. */
-    "poolAddress": "4AsBy39rpUMTmgTUARGq2bFQWhDhdQNekK5v4uaLU699NPAnx9CubEJ82AkvD5ScoAZNYRwBxybayainhyThHAZWCdKmPYn"
+    "poolAddress": "ddehi53dwGSBEXdhTYtga2R3fS4y9hRz4YHAsLABJpH75yUd5EDQmuL3yDBj1mG6MMeDfydY9vp4zFVVNQ99FTYq2PpsFJP2y"
 
     /* Poll RPC daemons for new blocks every this many milliseconds. */
     "blockRefreshInterval": 1000,
@@ -411,20 +403,17 @@ Variable explanations:
 /* Must point to the API setup in your config.json file. */
 var api = "http://poolhost:8117";
 
-/* Minimum units in a single coin, for Bytecoin its 100000000. */
-var coinUnits = 1000000000000;
-
 /* Pool server host to instruct your miners to point to.  */
-var poolHost = "cryppit.com";
+var poolHost = "poolhost.com";
 
 /* IRC Server and room used for embedded KiwiIRC chat. */
-var irc = "irc.freenode.net/#monero";
+var irc = "irc.freenode.net/#ducknote";
 
 /* Contact email address. */
-var email = "support@cryppit.com";
+var email = "support@poolhost.com";
 
 /* Market stat display params from https://www.cryptonator.com/widget */
-var cryptonatorWidget = ["XMR-BTC", "XMR-USD", "XMR-EUR", "XMR-GBP"];
+var cryptonatorWidget = ["XDN-BTC", "XDN-USD", "XDN-EUR"];
 
 /* Download link to cryptonote-easy-miner for Windows users. */
 var easyminerDownload = "https://github.com/zone117x/cryptonote-easy-miner/releases/";
@@ -435,6 +424,8 @@ var blockchainExplorer = "http://chainradar.com/{symbol}/block/{id}";
 /* Used by front-end transaction links. */
 var transactionExplorer = "http://chainradar.com/{symbol}/transaction/{id}";
 
+/* Any custom CSS theme for pool frontend */
+var themeCss = "themes/default-theme.css";
 
 ```
 

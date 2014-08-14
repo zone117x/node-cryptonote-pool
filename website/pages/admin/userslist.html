@@ -10,8 +10,8 @@
 		<td><a href="./?wallet={{this.number}}">{{this.number}}</a></td>
 		<td data-sort="{{this.wallet.hashrate}}">{{this.readableHashrate}}</td>
 		<td data-sort="{{this.wallet.hashes}}">{{this.readableHashes}}</td>
-		<td data-sort="{{this.wallet.pending}}">{{this.wallet.pending}}</td>
-		<td data-sort="{{this.wallet.paid}}">{{this.wallet.paid}}</td>
+		<td data-sort="{{this.wallet.pending}}">{{this.readablePending}}</td>
+		<td data-sort="{{this.wallet.paid}}">{{this.readablePaid}}</td>
 		<td data-sort="{{this.wallet.lastShare}}">{{this.timeago}}</td>
 	</tr>
 	{{/each}}
@@ -23,12 +23,15 @@
 			properObject = {};
 		for(var wallet in wallets) {
 			if(wallets.hasOwnProperty(wallet)) {
+				var userData = wallets[wallet];
 				walletsArray.push({
 					number: wallet,
-					wallet: wallets[wallet],
-					timeago: $.timeago(new Date(wallets[wallet].lastShare * 1000).toISOString()),
-					readableHashrate: getReadableHashRateString(wallets[wallet].hashrate) + '/s',
-					readableHashes: getReadableHashRateString(wallets[wallet].hashes)
+					wallet: userData,
+					timeago: $.timeago(new Date(userData.lastShare * 1000).toISOString()),
+					readablePending: getReadableCoins(userData.pending),
+					readablePaid: getReadableCoins(userData.paid),
+					readableHashrate: getReadableHashRateString(userData.hashrate) + '/s',
+					readableHashes: getReadableHashRateString(userData.hashes)
 				});
 			}
 		}
