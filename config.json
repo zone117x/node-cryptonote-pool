@@ -1,7 +1,8 @@
 {
-    "coin": "monero",
-    "symbol": "XMR",
-    "coinUnits": 1000000000000,
+    "coin": "ducknote",
+    "symbol": "XDN",
+    "coinUnits": 100000000,
+    "coinDifficultyTarget": 240,
 
     "logging": {
         "files": {
@@ -18,7 +19,7 @@
     "poolServer": {
         "enabled": true,
         "clusterForks": "auto",
-        "poolAddress": "48Y4SoUJM5L3YXBEfNQ8bFNsvTNsqcH5Rgq8RF7BwpgvTBj2xr7CmWVanaw7L4U9MnZ4AG7U6Pn1pBhfQhFyFZ1rL1efL8z",
+        "poolAddress": "ddehi53dwGSBEXdhTYtga2R3fS4y9hRz4YHAsLABJpH75yUd5EDQmuL3yDBj1mG6MMeDfydY9vp4zFVVNQ99FTYq2PpsFJP2y",
         "blockRefreshInterval": 1000,
         "minerTimeout": 900,
         "ports": [

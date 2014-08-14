@@ -329,7 +329,7 @@
 
             $('#networkLastBlockFound').timeago('update', new Date(lastStats.network.timestamp * 1000).toISOString());
 
-            updateText('networkHashrate', getReadableHashRateString(lastStats.network.difficulty / 60) + '/sec');
+            updateText('networkHashrate', getReadableHashRateString(lastStats.network.difficulty / lastStats.config.coinDifficultyTarget) + '/sec');
             updateText('networkDifficulty', lastStats.network.difficulty.toString());
             updateText('blockchainHeight', lastStats.network.height.toString());
             updateText('networkLastReward', getReadableCoins(lastStats.network.reward, 4));
@@ -593,7 +593,7 @@
     function createUserCharts(data) {
 	    for(var chart in userGraphStat) {
 		    if(data['charts'][chart] && data['charts'][chart].length) {
-			    var graphData = getGraphData(data['charts'][chart]);
+			    var graphData = getGraphData(data['charts'][chart], chart == 'payments');
 			    userGraphStat[chart].tooltipValueLookups.names = graphData.names;
 			    $('[data-chart=user_' + chart + ']').show().find('.chart').sparkline(graphData.values, userGraphStat[chart]);
 		    }
@@ -631,7 +631,7 @@
 
     /* Show stats of the currency */
 
-    function getGraphData (rawData) {
+    function getGraphData (rawData, fixValueToCoins) {
         var graphData = {
             names: [],
             values: []
@@ -639,7 +639,7 @@
         if(rawData) {
             for (var i = 0, xy; xy = rawData[i]; i++) {
                 graphData.names.push(new Date(xy[0]*1000).toUTCString());
-                graphData.values.push(xy[1]); 
+                graphData.values.push(fixValueToCoins ? getReadableCoins(xy[1], 4, true) : xy[1]);
             }
         }        
        
