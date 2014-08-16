@@ -6,7 +6,7 @@ var irc = "irc.freenode.net/#poolhost";
 
 var email = "support@poolhost.com";
 
-var cryptonatorWidget = ["XMR-BTC", "XMR-USD", "XMR-EUR"];
+var cryptonatorWidget = ["XDN-BTC", "XDN-USD", "XDN-EUR"];
 
 var easyminerDownload = "https://github.com/zone117x/cryptonote-easy-miner/releases/";
 
