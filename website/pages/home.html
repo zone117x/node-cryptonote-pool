@@ -343,16 +343,16 @@
 
 
             var totalFee = lastStats.config.fee;
-            if (lastStats.config.doDonations){
-                totalFee += lastStats.config.donation;
-                totalFee += lastStats.config.coreDonation;
-                var feeText = [];
-	              if (lastStats.config.donation > 0) feeText.push(lastStats.config.donation + '% to pool dev');
-                if (lastStats.config.coreDonation > 0) feeText.push(lastStats.config.coreDonation + '% to core devs');
-	              updateText('poolDonations', feeText.join(', '));
+            if (Object.keys(lastStats.config.donation).length) {
+                var totalDonation = 0;
+                for(var i in lastStats.config.donation) {
+                    totalDonation += lastStats.config.donation[i];
+                }
+                totalFee += totalDonation;
+                updateText('poolDonations', totalDonation.toFixed(1) + '% to open-source devs');
             }
             else{
-	              $('#donations').hide()
+                $('#donations').hide()
             }
 
             updateText('poolFee', totalFee + '%');

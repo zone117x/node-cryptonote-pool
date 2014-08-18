@@ -89,7 +89,8 @@
         "depth": 60,
         "poolFee": 2,
         "devDonation": 0.1,
-        "coreDevDonation": 0.1
+        "coreDevDonation": 0.1,
+        "extraFeaturesDevDonation":0.1
     },
 
     "api": {
