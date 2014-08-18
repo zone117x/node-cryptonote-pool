@@ -34,7 +34,7 @@
     }
     #calcHashResultsHolder{
         min-width: 145px;
-        max-width: 145px;
+        max-width: 200px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -458,10 +458,10 @@
     function calcEstimateProfit(){
         try {
             var rateUnit = Math.pow(1024,parseInt($('#calcHashUnit').data('mul')));
-            var inp2 = parseFloat($('#calcHashRate').val()) * rateUnit;
-            var resl = 16 / ((lastStats.network.difficulty / inp2) / 86400);
-            if (!isNaN(resl)) {
-                updateText('calcHashAmount', (Math.round(resl * 100) / 100).toString());
+            var hashRate = parseFloat($('#calcHashRate').val()) * rateUnit;
+            var profit = (hashRate * 86400 / lastStats.network.difficulty) * lastStats.network.reward;
+            if (profit) {
+                updateText('calcHashAmount', getReadableCoins(profit, 2, true));
                 return;
             }
         }
