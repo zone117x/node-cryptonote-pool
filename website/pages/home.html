@@ -459,7 +459,7 @@
         try {
             var rateUnit = Math.pow(1024,parseInt($('#calcHashUnit').data('mul')));
             var inp2 = parseFloat($('#calcHashRate').val()) * rateUnit;
-            var resl = 16 / ((lastStats.network.difficulty / inp2) / 86400);
+            var resl = 80000 / ((lastStats.network.difficulty / inp2) / 86400);
             if (!isNaN(resl)) {
                 updateText('calcHashAmount', (Math.round(resl * 100) / 100).toString());
                 return;
