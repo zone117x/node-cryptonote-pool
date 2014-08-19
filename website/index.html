@@ -290,6 +290,10 @@
         updateText('poolVersion', lastStats.config.version);
     }
 
+    function getBlockchainUrl(id) {
+        return blockchainExplorer.replace('{symbol}', lastStats.config.symbol.toLowerCase()).replace('{id}', id);
+    }
+
     $(function(){
 		$("head").append("<link rel='stylesheet' href=" + themeCss + ">");
 		

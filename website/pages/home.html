@@ -368,11 +368,6 @@
 
     $('#networkLastBlockFound,#poolLastBlockFound,#yourLastShare,#marketLastUpdated').timeago();
 
-    function getBlockchainUrl(id) {
-        return blockchainExplorer.replace('{symbol}', lastStats.config.symbol.toLowerCase()).replace('{id}', id);
-    }
-
-
     function getReadableTime(seconds){
 
         var units = [ [60, 'second'], [60, 'minute'], [24, 'hour'],
