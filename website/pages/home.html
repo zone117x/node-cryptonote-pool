@@ -349,13 +349,13 @@
                     totalDonation += lastStats.config.donation[i];
                 }
                 totalFee += totalDonation;
-                updateText('poolDonations', totalDonation.toFixed(1) + '% to open-source devs');
+                updateText('poolDonations', floatToString(totalDonation) + '% to open-source devs');
             }
             else{
                 $('#donations').hide()
             }
 
-            updateText('poolFee', totalFee + '%');
+            updateText('poolFee', floatToString(totalFee) + '%');
 
 
             updateText('blockSolvedTime', getReadableTime(lastStats.network.difficulty / lastStats.pool.hashrate));

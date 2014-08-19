@@ -256,6 +256,10 @@
         });
     }
 
+    function floatToString(float) {
+        return float.toFixed(6).replace(/[0\.]+$/, '');
+    }
+
 
     var xhrPageLoading;
     function routePage(loadedCallback) {
