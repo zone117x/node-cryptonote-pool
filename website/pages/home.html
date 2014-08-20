@@ -164,10 +164,7 @@
             spotRadius: 3,        
             chartRangeMin: 0,
             drawNormalOnTop: false,
-            tooltipFormat: '<b>{{y}}</b>, {{offset:names}}',
-            tooltipValueLookups: {
-                names: null
-            }
+            tooltipFormat: '<b>{{y}}</b>, {{offset:names}}'
         };
 
         var userGraphStat = {
@@ -184,10 +181,7 @@
 		        spotRadius: 3,
 		        drawNormalOnTop: false,
 		        chartRangeMin: 0,
-		        tooltipFormat: '<b>{{y}}</b>, {{offset:names}}',
-		        tooltipValueLookups: {
-			        names: null
-		        }
+		        tooltipFormat: '<b>{{y}}</b>, {{offset:names}}'
 	        },
 	        payments: {
 		        type: 'line',
@@ -202,10 +196,7 @@
 		        spotRadius: 3,
 		        drawNormalOnTop: false,
 		        chartRangeMin: 0,
-		        tooltipFormat: '<b>{{y}}</b>, {{offset:names}}',
-		        tooltipValueLookups: {
-			        names: null
-		        }
+		        tooltipFormat: '<b>{{y}}</b>, {{offset:names}}'
 	        }
         };
 
@@ -583,7 +574,7 @@
 	    for(var chart in userGraphStat) {
 		    if(data['charts'][chart] && data['charts'][chart].length) {
 			    var graphData = getGraphData(data['charts'][chart], chart == 'payments');
-			    userGraphStat[chart].tooltipValueLookups.names = graphData.names;
+			    userGraphStat[chart].tooltipValueLookups = {names: graphData.names};
 			    $('[data-chart=user_' + chart + ']').show().find('.chart').sparkline(graphData.values, userGraphStat[chart]);
 		    }
 	    }
@@ -648,10 +639,11 @@
             
     	    for(var graphType in graphData) {
     		    if(graphData[graphType].values.length > 1) {
-    			    currencyGraphStat.tooltipValueLookups.names = graphData[graphType].names;
+                    var settings = jQuery.extend({}, currencyGraphStat);
+                    settings.tooltipValueLookups = {names: graphData[graphType].names};
 			        var $chart = $('[data-chart=' + graphType + '] .chart');
 			        $chart.closest('.chartWrap').show();
-			        $chart.sparkline(graphData[graphType].values, currencyGraphStat);
+			        $chart.sparkline(graphData[graphType].values, settings);
     		    }
     	    }
         }
