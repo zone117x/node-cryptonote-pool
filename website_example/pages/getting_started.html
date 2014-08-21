@@ -57,6 +57,7 @@
 <div id="miningPorts" class="row">
     <div class="stats">
         <div><i class="fa fa-tachometer"></i> Port: <span class="miningPort"></span></div>
+		<div><i class="fa fa-cog"></i> Protocol: <span class="miningPortProtocol"></span></div>
         <div><i class="fa fa-unlock-alt"></i> Starting Difficulty: <span class="miningPortDiff"></span></div>
         <div><i class="fa fa-question"></i> Description: <span class="miningPortDesc"></span></div>
     </div>
@@ -74,10 +75,10 @@
 <hr>
 
 <h3>Wallet & Daemon Software</h3>
-<p>monero
+<p>
     <ul>
         <li><a target="_blank" href="http://boolberry.com/howto.html">Boolberry Howto</a></li>
-        <li>Boolberry information and news on its <a href="https://bitcointalk.org/index.php?topic=577267">BitcoinTalk announcement thread</a></li>
+        <li>Monero information and news on its <a href="https://bitcointalk.org/index.php?topic=577267">BitcoinTalk announcement thread</a></li>
     </ul>
 </p>
 
@@ -97,18 +98,56 @@
         </thead>
         <tbody id="mining_apps">
         <tr>
-            <td class="miningAppTitle">CPUMiner (forked by LucasJones & Wolf, modified by cryptozoidberg)</td>
+            <td class="miningAppTitle">CPUMiner (forked by LucasJones & Wolf0, modified by cryptozoidberg)</td>
             <td>CPU</td>
-<!--            <td><a target="_blank" href="https://bitcointalk.org/index.php?topic=632724">BitcoinTalk</a></td>
-            <td><a target="_blank" href="https://bitcointalk.org/index.php?topic=632724">BitcoinTalk</a></td>-->
+            <td><a target="_blank" href="http://boolberry.com/downloads.html">Boolberry.com</a></td>
+            <td><a target="_blank" href="https://bitcointalk.org/index.php?topic=577267">BitcoinTalk</a></td>
             <td><a target="_blank" href="https://github.com/cryptozoidberg/cpuminer-multi">Github</a></td>
         </tr>
         <tr>
             <td colspan="5">
                 <span>Example:</span>
-                <code>minerd -a wildkeccak -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS</span> -p x</code>
+                <code>minerd -a wildkeccak -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS</span> -p x -k http://<span class="exampleHost"></span>/scratchpad.bin</code>
             </td>
         </tr>
+		<tr>
+			<td class="miningAppTitle">Wolf0's Cuda miner (recommended for Nvidia cards)</td>
+			<td>GPU</td>
+			<td><a href="https://github.com/wolf9466/bbr-cudaminer">Github</a></td>
+			<td><a href="https://bitcointalk.org/index.php?topic=693118.msg8239797#msg8239797">BitcoinTalk</a></td>
+			<td><a href="https://github.com/wolf9466/bbr-cudaminer">Github</a></td>
+		</tr>
+		<tr>
+            <td colspan="5">
+                <span>Example:</span>
+                <code>
+					cudaminerd -o stratum+tcp://<span class="exampleHost"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS</span> -p x -k http://<span class="exampleHost"></span>/scratchpad.bin -t 1 
+						</code> <br/>
+				*port 11111 for high end GPU
+            </td>
+        </tr>
+        <tr>
+            <td class="miningAppTitle">OpenCL stratum GPUMiner by mbk (recommended for AMD cards)</td>
+            <td>GPU</td>
+            <td><a target="_blank" href="https://github.com/mbkuperman/cpuminer-multi-opencl/releases">Github</a></td>
+            <td><a target="_blank" href="https://bitcointalk.org/index.php?topic=693118.msg8339439#msg8339439">BitcoinTalk</a></td>
+            <td><a target="_blank" href="https://github.com/mbkuperman/cpuminer-multi-opencl/">Github</a></td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <span>Example:</span>
+                <code>minerd.exe -a wildkeccak_ocl -o stratum+tcp://<span class="exampleHost"></span>:8888 -u <span class="exampleAddress">YOUR_WALLET_ADDRESS</span> -p x -k http://<span class="exampleHost"></span>/scratchpad.bin -l scratchpad.bin </code><br/>  for windows 
+				
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <span>or</span>
+                <code>minerd -a wildkeccak_ocl -o stratum+tcp://<span class="exampleHost"></span>:8888 -u <span class="exampleAddress">YOUR_WALLET_ADDRESS</span> -p x -k http://<span class="exampleHost"></span>/scratchpad.bin -l ~/scratchpad.bin </code><br/>  for linux
+				
+            </td>
+        </tr>
+
         </tbody>
     </table>
 </div>
@@ -130,6 +169,7 @@
                     var portData = lastStats.config.ports[i];
                     var $portChild = $(miningPortTemplate);
                     $portChild.find('.miningPort').text(portData.port);
+					$portChild.find('.miningPortProtocol').text(portData.protocol).addClass(portData.protocol === 'tcp' ? 'label label-success' : 'label label-warning');
                     $portChild.find('.miningPortDiff').text(portData.difficulty);
                     $portChild.find('.miningPortDesc').text(portData.desc);
                     $miningPortChildren.push($portChild);
