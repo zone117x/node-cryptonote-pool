@@ -22,6 +22,6 @@ var simplewalletDownload = 'http://monero.cc/getting-started';
 /* var blockchainExplorer = "http://monerochain.info/block/"; */
 
 /* boolbery */
-var blockchainExplorer = "https://minergate.com/blockchain/bbr/block/"; 
+var blockchainExplorer = "http://chainradar.com/bbr/block/"; 
 
-var transactionExplorer = "https://minergate.com/blockchain/bbr/transaction/";
+var transactionExplorer = "http://chainradar.com/bbr/transaction/";
