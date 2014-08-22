@@ -80,6 +80,8 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 * http://extremepool.org
 * http://xminingpool.com
+* http://noclaymorefee.com
+* http://nicepool.org
 
 Usage
 ===
