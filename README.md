@@ -82,6 +82,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * http://xminingpool.com
 * http://noclaymorefee.com
 * http://nicepool.org
+* https://yaymining.com
 
 Usage
 ===
