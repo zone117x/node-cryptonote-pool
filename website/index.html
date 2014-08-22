@@ -256,6 +256,10 @@
         });
     }
 
+    function floatToString(float) {
+        return float.toFixed(6).replace(/[0\.]+$/, '');
+    }
+
 
     var xhrPageLoading;
     function routePage(loadedCallback) {
@@ -287,6 +291,11 @@
 
     function updateIndex(){
         updateText('coinName', lastStats.config.coin);
+        updateText('poolVersion', lastStats.config.version);
+    }
+
+    function getBlockchainUrl(id) {
+        return blockchainExplorer.replace('{symbol}', lastStats.config.symbol.toLowerCase()).replace('{id}', id);
     }
 
     $(function(){
@@ -353,7 +362,8 @@
 
 <footer>
     <div class="text-muted">
-        Powered by <a target="_blank" href="//github.com/fancoder/cryptonote-universal-pool"><i class="fa fa-github"></i> cryptonote-universal-pool</a>
+        Powered by <a target="_blank" href="//cryptonotemining.org"><i class="fa fa-github"></i> cryptonote-universal-pool</a>
+        <span id="poolVersion"></span>
         open sourced under the <a href="http://www.gnu.org/licenses/gpl-2.0.html">GPL</a>
     </div>
 </footer>

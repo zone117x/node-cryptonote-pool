@@ -157,19 +157,14 @@
             height: '75',
             lineColor: '#03a678',
             fillColor: 'rgba(3, 166, 120, .3)',
-            spotColor: '#00bf00',
-            minSpotColor: '#00bf00',
-            maxSpotColor: '#00bf00',
-            highlightLineColor: '#236d26',
-            spotRadius: 3,        
-            // chartRangeMin: 0,    
+            spotColor: null,
             minSpotColor: null,
             maxSpotColor: null,
+            highlightLineColor: '#236d26',
+            spotRadius: 3,        
+            chartRangeMin: 0,
             drawNormalOnTop: false,
-            tooltipFormat: '<b>{{y}}</b>, {{offset:names}}',
-            tooltipValueLookups: {
-                names: null
-            }
+            tooltipFormat: '<b>{{y}}</b>, {{offset:names}}'
         };
 
         var userGraphStat = {
@@ -179,19 +174,14 @@
 		        height: '180',
 		        lineColor: '#03a678',
 		        fillColor: 'rgba(3, 166, 120, .3)',
-		        spotColor: '#00bf00',
-		        minSpotColor: '#00bf00',
-		        maxSpotColor: '#00bf00',
-		        highlightLineColor: '#236d26',
-		        spotRadius: 3,
+		        spotColor: null,
 		        minSpotColor: null,
 		        maxSpotColor: null,
+		        highlightLineColor: '#236d26',
+		        spotRadius: 3,
 		        drawNormalOnTop: false,
 		        chartRangeMin: 0,
-		        tooltipFormat: '<b>{{y}}</b>, {{offset:names}}',
-		        tooltipValueLookups: {
-			        names: null
-		        }
+		        tooltipFormat: '<b>{{y}}</b>, {{offset:names}}'
 	        },
 	        payments: {
 		        type: 'line',
@@ -199,19 +189,14 @@
 		        height: '180',
 		        lineColor: '#03a678',
 		        fillColor: 'rgba(3, 166, 120, .3)',
-		        spotColor: '#00bf00',
-		        minSpotColor: '#00bf00',
-		        maxSpotColor: '#00bf00',
-		        highlightLineColor: '#236d26',
-		        spotRadius: 3,
+		        spotColor: null,
 		        minSpotColor: null,
 		        maxSpotColor: null,
+		        highlightLineColor: '#236d26',
+		        spotRadius: 3,
 		        drawNormalOnTop: false,
 		        chartRangeMin: 0,
-		        tooltipFormat: '<b>{{y}}</b>, {{offset:names}}',
-		        tooltipValueLookups: {
-			        names: null
-		        }
+		        tooltipFormat: '<b>{{y}}</b>, {{offset:names}}'
 	        }
         };
 
@@ -349,19 +334,19 @@
 
 
             var totalFee = lastStats.config.fee;
-            if (lastStats.config.doDonations){
-                totalFee += lastStats.config.donation;
-                totalFee += lastStats.config.coreDonation;
-                var feeText = [];
-	              if (lastStats.config.donation > 0) feeText.push(lastStats.config.donation + '% to pool dev');
-                if (lastStats.config.coreDonation > 0) feeText.push(lastStats.config.coreDonation + '% to core devs');
-	              updateText('poolDonations', feeText.join(', '));
+            if (Object.keys(lastStats.config.donation).length) {
+                var totalDonation = 0;
+                for(var i in lastStats.config.donation) {
+                    totalDonation += lastStats.config.donation[i];
+                }
+                totalFee += totalDonation;
+                updateText('poolDonations', floatToString(totalDonation) + '% to open-source devs');
             }
             else{
-	              $('#donations').hide()
+                $('#donations').hide()
             }
 
-            updateText('poolFee', totalFee + '%');
+            updateText('poolFee', floatToString(totalFee) + '%');
 
 
             updateText('blockSolvedTime', getReadableTime(lastStats.network.difficulty / lastStats.pool.hashrate));
@@ -373,11 +358,6 @@
 
 
     $('#networkLastBlockFound,#poolLastBlockFound,#yourLastShare,#marketLastUpdated').timeago();
-
-    function getBlockchainUrl(id) {
-        return blockchainExplorer.replace('{symbol}', lastStats.config.symbol.toLowerCase()).replace('{id}', id);
-    }
-
 
     function getReadableTime(seconds){
 
@@ -464,10 +444,10 @@
     function calcEstimateProfit(){
         try {
             var rateUnit = Math.pow(1024,parseInt($('#calcHashUnit').data('mul')));
-            var inp2 = parseFloat($('#calcHashRate').val()) * rateUnit;
-            var resl = 16 / ((lastStats.network.difficulty / inp2) / 86400);
-            if (!isNaN(resl)) {
-                updateText('calcHashAmount', (Math.round(resl * 100) / 100).toString());
+            var hashRate = parseFloat($('#calcHashRate').val()) * rateUnit;
+            var profit = (hashRate * 86400 / lastStats.network.difficulty) * lastStats.network.reward;
+            if (profit) {
+                updateText('calcHashAmount', getReadableCoins(profit, 2, true));
                 return;
             }
         }
@@ -594,7 +574,7 @@
 	    for(var chart in userGraphStat) {
 		    if(data['charts'][chart] && data['charts'][chart].length) {
 			    var graphData = getGraphData(data['charts'][chart], chart == 'payments');
-			    userGraphStat[chart].tooltipValueLookups.names = graphData.names;
+			    userGraphStat[chart].tooltipValueLookups = {names: graphData.names};
 			    $('[data-chart=user_' + chart + ']').show().find('.chart').sparkline(graphData.values, userGraphStat[chart]);
 		    }
 	    }
@@ -659,10 +639,11 @@
             
     	    for(var graphType in graphData) {
     		    if(graphData[graphType].values.length > 1) {
-    			    currencyGraphStat.tooltipValueLookups.names = graphData[graphType].names;
+                    var settings = jQuery.extend({}, currencyGraphStat);
+                    settings.tooltipValueLookups = {names: graphData[graphType].names};
 			        var $chart = $('[data-chart=' + graphType + '] .chart');
 			        $chart.closest('.chartWrap').show();
-			        $chart.sparkline(graphData[graphType].values, currencyGraphStat);
+			        $chart.sparkline(graphData[graphType].values, settings);
     		    }
     	    }
         }
