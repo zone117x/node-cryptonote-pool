@@ -83,6 +83,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * http://noclaymorefee.com
 * http://nicepool.org
 * https://yaymining.com
+* http://bbr.unipool.pro
 
 Usage
 ===
