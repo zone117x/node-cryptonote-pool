@@ -84,6 +84,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * http://nicepool.org
 * https://yaymining.com
 * http://bbr.unipool.pro
+* http://multihash.de
 
 Usage
 ===
