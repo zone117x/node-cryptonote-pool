@@ -12,6 +12,6 @@ var cryptonatorWidget = ["XMR-BTC", "XMR-USD", "XMR-EUR", "XMR-GBP"];
 
 var easyminerDownload = "https://github.com/zone117x/cryptonote-easy-miner/releases/";
 
-var blockchainExplorer = "http://monerochain.info/block/";
+var blockchainExplorer = "http://chainradar.com/xmr/block/";
 
-var transactionExplorer = "http://monerochain.info/tx/";
+var transactionExplorer = "http://chainradar.com/xmr/transaction/";
