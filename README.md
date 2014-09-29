@@ -85,6 +85,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * https://yaymining.com
 * http://bbr.unipool.pro
 * http://multihash.de
+* http://monero.rs
 
 Usage
 ===
