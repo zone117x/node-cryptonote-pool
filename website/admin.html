@@ -127,7 +127,7 @@
 			hashrate = hashrate / 1024;
 			i++;
 		}
-		return hashrate.toFixed(2) + byteUnits[i];
+		return parseInt(hashrate).toFixed(2) + byteUnits;
 	}
 
 	window.onhashchange = function() {
