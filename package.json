@@ -5,7 +5,7 @@
     "author": "Matthew Little",
     "repository": {
         "type": "git",
-        "url": "https://github.com/zone117x/node-cryptonote-pool.git"
+        "url": "https://github.com/saymissme/node-cryptonote-pool.git"
     },
     "dependencies": {
         "bignum": "*",
@@ -14,7 +14,7 @@
         "cli-color": "*",
         "dateformat": "*",
         "base58-native": "*",
-        "multi-hashing": "git://github.com/zone117x/node-multi-hashing.git",
+        "multi-hashing": "git://github.com/saymissme/node-multi-hashing.git",
         "cryptonote-util": "git://github.com/LucasJones/node-cryptonote-util.git"
     },
     "engines": {
