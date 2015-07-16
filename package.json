@@ -15,7 +15,7 @@
         "dateformat": "*",
         "base58-native": "*",
         "multi-hashing": "git://github.com/zone117x/node-multi-hashing.git",
-        "cryptonote-util": "git://github.com/LucasJones/node-cryptonote-util.git"
+        "cryptonote-util": "git://github.com/lucasjones/node-cryptonote-util.git"
     },
     "engines": {
         "node": ">=0.10"
