@@ -63,6 +63,11 @@
             "time": 600,
             "invalidPercent": 25,
             "checkThreshold": 30
+        },
+        "slushMining": {
+            "enabled": true,
+            "weight": 120,
+            "lastBlockCheckRate": 1
         }
     },
 
