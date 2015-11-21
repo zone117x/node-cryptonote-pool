@@ -67,6 +67,7 @@
         "slushMining": {
             "enabled": true,
             "weight": 120,
+            "blockTime": 60,
             "lastBlockCheckRate": 1
         }
     },

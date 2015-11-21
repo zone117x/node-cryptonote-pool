@@ -119,12 +119,29 @@
     function getBlockRowElement(block, jsonString){
 
         function formatLuck(difficulty, shares){
-            if (difficulty > shares){
-                var percent = 100 - Math.round(shares / difficulty * 100);
+            //accurateShares is only an approximation to reverse the calcualtions done in pool.js, because the shares with their respective are not recorded in redis
+            //Approximation assumes equal pool hashrate for the whole round
+            //Could potentially be replaced by storing the sum of all job.difficulty in the redis db. 
+            if (lastStats.config.slushMiningEnabled) {
+                var accurateShares = shares / (1/lastStats.config.blockTime * (             //This uses integral calculus to calculate the "area below the graph". We need 1/blockTime for the average
+                    lastStats.config.weight - lastStats.config.weight *                     //This is the integrated function of the original function sligthly modified.
+                        Math.pow(                                                           //Instead of (scoreTime - dateNowSeconds) it used (x-blockTime)
+                            Math.E,                                                         //This is possible because we calculated it in the intervall of 0 to blocktime
+                            ((lastStats.config.blockTime * (-1)) / lastStats.config.weight)
+                         )
+                    )
+                );
+            }
+            else {
+                var accurateShares = shares;
+            }
+
+            if (difficulty > accurateShares){
+                var percent = 100 - Math.round(accurateShares / difficulty * 100);
                 return '<span class="luckGood">' + percent + '%</span>';
             }
             else{
-                var percent = (100 - Math.round(difficulty / shares * 100)) * -1;
+                var percent = (100 - Math.round(difficulty / accurateShares * 100)) * -1;
                 return '<span class="luckBad">' + percent + '%</span>';
             }
         }
