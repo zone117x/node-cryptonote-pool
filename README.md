@@ -83,6 +83,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * http://kippo.eu
 * http://coinmine.pl/xmr
 * http://moneropool.org
+* http://xmrpool.com
 
 
 Usage
