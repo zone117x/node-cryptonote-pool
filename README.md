@@ -84,6 +84,8 @@ Usage
 * [Redis](http://redis.io/) key-value store v2.6+ ([follow these instructions](http://redis.io/topics/quickstart))
 * libssl required for the node-multi-hashing module
   * For Ubuntu: `sudo apt-get install libssl-dev`
+* Boost is required for the cryptonote-util module
+  * For Ubuntu: `sudo apt-get install libboost-all-dev`
 
 
 ##### Seriously
