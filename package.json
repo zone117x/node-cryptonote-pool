@@ -8,12 +8,12 @@
         "url": "https://github.com/zone117x/node-cryptonote-pool.git"
     },
     "dependencies": {
-        "bignum": "*",
-        "async": "*",
+        "bignum": "0.12.5",
+        "async": "1.5.2",
         "redis": "0.12.1",
-        "cli-color": "*",
-        "dateformat": "*",
-        "base58-native": "*",
+        "cli-color": "1.1.0",
+        "dateformat": "1.0.12",
+        "base58-native": "0.1.4",
         "multi-hashing": "git://github.com/zone117x/node-multi-hashing.git",
         "cryptonote-util": "git://github.com/lucasjones/node-cryptonote-util.git"
     },
