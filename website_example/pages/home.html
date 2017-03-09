@@ -267,8 +267,8 @@
     function getReadableHashRateString(hashrate){
         var i = 0;
         var byteUnits = [' H', ' KH', ' MH', ' GH', ' TH', ' PH' ];
-        while (hashrate > 1024){
-            hashrate = hashrate / 1024;
+        while (hashrate > 1000){
+            hashrate = hashrate / 1000;
             i++;
         }
         return hashrate.toFixed(2) + byteUnits[i];
@@ -324,9 +324,9 @@
 
     function calcEstimateProfit(){
         try {
-            var rateUnit = Math.pow(1024,parseInt($('#calcHashUnit').data('mul')));
+            var rateUnit = Math.pow(1000,parseInt($('#calcHashUnit').data('mul')));
             var inp2 = parseFloat($('#calcHashRate').val()) * rateUnit;
-            var resl = 16 / ((lastStats.network.difficulty / inp2) / 86400);
+            var resl = ( lastStats.network.reward / coinUnits) / ((lastStats.network.difficulty / inp2) / 86400  );
             if (!isNaN(resl)) {
                 updateText('calcHashAmount', (Math.round(resl * 100) / 100).toString());
                 return;

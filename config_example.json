@@ -65,7 +65,7 @@
             "checkThreshold": 30
         },
         "slushMining": {
-            "enabled": true,
+            "enabled": false,
             "weight": 120,
             "blockTime": 60,
             "lastBlockCheckRate": 1
