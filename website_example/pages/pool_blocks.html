@@ -119,16 +119,16 @@
     function getBlockRowElement(block, jsonString){
 
         function formatLuck(difficulty, shares){
-            //accurateShares is only an approximation to reverse the calcualtions done in pool.js, because the shares with their respective are not recorded in redis
+            //Only an approximation to reverse the calculations done in pool.js, because the shares with their respective times are not recorded in redis
             //Approximation assumes equal pool hashrate for the whole round
             //Could potentially be replaced by storing the sum of all job.difficulty in the redis db. 
-            if (lastStats.config.slushMiningEnabled) {
-                var accurateShares = shares / (1/lastStats.config.blockTime * (             //This uses integral calculus to calculate the "area below the graph". We need 1/blockTime for the average
-                    lastStats.config.weight - lastStats.config.weight *                     //This is the integrated function of the original function sligthly modified.
-                        Math.pow(                                                           //Instead of (scoreTime - dateNowSeconds) it used (x-blockTime)
-                            Math.E,                                                         //This is possible because we calculated it in the intervall of 0 to blocktime
-                            ((lastStats.config.blockTime * (-1)) / lastStats.config.weight)
-                         )
+            if (lastStats.config.slushMiningEnabled) {                                      //Uses integral calculus to calculate the average of a dynamic function
+                var accurateShares = 1/lastStats.config.blockTime * (                       //1/blockTime to get the average
+                    shares * lastStats.config.weight * (                                    //Basically calculates the 'area below the graph' between 0 and blockTime
+                        1 - Math.pow(
+                                Math.E, 
+                                ((- lastStats.config.blockTime) / lastStats.config.weight)  //blockTime is equal to the highest possible result of (dateNowSeconds - scoreTime)
+                            )
                     )
                 );
             }
