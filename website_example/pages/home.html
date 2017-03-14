@@ -277,7 +277,7 @@
 
 
 
-    /* Market data polling */
+/* Market data polling */
 
     var intervalMarketPolling = setInterval(updateMarkets, 300000); //poll market data every 5 minutes
     var xhrMarketGets = {};
@@ -287,7 +287,13 @@
         var marketsData = [];
         for (var i = 0; i < cryptonatorWidget.length; i++){
             (function(i){
-                xhrMarketGets[cryptonatorWidget[i]] = $.get('https://www.cryptonator.com/api/ticker/' + cryptonatorWidget[i], function(data){
+                cryptonatorWidget[i] = cryptonatorWidget[i].replace('{symbol}', lastStats.config.symbol.toLowerCase());
+                xhrMarketGets[cryptonatorWidget[i]] = $.get('https://api.cryptonator.com/api/ticker/' + cryptonatorWidget[i], function(data){
+                    if(data.error) {
+                        return;
+                    }
+                    $('.marketRate').show();
+
                     marketsData[i] = data;
                     completedFetches++;
                     if (completedFetches !== cryptonatorWidget.length) return;
@@ -307,7 +313,6 @@
             })(i);
         }
     }
-
 
 
 
