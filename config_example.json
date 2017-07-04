@@ -23,30 +23,30 @@
         "ports": [
             {
                 "port": 3333,
-                "difficulty": 100,
+                "difficulty": 500,
                 "desc": "Low end hardware"
             },
             {
                 "port": 5555,
-                "difficulty": 2000,
+                "difficulty": 25000,
                 "desc": "Mid range hardware"
             },
             {
                 "port": 7777,
-                "difficulty": 10000,
+                "difficulty": 100000,
                 "desc": "High end hardware"
             },
             {
                 "port": 8888,
-                "difficulty": 10000,
+                "difficulty": 200000,
                 "desc": "Hidden port",
                 "hidden": true
             }
         ],
         "varDiff": {
             "minDiff": 2,
-            "maxDiff": 100000,
-            "targetTime": 100,
+            "maxDiff": 1000000,
+            "targetTime": 120,
             "retargetTime": 30,
             "variancePercent": 30,
             "maxJump": 100
@@ -77,9 +77,10 @@
         "interval": 600,
         "maxAddresses": 50,
         "mixin": 3,
-        "transferFee": 5000000000,
+        "transferFee": 50000000,
         "minPayment": 100000000000,
-        "denomination": 100000000000
+        "maxTransactionAmount": 100000000000,
+        "denomination": 10000000000
     },
 
     "blockUnlocker": {
