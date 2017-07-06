@@ -1,7 +1,7 @@
 node-cryptonote-pool
 ====================
 
-High performance Node.js (with native C addons) mining pool for CryptoNote based coins such as Bytecoin, Monero, QuazarCoin, HoneyPenny, etc..
+High performance Node.js (with native C addons) mining pool for CryptoNote based coins such as Superior Coin, Bytecoin, Monero, QuazarCoin, HoneyPenny, etc..
 Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 
@@ -57,17 +57,16 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 
 ### Community / Support
 
-* [CryptoNote Forum](https://forum.cryptonote.org/)
-* [Bytecoin Github](https://github.com/amjuarez/bytecoin)
-* [Monero Github](https://github.com/monero-project/bitmonero)
-* [Monero Announcement Thread](https://bitcointalk.org/index.php?topic=583449.0)
-* IRC (freenode)
-  * Support / general discussion join #monero: https://webchat.freenode.net/?channels=#monero
-  * Development discussion join #monero-dev: https://webchat.freenode.net/?channels=#monero-dev
+* [Superior Coin Github](https://github.com/TheSuperiorCoin/TheSuperiorCoin)
+* [Superior Coin Announcement Thread](https://bitcointalk.org/index.php?topic=1974261.0)
+* Mining Discussion
+  * Facebook: https://www.facebook.com/groups/minesuperior 
+  * Slack: https://superiorcoin.slack.com 
 
 
 #### Pools Using This Software
 
+* http://minesuperiorcoin.com
 * http://xminingpool.com
 * http://xmr.poolto.be
 * https://moneropool.com
@@ -123,10 +122,10 @@ Copy the `config_example.json` file to `config.json` then overview each options 
 Explanation for each field:
 ```javascript
 /* Used for storage in redis so multiple coins can share the same redis instance. */
-"coin": "monero",
+"coin": "superior-coin",
 
 /* Used for front-end display */
-"symbol": "MRO",
+"symbol": "SUPER",
 
 "logging": {
 
