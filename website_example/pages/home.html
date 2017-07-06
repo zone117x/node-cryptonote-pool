@@ -197,7 +197,7 @@
 
             $('#networkLastBlockFound').timeago('update', new Date(lastStats.network.timestamp * 1000).toISOString());
 
-            updateText('networkHashrate', getReadableHashRateString(lastStats.network.difficulty / 60) + '/sec');
+            updateText('networkHashrate', getReadableHashRateString(lastStats.network.difficulty / 120) + '/sec');
             updateText('networkDifficulty', lastStats.network.difficulty.toString());
             updateText('blockchainHeight', lastStats.network.height.toString());
             updateText('networkLastReward', getReadableCoins(lastStats.network.reward, 4));
