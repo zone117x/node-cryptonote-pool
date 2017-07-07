@@ -1,6 +1,6 @@
 {
-    "coin": "monero",
-    "symbol": "XMR",
+    "coin": "superior-coin",
+    "symbol": "SUPER",
 
     "logging": {
         "files": {
