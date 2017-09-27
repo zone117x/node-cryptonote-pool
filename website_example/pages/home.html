@@ -328,7 +328,7 @@
             var inp2 = parseFloat($('#calcHashRate').val()) * rateUnit;
             var resl = ( lastStats.network.reward / coinUnits) / ((lastStats.network.difficulty / inp2) / 86400  );
             if (!isNaN(resl)) {
-                updateText('calcHashAmount', (Math.round(resl * 100) / 100).toString());
+                updateText('calcHashAmount', (Math.round(resl * 1000) / 1000).toString());
                 return;
             }
         }
