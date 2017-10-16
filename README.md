@@ -73,6 +73,7 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * https://moneropool.com
 * http://monero.crypto-pool.fr
 * https://minexmr.com
+* https://moneropool.us
 
 
 Usage
