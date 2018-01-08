@@ -1,11 +1,11 @@
 node-cryptonote-pool
 ====================
 
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+
 High performance Node.js (with native C addons) mining pool for CryptoNote based coins such as Bytecoin, Monero, QuazarCoin, HoneyPenny, etc..
 Comes with lightweight example front-end script which uses the pool's AJAX API.
-
-
-
+    
 #### Table of Contents
 * [Features](#features)
 * [Community Support](#community--support)
