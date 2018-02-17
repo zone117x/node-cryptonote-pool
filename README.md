@@ -107,6 +107,12 @@ Clone the repository and run `npm update` for all the dependencies to be install
 ```bash
 git clone https://github.com/zone117x/node-cryptonote-pool.git pool
 cd pool
+
+nvm install 0.10.48
+nvm use 0.10.48
+nvm alias default 0.10.48
+nvm use default
+
 npm update
 ```
 
