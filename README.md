@@ -37,7 +37,6 @@ Comes with lightweight example front-end script which uses the pool's AJAX API.
 * Payment processing
   * Splintered transactions to deal with max transaction size
   * Minimum payment threshold before balance will be paid out
-  * Minimum denomination for truncating payment amount precision to reduce size/complexity of block transactions
 * Detailed logging
 * Ability to configure multiple ports - each with their own difficulty
 * Variable difficulty / share limiter
@@ -225,8 +224,8 @@ Explanation for each field:
         "invalidPercent": 25, //What percent of invalid shares triggers ban
         "checkThreshold": 30 //Perform check when this many shares have been submitted
     },
-    /* [Warning: several reports of this feature being broken. Proposed fix needs to be tested.] 
-        Slush Mining is a reward calculation technique which disincentivizes pool hopping and rewards 
+    /* [Warning: several reports of this feature being broken. Proposed fix needs to be tested.]
+        Slush Mining is a reward calculation technique which disincentivizes pool hopping and rewards
         'loyal' miners by valuing younger shares higher than older shares. Remember adjusting the weight!
         More about it here: https://mining.bitcoin.cz/help/#!/manual/rewards */
     "slushMining": {
@@ -243,8 +242,7 @@ Explanation for each field:
     "maxAddresses": 50, //split up payments if sending to more than this many addresses
     "mixin": 3, //number of transactions yours is indistinguishable from
     "transferFee": 5000000000, //fee to pay for each transaction
-    "minPayment": 100000000000, //miner balance required before sending payment
-    "denomination": 100000000000 //truncate to this precision and store remainder
+    "minPayment": 100000000000 //miner balance required before sending payment
 },
 
 /* Module that monitors the submitted block maturities and manages rounds. Confirmed

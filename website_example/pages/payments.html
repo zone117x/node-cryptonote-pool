@@ -21,7 +21,6 @@
     <span class="bg-primary">Total Payments: <span id="paymentsTotal"></span></span>
     <span class="bg-info">Total Miners Paid: <span id="paymentsTotalPaid"></span></span>
     <span class="bg-info">Minimum Payment Threshold: <span id="paymentsMinimum"></span></span>
-    <span class="bg-info">Denomination Unit: <span id="paymentsDenomination"></span></span>
 </div>
 
 <hr>
@@ -58,7 +57,6 @@
             updateText('paymentsTotal', lastStats.pool.totalPayments.toString());
             updateText('paymentsTotalPaid', lastStats.pool.totalMinersPaid.toString());
             updateText('paymentsMinimum', getReadableCoins(lastStats.config.minPaymentThreshold, 3));
-            updateText('paymentsDenomination', getReadableCoins(lastStats.config.denominationUnit, 3));
             renderPayments(lastStats.pool.payments);
         }
     };
