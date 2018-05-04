@@ -2,10 +2,10 @@
     "name": "cryptonote-pool",
     "version": "0.0.1",
     "license": "GPL-2.0",
-    "author": "Matthew Little",
+    "author": "tytandtam",
     "repository": {
         "type": "git",
-        "url": "https://github.com/zone117x/node-cryptonote-pool.git"
+        "url": "https://github.com/tytandtam/node-cryptonote-pool.git"
     },
     "dependencies": {
         "bignum": "0.12.5",
@@ -15,7 +15,7 @@
         "dateformat": "1.0.12",
         "base58-native": "0.1.4",
         "multi-hashing": "git://github.com/zone117x/node-multi-hashing.git",
-        "cryptonote-util": "git://github.com/Snipa22/node-cryptonote-util#xmr-Nan-2.0"
+        "cryptonote-util": "git://github.com/tytandtam/node-cryptonote-util#xmv-Nan-2.0"
     },
     "engines": {
         "node": ">=0.10"
