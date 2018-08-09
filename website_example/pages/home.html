@@ -7,7 +7,7 @@
         text-transform: uppercase;
     }
     #lastHash{
-        font-family: 'Inconsolata', monospace;
+        font-family: 'Raleway', monospace;
         font-size: 0.8em;
     }
     #poolDonations{
@@ -27,10 +27,10 @@
     }
     #calcHashRate{
         z-index: inherit;
-        font-family: 'Inconsolata', monospace;
+        font-family: 'Raleway', monospace;
     }
     #calcHashAmount{
-        font-family: 'Inconsolata', monospace;
+        font-family: 'Raleway', monospace;
     }
     #calcHashResultsHolder{
         min-width: 145px;
@@ -41,10 +41,10 @@
     }
     #yourStatsInput{
         z-index: inherit;
-        font-family: 'Inconsolata', monospace;
+        font-family: 'Raleway', monospace;
     }
     #yourAddressDisplay > span {
-        font-family: 'Inconsolata', monospace;
+        font-family: 'Raleway', monospace;
     }
     #lookUp > span:nth-child(2){
         display: none;
@@ -58,7 +58,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         vertical-align: middle;
-        font-family: 'Inconsolata', monospace;
+        font-family: 'Raleway', monospace;
         font-size: 0.9em;
     }
     #addressError{
@@ -68,7 +68,7 @@
 
     #payments_rows > tr > td{
         vertical-align: middle;
-        font-family: 'Inconsolata', monospace;
+        font-family: 'Raleway', monospace;
         font-size: 0.95em;
         text-align: center;
     }
@@ -86,18 +86,18 @@
 <div class="row">
     <div class="col-md-4 stats">
         <h3>Network</h3>
-        <div><i class="fa fa-tachometer"></i> Hash Rate: <span id="networkHashrate"></span></div>
-        <div><i class="fa fa-clock-o"></i> Block Found: <span id="networkLastBlockFound"></span></div>
-        <div><i class="fa fa-unlock-alt"></i> Difficulty: <span id="networkDifficulty"></span></div>
+        <div><i class="fa fa-tachometer"></i> Network Hash Rate: <span id="networkHashrate"></span></div>
+        <div><i class="fa fa-clock-o"></i> Block Found On The Network: <span id="networkLastBlockFound"></span></div>
+        <div><i class="fa fa-unlock-alt"></i> Network Difficulty: <span id="networkDifficulty"></span></div>
         <div><i class="fa fa-bars"></i> Blockchain Height: <span id="blockchainHeight"></span></div>
-        <div><i class="fa fa-money"></i> Last Reward: <span id="networkLastReward"></span></div>
+        <div><i class="fa fa-money"></i> Last Block Reward: <span id="networkLastReward"></span></div>
         <div><i class="fa fa-paw"></i> Last Hash: <a id="lastHash" target="_blank"></a></div>
     </div>
 
     <div class="col-md-4 stats">
         <h3>Our Pool</h3>
-        <div><i class="fa fa-tachometer"></i> Hash Rate: <span id="poolHashrate"></span></div>
-        <div><i class="fa fa-clock-o"></i> Block Found: <span id="poolLastBlockFound"></span></div>
+        <div><i class="fa fa-tachometer"></i> Pool Hash Rate: <span id="poolHashrate"></span></div>
+        <div><i class="fa fa-clock-o"></i>Last Block Found By The Pool: <span id="poolLastBlockFound"></span></div>
         <div><i class="fa fa-users"></i> Connected Miners: <span id="poolMiners"></span></div>
         <div><i class="fa fa-gift"></i> Donations: <span id="poolDonations"></span></div>
         <div><i class="fa fa-money"></i> Total Pool Fee: <span id="poolFee"></span></div>
@@ -107,14 +107,14 @@
     <div class="col-md-4 stats">
         <h3 id="marketHeader">Market</h3>
         <div class="marketFooter">Updated: <span id="marketLastUpdated"></span></div>
-        <div class="marketFooter">Powered by <a href="https://www.cryptonator.com/">Cryptonator</a></div>
+        <div class="marketFooter">Powered by <a href="https://multiminer.us">MultiMiner</a></div>
     </div>
 </div>
 
 <hr>
 
 <div id="miningProfitCalc">
-    <h3>Estimate Mining Profits</h3>
+    <h3>Mining Profit Estimator</h3>
     <div id="calcHashHolder">
         <div class="input-group">
             <input type="number" class="form-control" id="calcHashRate" placeholder="Enter Your Hash Rate">
@@ -148,11 +148,11 @@
     </div>
 
     <div id="addressError"></div>
-    <div class="yourStats"><i class="fa fa-key"></i> Address: <span id="yourAddressDisplay"></span></div>
-    <div class="yourStats"><i class="fa fa-bank"></i> Pending Balance: <span id="yourPendingBalance"></span></div>
-    <div class="yourStats"><i class="fa fa-money"></i> Total Paid: <span id="yourPaid"></span></div>
+    <div class="yourStats"><i class="fa fa-key"></i> Your Address: <span id="yourAddressDisplay"></span></div>
+    <div class="yourStats"><i class="fa fa-bank"></i> Amount Waiting to be paid: <span id="yourPendingBalance"></span></div>
+    <div class="yourStats"><i class="fa fa-money"></i> Total Amount Of Coins Paid: <span id="yourPaid"></span></div>
     <div class="yourStats"><i class="fa fa-clock-o"></i> Last Share Submitted: <span id="yourLastShare"></span></div>
-    <div class="yourStats"><i class="fa fa-tachometer"></i> Hash Rate: <span id="yourHashrateHolder"></span></div>
+    <div class="yourStats"><i class="fa fa-tachometer"></i> Your Hash Rate: <span id="yourHashrateHolder"></span></div>
     <div class="yourStats"><i class="fa fa-cloud-upload"></i> Total Hashes Submitted: <span id="yourHashes"></span></div>
 
     <br class="yourStats">
@@ -287,7 +287,7 @@
         var marketsData = [];
         for (var i = 0; i < cryptonatorWidget.length; i++){
             (function(i){
-                xhrMarketGets[cryptonatorWidget[i]] = $.get('https://api.cryptonator.com/api/ticker/' + cryptonatorWidget[i], function(data){
+                xhrMarketGets[cryptonatorWidget[i]] = $.get('https' + cryptonatorWidget[i], function(data){
                     marketsData[i] = data;
                     completedFetches++;
                     if (completedFetches !== cryptonatorWidget.length) return;

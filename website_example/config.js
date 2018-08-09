@@ -2,15 +2,15 @@ var api = "http://cryppit.com:8117";
 
 var coinUnits = 1000000000000;
 
-var poolHost = "cryppit.com";
+var poolHost = "multiminer.us";
 
 var irc = "irc.freenode.net/#monero-pools";
 
-var email = "support@cryppit.com";
+var email = "support@multiminer.us";
 
 var cryptonatorWidget = ["XMR-BTC", "XMR-USD", "XMR-EUR", "XMR-GBP"];
 
-var easyminerDownload = "https://github.com/zone117x/cryptonote-easy-miner/releases/";
+var easyminerDownload = "https://multiminer.us/downloads";
 
 var blockchainExplorer = "http://chainradar.com/xmr/block/";
 
