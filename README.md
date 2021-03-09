@@ -1,4 +1,6 @@
-## This repo is looking for maintainers! Please reach out if interested.
+## This repo is not maintained. Pull requests that are critical or of high quality and well tested are accepted - but not much more.
+### Looking for maintainers. Please open an issue if interested. 
+
 --------
 
 
