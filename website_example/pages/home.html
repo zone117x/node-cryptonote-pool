@@ -281,6 +281,8 @@
 
     var intervalMarketPolling = setInterval(updateMarkets, 300000); //poll market data every 5 minutes
     var xhrMarketGets = {};
+    var conversionRate;
+    var conversionUnit;
     updateMarkets();
     function updateMarkets(){
         var completedFetches = 0;
@@ -299,6 +301,11 @@
 
                         if (price > 1) price = Math.round(price * 100) / 100;
                         else price = marketsData[f].ticker.price;
+
+                        if (typeof(cryptonatorEarnings) != 'undefined' && cryptonatorWidget[f] == cryptonatorEarnings) {
+                            conversionRate = parseFloat(price);
+                            conversionUnit = marketsData[f].ticker.target;
+                        }
 
                         $marketHeader.after('<div class="marketTicker">' + marketsData[f].ticker.base + ': <span>' + price + ' ' + marketsData[f].ticker.target + '</span></div>');
                     }
@@ -328,7 +335,7 @@
             var inp2 = parseFloat($('#calcHashRate').val()) * rateUnit;
             var resl = ( lastStats.network.reward / coinUnits) / ((lastStats.network.difficulty / inp2) / 86400  );
             if (!isNaN(resl)) {
-                updateText('calcHashAmount', (Math.round(resl * 100) / 100).toString());
+                updateText('calcHashAmount', (Math.round(resl * 1000) / 1000).toString());
                 return;
             }
         }
@@ -408,8 +415,18 @@
 
                     updateText('yourHashrateHolder', (data.stats.hashrate || '0 H') + '/sec');
                     updateText('yourHashes', (data.stats.hashes || 0).toString());
-                    updateText('yourPaid', getReadableCoins(data.stats.paid));
-                    updateText('yourPendingBalance', getReadableCoins(data.stats.balance));
+                    var earningsPaid = (data.stats.paid || 0);
+                    var convertedPaid = Math.round(100 * parseFloat(getReadableCoins(earningsPaid,0,false)) * conversionRate) / 100;
+                    var earningsBalance = (data.stats.balance || 0);
+                    var convertedBalance = Math.round(100 * parseFloat(getReadableCoins(earningsBalance,0,false)) * conversionRate) / 100;
+                    if (conversionUnit) {
+                        updateText('yourPaid', getReadableCoins(earningsPaid) + " (" + convertedPaid  + " " + conversionUnit + ")");
+                        updateText('yourPendingBalance', getReadableCoins(earningsBalance) + " (" + convertedBalance  + " " + conversionUnit + ")");
+                    }
+                    else {
+                        updateText('yourPaid', getReadableCoins(earningsPaid));
+                        updateText('yourPendingBalance', getReadableCoins(earningsBalance));
+                    }
 
                     renderPayments(data.payments);
 
