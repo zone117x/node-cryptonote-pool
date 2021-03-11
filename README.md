@@ -432,7 +432,7 @@ curl 127.0.0.1:18081/json_rpc -d '{"method":"getblockheaderbyheight","params":{"
 
 * To inspect and make changes to redis I suggest using [redis-commander](https://github.com/joeferner/redis-commander)
 * To monitor server load for CPU, Network, IO, etc - I suggest using [New Relic](http://newrelic.com/)
-* To keep your pool node script running in background, logging to file, and automatically restarting if it crashes - I suggest using [forever](https://github.com/nodejitsu/forever)
+* To keep your pool node script running in background, logging to file, and automatically restarting if it crashes - I suggest using [PM2](https://github.com/Unitech/pm2)
 
 
 Donations
